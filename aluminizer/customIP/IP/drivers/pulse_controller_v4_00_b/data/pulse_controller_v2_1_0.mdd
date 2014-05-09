@@ -1,0 +1,15 @@
+##############################################################################
+## Filename:          C:\Users\trosen\Xilinx\customIP2\MyProcessorIPLib/drivers/pulse_controller_v4_00_b/data/pulse_controller_v2_1_0.mdd
+## Description:       Microprocessor Driver Definition
+## Date:              Sat Jul 14 14:34:13 2012 (by Create and Import Peripheral Wizard)
+##############################################################################
+
+OPTION psf_version = 2.1.0;
+
+BEGIN DRIVER pulse_controller
+
+  OPTION supported_peripherals = (pulse_controller);
+  OPTION depends = (common_v1_00_a);
+  OPTION copyfiles = all;
+
+END DRIVER

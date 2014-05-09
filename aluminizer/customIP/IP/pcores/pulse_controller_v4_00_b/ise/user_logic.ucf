@@ -1,0 +1,4 @@
+#check timing
+
+NET "Bus2IP_Clk" TNM_NET = "Bus2IP_Clk";
+TIMESPEC "TS_Bus2IP_Clk" = PERIOD "Bus2IP_Clk" 5 ns HIGH 50%;
