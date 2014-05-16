@@ -178,7 +178,7 @@ begin
 					endcase
 				  end
 				  
-			2 : begin // set memory word
+			2 : begin // set memory word (two bytes)
 					case(cycle)
 					1 : begin dds_addr_reg <= opcode_reg[DDS_REG_B:DDS_REG_A]; dds_FUD <= 0; end
 					2 : begin dds_data_reg <= operand_reg[15:0]; dds_w_strobe_n <= 0; end
@@ -187,7 +187,7 @@ begin
 					endcase
 				  end
 				  
-			3 : begin // get memory word
+			3 : begin // get memory word (two bytes)
 					case(cycle)
 					1 : begin dds_addr_reg <= opcode_reg[DDS_REG_B:DDS_REG_A]; dds_data_T_reg <= 1; result_reg <= 0; end
 					3 : dds_r_strobe_n <= 0;
@@ -203,7 +203,7 @@ begin
 					endcase
 				  end
          
-			15 : begin // set two memory words
+			15 : begin // set two memory words (four bytes)
 					case(cycle)
 					1 : begin dds_addr_reg <= opcode_reg[DDS_REG_B:DDS_REG_A]; dds_FUD <= 0; end
 					2 : begin dds_data_reg <= operand_reg[31:16]; dds_w_strobe_n <= 0; end
