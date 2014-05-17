@@ -3,8 +3,7 @@ XmpVersion: 14.7
 VerMgmt: 14.7
 IntStyle: default
 Flow: ise
-ModuleSearchPath: /home/trosen/x/aluminizer/fpga/customIP/IP/pcores/pulse_controller_v4_00_b/../../../
-ModuleSearchPath: /home/trosen/nist/Al/control_trunk/FPGA/customIP2
+ModuleSearchPath: ../../../../../customIP/
 MHS File: module_1.mhs
 Architecture: zynq
 Device: xc7z020

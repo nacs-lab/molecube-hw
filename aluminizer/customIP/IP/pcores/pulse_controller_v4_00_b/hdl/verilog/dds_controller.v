@@ -4,23 +4,26 @@
 //opcode[DDS_ID_A:DDS_ID_B] DDS number (0...31)
 //opcode[DDS_REG_A:DDS_REG_B] DDS memory address
 
+//All DDS commands require (MAX_CYCLES+1)*(CLK_DIV+1)=28 cycles (280 ns)
+
 module dds_controller(clock, reset, write_enable, opcode, operand, 
-							 dds_addr, dds_data_I, dds_data_O, dds_data_T, dds_control, 
+               dds_addr, dds_data_I, dds_data_O, dds_data_T, dds_control, 
                dds_addr2, dds_data2_I, dds_data2_O, dds_data2_T, dds_control2, dds_cs,
-							 result_data, result_WrReq);
+               result_data, result_WrReq);
 
 // synthesis attribute iostandard of dds_bus is LVCMOS33;
 
 parameter N_DDS = 8;
-parameter DDS_BANK_SIZE	    = 11;
-parameter U_DDS_DATA_WIDTH	= 16;
-parameter U_DDS_ADDR_WIDTH	= 7;
-parameter U_DDS_CTRL_WIDTH	= 4;
+parameter DDS_BANK_SIZE     = 11;
+parameter U_DDS_DATA_WIDTH  = 16;
+parameter U_DDS_ADDR_WIDTH  = 7;
+parameter U_DDS_CTRL_WIDTH  = 4;
 parameter DDS_OPCODE_WIDTH  = 16;
 parameter DDS_OPERAND_WIDTH = 32;
 parameter RESULT_WIDTH      = 32;
 
 parameter MAX_CYCLES = 6;
+parameter CLK_DIV = 3;
 
 //first and last bit of DDS id in opcode
 parameter DDS_ID_A = 4;
@@ -101,129 +104,158 @@ reg [1:0]  sub_cycle;
 
 always @(posedge clock or posedge reset)
 begin
-	if(reset)
-	begin
-		cycle <= 0;
-		sub_cycle <= 0;
-		
-		operand_reg <= 0;
-		opcode_reg <= 0;
-	
-		dds_w_strobe_n 	<= 1;
-		dds_r_strobe_n 	<= 1;
-		dds_FUD 	<= 1;
-		dds_reset	<= 0;
-		
-		dds_cs_reg <= ~0; //all ones
-		
-		dds_addr_reg 	<= 0;
-		dds_data_reg 	<= 0;
-		dds_data_T_reg  <= 1;
-		
-		result_WrReq_reg <= 0;
-	end
-	else
-	begin	
-		if(cycle == 0)	begin
-			dds_w_strobe_n 	<= 1;
-			dds_r_strobe_n 	<= 1;
-			dds_reset	<= 0;
-			
-			dds_addr_reg 	<= 0;
-			dds_data_reg 	<= 0;
-			dds_data_T_reg <= 0;
-			
-			result_WrReq_reg <= 0;
-			result_reg <= 0;
-			
-			sub_cycle <= 0;
-						
-			//wait for write_enable to start
-			if(write_enable) begin
-				//chip select
-			        dds_cs_reg <= ~(1 << opcode[DDS_ID_B:DDS_ID_A]);
+  if(reset)
+  begin
+    cycle <= 0;
+    sub_cycle <= 0;
+    
+    operand_reg <= 0;
+    opcode_reg <= 0;
+  
+    dds_w_strobe_n  <= 1;
+    dds_r_strobe_n  <= 1;
+    dds_FUD   <= 1;
+    dds_reset <= 0;
+    
+    dds_cs_reg <= ~0; //all ones
+    
+    dds_addr_reg  <= 0;
+    dds_data_reg  <= 0;
+    dds_data_T_reg  <= 1;
+    
+    result_WrReq_reg <= 0;
+  end
+  else
+  begin 
+    if(cycle == 0)  begin
+      dds_w_strobe_n  <= 1;
+      dds_r_strobe_n  <= 1;
+      dds_reset <= 0;
+      
+      dds_addr_reg  <= 0;
+      dds_data_reg  <= 0;
+      dds_data_T_reg <= 0;
+      
+      result_WrReq_reg <= 0;
+      result_reg <= 0;
+      
+      sub_cycle <= 0;
+            
+      //wait for write_enable to start
+      if(write_enable) begin
+        //chip select
+        dds_cs_reg <= ~(1 << opcode[DDS_ID_B:DDS_ID_A]);
         
-	  active_dds_bank[0] = opcode[DDS_ID_B:DDS_ID_A]  < DDS_BANK_SIZE;
-	  active_dds_bank[1] = opcode[DDS_ID_B:DDS_ID_A] >= DDS_BANK_SIZE;
-				
-				//latch in operand and operand
-				operand_reg    <= operand;
-				opcode_reg		<= opcode;
-				
-				cycle <= 1;
-			end else begin 
-				dds_cs_reg <= ~0; //all ones
-			end
-		end else begin
-			case (opcode_reg[3:0])
-			0 : begin // set frequency
-					case(cycle)
-					1 : begin dds_addr_reg <= 6'h10; dds_FUD <= 0; end
-					2 : begin dds_data_reg <= operand_reg[31:16]; dds_w_strobe_n <= 0; end
-					3 : begin dds_addr_reg <= 6'h12; dds_w_strobe_n <= 1; end
-					4 : begin dds_data_reg <= operand_reg[15:0]; dds_w_strobe_n <= 0; end
-					5 : dds_w_strobe_n <= 1;
-					6 : dds_FUD <= 1; 
-					endcase
-				  end
-				  
-			1 : begin // set phase, amplitude for profile 0
-					case(cycle)
-					1 : begin dds_addr_reg <= 6'h30; dds_FUD <= 0; end
-					2 : begin dds_data_reg <= operand_reg[31:16]; dds_w_strobe_n <= 0; end
-					3 : begin dds_addr_reg <= 6'h32; dds_w_strobe_n <= 1; end
-					4 : begin dds_data_reg <= operand_reg[15:0]; dds_w_strobe_n <= 0; end
-					5 : dds_w_strobe_n <= 1;
-					6 : dds_FUD <= 1; 
-					endcase
-				  end
-				  
-			2 : begin // set memory word (two bytes)
-					case(cycle)
-					1 : begin dds_addr_reg <= opcode_reg[DDS_REG_B:DDS_REG_A]; dds_FUD <= 0; end
-					2 : begin dds_data_reg <= operand_reg[15:0]; dds_w_strobe_n <= 0; end
-					3 : dds_w_strobe_n <= 1;
-					6 : dds_FUD <= 1; 
-					endcase
-				  end
-				  
-			3 : begin // get memory word (two bytes)
-					case(cycle)
-					1 : begin dds_addr_reg <= opcode_reg[DDS_REG_B:DDS_REG_A]; dds_data_T_reg <= 1; result_reg <= 0; end
-					3 : dds_r_strobe_n <= 0;
-					5 : result_reg[31:16] <= active_dds_bank[0] ? dds_data_I : dds_data2_I; 
-					6 : begin dds_r_strobe_n <= 1; result_WrReq_reg <= 1; end
-					endcase
-				  end
-				  
-			4 : begin // DDS reset
-					case(cycle)
-					1 : dds_reset <= 0;
-					5 : dds_reset <= 1;
-					endcase
-				  end
-         
-			15 : begin // set two memory words (four bytes)
-					case(cycle)
-					1 : begin dds_addr_reg <= opcode_reg[DDS_REG_B:DDS_REG_A]; dds_FUD <= 0; end
-					2 : begin dds_data_reg <= operand_reg[31:16]; dds_w_strobe_n <= 0; end
-					3 : begin dds_addr_reg <= opcode_reg[DDS_REG_B:DDS_REG_A]+2; dds_w_strobe_n <= 1; end
-					4 : begin dds_data_reg <= operand_reg[15:0]; dds_w_strobe_n <= 0; end
-					5 : dds_w_strobe_n <= 1;
-					6 : dds_FUD <= 1; 
-					endcase
-				  end
-			endcase
-			
-			if(cycle == MAX_CYCLES) cycle <= 0;
-			else begin
-				sub_cycle <= sub_cycle + 1;
-				if(sub_cycle == 2'b11) //divide clock rate by 4 for DDS programming
-					cycle <= cycle + 1;
-			end
-		end
-	end
+        active_dds_bank[0] = opcode[DDS_ID_B:DDS_ID_A]  < DDS_BANK_SIZE;
+        active_dds_bank[1] = opcode[DDS_ID_B:DDS_ID_A] >= DDS_BANK_SIZE;
+        
+        //latch in operand and opcode
+        operand_reg   <= operand;
+        opcode_reg    <= opcode;
+        
+        cycle <= 1;
+      end else begin 
+        dds_cs_reg <= ~0; //all ones
+      end
+    end else begin
+      case (opcode_reg[3:0])
+      0 : begin // set frequency for profile 0
+          case(cycle)
+          1 : begin dds_addr_reg <= 6'h2F; dds_FUD <= 0; end
+          2 : begin dds_data_reg <= operand_reg[31:16]; dds_w_strobe_n <= 0; end
+          3 : begin dds_addr_reg <= 6'h2D; dds_w_strobe_n <= 1; end
+          4 : begin dds_data_reg <= operand_reg[15:0]; dds_w_strobe_n <= 0; end
+          5 : dds_w_strobe_n <= 1;
+          6 : dds_FUD <= 1; 
+          endcase
+          end
+          
+      1 : begin // set phase (two high bytes), amplitude (two low bytes) for profile 0
+          case(cycle)
+          1 : begin dds_addr_reg <= 6'h31; dds_FUD <= 0; end
+          2 : begin dds_data_reg <= operand_reg[31:16]; dds_w_strobe_n <= 0; end
+          3 : begin dds_addr_reg <= 6'h33; dds_w_strobe_n <= 1; end
+          4 : begin dds_data_reg <= operand_reg[15:0]; dds_w_strobe_n <= 0; end
+          5 : dds_w_strobe_n <= 1;
+          6 : dds_FUD <= 1; 
+          endcase
+          end
+          
+      2 : begin // set memory word (two bytes) from addr-1 to addr
+          case(cycle)
+          1 : begin dds_addr_reg <= opcode_reg[DDS_REG_B:DDS_REG_A]; dds_FUD <= 0; end
+          2 : begin dds_data_reg <= operand_reg[15:0]; dds_w_strobe_n <= 0; end
+          3 : dds_w_strobe_n <= 1;
+          6 : dds_FUD <= 1; 
+          endcase
+          end
+          
+      3 : begin // get memory word (two bytes) from addr-1 to addr
+          case(cycle)
+          1 : begin dds_addr_reg <= opcode_reg[DDS_REG_B:DDS_REG_A]; dds_data_T_reg <= 1; result_reg <= 0; end
+          3 : dds_r_strobe_n <= 0;
+          5 : result_reg[15:0] <= active_dds_bank[0] ? dds_data_I : dds_data2_I; 
+          6 : begin dds_r_strobe_n <= 1; result_WrReq_reg <= 1; end
+          endcase
+          end
+          
+      4 : begin // DDS reset (should be low for about 10 ns minimum)
+          case(cycle)
+          1 : dds_reset <= 0;
+          5 : dds_reset <= 1;
+          endcase
+          end
+          
+      5 : begin // DDS reset (boards selected by operand)
+          case(cycle)
+          1 : dds_cs_reg <= operand_reg[(N_DDS-1):0];
+          3 : dds_reset <= 1;
+          6 : dds_reset <= 0;
+          endcase
+          end
+          
+      14 : begin // get two memory words (four bytes) from addr-1 to addr+2
+          case(cycle)
+          1 : begin dds_addr_reg <= opcode_reg[DDS_REG_B:DDS_REG_A]; dds_data_T_reg <= 1; result_reg <= 0; end
+          2 : dds_r_strobe_n <= 0; //initiate first read from DDS
+          3 : begin // get data on bus
+                result_reg[15:0] <= active_dds_bank[0] ? dds_data_I : dds_data2_I; 
+                dds_r_strobe_n <= 1; 
+                result_WrReq_reg <= 1; //write request to result buffer
+                dds_addr_reg <= opcode_reg[DDS_REG_B:DDS_REG_A]+2; //advance address
+              end
+          //initiate second read from DDS
+          4 : begin dds_r_strobe_n <= 0; result_WrReq_reg <= 0; end 
+          5 : begin // get data on bus
+                result_reg[31:16] <= active_dds_bank[0] ? dds_data_I : dds_data2_I; 
+                dds_r_strobe_n <= 1; 
+                result_WrReq_reg <= 1; //write request to result buffer
+              end
+          6 : result_WrReq_reg <= 0;
+          endcase
+          end
+          
+      15 : begin // set two memory words (four bytes) from addr-1 to addr+2
+          case(cycle)
+          1 : begin dds_addr_reg <= opcode_reg[DDS_REG_B:DDS_REG_A]+2; dds_FUD <= 0; end
+          2 : begin dds_data_reg <= operand_reg[31:16]; dds_w_strobe_n <= 0; end
+          3 : begin dds_addr_reg <= opcode_reg[DDS_REG_B:DDS_REG_A]; dds_w_strobe_n <= 1; end
+          4 : begin dds_data_reg <= operand_reg[15:0]; dds_w_strobe_n <= 0; end
+          5 : dds_w_strobe_n <= 1;
+          6 : dds_FUD <= 1; 
+          endcase
+          end
+      endcase
+      
+      if(cycle == MAX_CYCLES) cycle <= 0; //All DDS commands require 4*7=28 cycles (280 ns)
+      else begin
+        sub_cycle <= sub_cycle + 1;
+        if(sub_cycle == 2'b11) //divide clock rate by 4 for DDS programming
+          cycle <= cycle + 1;
+      end
+    end
+  end
 end
-	
-		
+  
+    
 endmodule
