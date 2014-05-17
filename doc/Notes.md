@@ -62,3 +62,35 @@
 
     SYSCLK is usually REFCLK
     REFCLK is off and I can't turn it on remotely.
+
+# Fri 16 May 2014
+
+* Turn on REFCLK at 600 MHZ
+
+    Restart FPGA
+    Observe 25 MHz SYNC_CLK
+
+* Set `ftw[11] = 0x771C23C6`
+
+    ```
+    AD9914 board=11 addr=0x00...03 = 08 01 01 00
+    AD9914 board=11 addr=0x04...07 = 00 09 00 00
+    AD9914 board=11 addr=0x08...0B = 1C 19 00 00
+    AD9914 board=11 addr=0x0C...0F = 20 21 05 1C
+    AD9914 board=11 addr=0x10...13 = 77 C6 23 00
+    AD9914 board=11 addr=0x14...17 = 00 00 00 00
+    AD9914 board=11 addr=0x18...1B = 0C 41 12 40
+    AD9914 board=11 addr=0x1C...1F = 4A 0B 10 04
+    AD9914 board=11 addr=0x20...23 = 81 08 90 00
+    AD9914 board=11 addr=0x24...27 = 00 00 00 00
+    AD9914 board=11 addr=0x28...2B = 00 00 00 00
+    AD9914 board=11 addr=0x2C...2F = 00 00 00 00
+    AD9914 board=11 addr=0x30...33 = 00 00 00 00
+    AD9914 board=11 addr=0x34...37 = 00 92 20 04
+    AD9914 board=11 addr=0x38...3B = 40 5C 00 00
+    AD9914 board=11 addr=0x3C...3F = 00 40 A0 00
+    ```
+
+* Fix address locations for ftw, amplitude.
+
+* 10 MHz signal has distortion at negative side.  something is overdriven ?
