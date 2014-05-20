@@ -347,7 +347,7 @@ always @(posedge clock or posedge reset) begin
 								dds_opcode <= instruction[47:32];
 								dds_operand <= instruction[31:0];
 								dds_we <= 1; // write to DDS
-								timer <= 50;
+								timer <= 30; //instruction takes 280 ns.  Allocate 300 ns.
 							 end
 							 
 						2 : begin //read PMT
