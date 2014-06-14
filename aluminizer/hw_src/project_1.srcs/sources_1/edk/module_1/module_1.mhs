@@ -43,8 +43,8 @@
  PORT dds_data2_pin = dds_data2, DIR = IO, VEC = [15:0]
  PORT dds_control2_pin = dds_control2, DIR = O, VEC = [3:0]
  PORT dds_cs_pin = dds_cs, DIR = O, VEC = [21:0]
- PORT clock_out = clock_out, DIR = O
- PORT clock_in = clock_in, DIR = I, SIGIS = CLK
+# PORT clock_out = clock_out, DIR = O
+ PORT clock_in_pin = clock_in, DIR = I, SIGIS = CLK, CLK_FREQ = 100000000
  PORT axi_spi_0_SCK_pin = axi_spi_0_SCK, DIR = O
  PORT axi_spi_0_MISO_pin = axi_spi_0_MISO, DIR = I
  PORT axi_spi_0_MOSI_pin = axi_spi_0_MOSI, DIR = O
@@ -53,6 +53,7 @@
  PORT axi_spi_1_MISO_pin = axi_spi_1_MISO, DIR = I
  PORT axi_spi_1_MOSI_pin = axi_spi_1_MOSI, DIR = O
  PORT axi_spi_1_SS_pin = axi_spi_1_SS, DIR = O
+ PORT clock_generator_0_CLKOUT0_pin = clock_generator_0_CLKOUT0, DIR = O, SIGIS = CLK, CLK_FREQ = 33333333
 
 
 # PORT axi_spi_2_SCK_pin = axi_spi_2_SCK, DIR = O
@@ -179,9 +180,9 @@ BEGIN pulse_controller
  PORT dds_cs = dds_cs
  PORT counter_in = counter0_in
  PORT sync_in = sync_counter0_in
- PORT clock_out = clock_out
 END
 
+# PORT clock_out = clock_out
 BEGIN util_ds_buf
  PARAMETER INSTANCE = util_ds_buf_0
  PARAMETER HW_VER = 1.01.a
@@ -237,6 +238,7 @@ BEGIN clock_generator
  PARAMETER C_CLKIN_FREQ = 100000000
  PARAMETER C_CLKOUT0_FREQ = 33333333
  PORT CLKIN = clock_in
+ PORT CLKOUT0 = clock_generator_0_CLKOUT0
 END
 
 # BEGIN axi_spi

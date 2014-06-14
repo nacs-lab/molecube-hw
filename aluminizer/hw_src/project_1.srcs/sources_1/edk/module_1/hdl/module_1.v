@@ -36,8 +36,7 @@ module module_1
     dds_data2_pin,
     dds_control2_pin,
     dds_cs_pin,
-    clock_out,
-    clock_in,
+    clock_in_pin,
     axi_spi_0_SCK_pin,
     axi_spi_0_MISO_pin,
     axi_spi_0_MOSI_pin,
@@ -45,7 +44,8 @@ module module_1
     axi_spi_1_SCK_pin,
     axi_spi_1_MISO_pin,
     axi_spi_1_MOSI_pin,
-    axi_spi_1_SS_pin
+    axi_spi_1_SS_pin,
+    clock_generator_0_CLKOUT0_pin
   );
   inout [53:0] processing_system7_0_MIO;
   input processing_system7_0_PS_SRSTB;
@@ -79,8 +79,7 @@ module module_1
   inout [15:0] dds_data2_pin;
   output [3:0] dds_control2_pin;
   output [21:0] dds_cs_pin;
-  output clock_out;
-  input clock_in;
+  input clock_in_pin;
   output axi_spi_0_SCK_pin;
   input axi_spi_0_MISO_pin;
   output axi_spi_0_MOSI_pin;
@@ -89,6 +88,7 @@ module module_1
   input axi_spi_1_MISO_pin;
   output axi_spi_1_MOSI_pin;
   output axi_spi_1_SS_pin;
+  output clock_generator_0_CLKOUT0_pin;
 
   // Internal signals
 
@@ -158,6 +158,8 @@ module module_1
   wire axi_spi_1_MOSI;
   wire axi_spi_1_SCK;
   wire [0:0] axi_spi_1_SS;
+  wire clock_generator_0_CLKOUT0;
+  wire clock_in;
   wire [0:0] counter0_in;
   wire [6:0] dds_addr;
   wire [6:0] dds_addr2;
@@ -205,6 +207,7 @@ module module_1
   assign dds_addr2_pin = dds_addr2;
   assign dds_control2_pin = dds_control2;
   assign dds_cs_pin = dds_cs;
+  assign clock_in = clock_in_pin;
   assign axi_spi_0_SCK_pin = axi_spi_0_SCK;
   assign axi_spi_0_MISO = axi_spi_0_MISO_pin;
   assign axi_spi_0_MOSI_pin = axi_spi_0_MOSI;
@@ -213,6 +216,7 @@ module module_1
   assign axi_spi_1_MISO = axi_spi_1_MISO_pin;
   assign axi_spi_1_MOSI_pin = axi_spi_1_MOSI;
   assign axi_spi_1_SS_pin = axi_spi_1_SS[0];
+  assign clock_generator_0_CLKOUT0_pin = clock_generator_0_CLKOUT0;
   assign pgassign1[1] = axi_spi_0_IP2INTC_Irpt;
   assign pgassign1[0] = axi_spi_1_IP2INTC_Irpt;
   assign pgassign2[2:2] = processing_system7_0_FCLK_CLK0[0:0];
@@ -942,7 +946,7 @@ module module_1
       .dds_cs ( dds_cs ),
       .counter_in ( counter0_in[0:0] ),
       .sync_in ( sync_counter0_in[0] ),
-      .clock_out ( clock_out ),
+      .clock_out (  ),
       .dds_data_I ( dds_data_I ),
       .dds_data_O ( dds_data_O ),
       .dds_data_T ( dds_data_T ),
@@ -1256,7 +1260,7 @@ module module_1
   module_1_clock_generator_0_wrapper
     clock_generator_0 (
       .CLKIN ( clock_in ),
-      .CLKOUT0 (  ),
+      .CLKOUT0 ( clock_generator_0_CLKOUT0 ),
       .CLKOUT1 (  ),
       .CLKOUT2 (  ),
       .CLKOUT3 (  ),
