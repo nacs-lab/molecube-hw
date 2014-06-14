@@ -37,6 +37,7 @@ module module_1_stub
     dds_control2_pin,
     dds_cs_pin,
     clock_out,
+    clock_in,
     axi_spi_0_SCK_pin,
     axi_spi_0_MISO_pin,
     axi_spi_0_MOSI_pin,
@@ -79,6 +80,7 @@ module module_1_stub
   output [3:0] dds_control2_pin;
   output [21:0] dds_cs_pin;
   output clock_out;
+  input clock_in;
   output axi_spi_0_SCK_pin;
   input axi_spi_0_MISO_pin;
   output axi_spi_0_MOSI_pin;
@@ -124,6 +126,7 @@ module module_1_stub
       .dds_control2_pin ( dds_control2_pin ),
       .dds_cs_pin ( dds_cs_pin ),
       .clock_out ( clock_out ),
+      .clock_in ( clock_in ),
       .axi_spi_0_SCK_pin ( axi_spi_0_SCK_pin ),
       .axi_spi_0_MISO_pin ( axi_spi_0_MISO_pin ),
       .axi_spi_0_MOSI_pin ( axi_spi_0_MOSI_pin ),
@@ -171,6 +174,7 @@ module module_1
     dds_control2_pin,
     dds_cs_pin,
     clock_out,
+    clock_in,
     axi_spi_0_SCK_pin,
     axi_spi_0_MISO_pin,
     axi_spi_0_MOSI_pin,
@@ -213,6 +217,7 @@ module module_1
   output [3:0] dds_control2_pin;
   output [21:0] dds_cs_pin;
   output clock_out;
+  input clock_in;
   output axi_spi_0_SCK_pin;
   input axi_spi_0_MISO_pin;
   output axi_spi_0_MOSI_pin;

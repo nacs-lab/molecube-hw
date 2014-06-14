@@ -44,6 +44,7 @@
  PORT dds_control2_pin = dds_control2, DIR = O, VEC = [3:0]
  PORT dds_cs_pin = dds_cs, DIR = O, VEC = [21:0]
  PORT clock_out = clock_out, DIR = O
+ PORT clock_in = clock_in, DIR = I, SIGIS = CLK
  PORT axi_spi_0_SCK_pin = axi_spi_0_SCK, DIR = O
  PORT axi_spi_0_MISO_pin = axi_spi_0_MISO, DIR = I
  PORT axi_spi_0_MOSI_pin = axi_spi_0_MOSI, DIR = O
@@ -228,6 +229,14 @@ BEGIN axi_spi
  PORT MOSI_O = axi_spi_1_MOSI
  PORT SS_O = axi_spi_1_SS
  PORT IP2INTC_Irpt = axi_spi_1_IP2INTC_Irpt
+END
+
+BEGIN clock_generator
+ PARAMETER INSTANCE = clock_generator_0
+ PARAMETER HW_VER = 4.03.a
+ PARAMETER C_CLKIN_FREQ = 100000000
+ PARAMETER C_CLKOUT0_FREQ = 33333333
+ PORT CLKIN = clock_in
 END
 
 # BEGIN axi_spi
