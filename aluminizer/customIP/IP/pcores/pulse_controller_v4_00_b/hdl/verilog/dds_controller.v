@@ -13,7 +13,7 @@ module dds_controller(clock, reset, write_enable, opcode, operand,
 
 // synthesis attribute iostandard of dds_bus is LVCMOS33;
 
-parameter N_DDS = 8;
+parameter N_DDS = 22;
 parameter DDS_BANK_SIZE     = 11;
 parameter U_DDS_DATA_WIDTH  = 16;
 parameter U_DDS_ADDR_WIDTH  = 7;
@@ -101,6 +101,7 @@ assign result_data = result_reg;
 reg [3:0]  cycle;
 reg [1:0]  sub_cycle;
 
+reg [(N_DDS-1):0] dds_sel_mask; // set active DDS via separate command
 
 always @(posedge clock or posedge reset)
 begin
@@ -140,14 +141,22 @@ begin
       result_reg <= 0;
       
       sub_cycle <= 0;
+      dds_sel_mask <= 0;
             
       //wait for write_enable to start
       if(write_enable) begin
         //chip select
-        dds_cs_reg <= ~(1 << opcode[DDS_ID_B:DDS_ID_A]);
         
-        active_dds_bank[0] = opcode[DDS_ID_B:DDS_ID_A]  < DDS_BANK_SIZE;
-        active_dds_bank[1] = opcode[DDS_ID_B:DDS_ID_A] >= DDS_BANK_SIZE;
+        if(dds_sel_mask == 0) begin
+          dds_cs_reg <= ~(1 << opcode[DDS_ID_B:DDS_ID_A]);
+          
+          active_dds_bank[0] = opcode[DDS_ID_B:DDS_ID_A]  < DDS_BANK_SIZE;
+          active_dds_bank[1] = opcode[DDS_ID_B:DDS_ID_A] >= DDS_BANK_SIZE;
+        end else begin
+          dds_cs_reg <= ~dds_sel_mask;
+          active_dds_bank[0] = 1;
+          active_dds_bank[1] = 1;
+        end
         
         //latch in operand and opcode
         operand_reg   <= operand;
@@ -211,6 +220,14 @@ begin
           1 : dds_cs_reg <= operand_reg[(N_DDS-1):0];
           3 : dds_reset <= 1;
           6 : dds_reset <= 0;
+          endcase
+          end
+          
+      6 : begin // Set active DDS (boards selected by operand).
+                // Allows phase synchronization between chips.
+                // Don't forget to set dds_sel_mask = 0 when done.
+          case(cycle)
+          1 : dds_sel_mask <= operand_reg[(N_DDS-1):0];
           endcase
           end
           
