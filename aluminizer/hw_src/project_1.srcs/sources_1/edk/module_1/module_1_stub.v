@@ -6,7 +6,6 @@ module module_1_stub
   (
     processing_system7_0_MIO,
     processing_system7_0_PS_SRSTB,
-    processing_system7_0_PS_CLK,
     processing_system7_0_PS_PORB,
     processing_system7_0_DDR_Clk,
     processing_system7_0_DDR_Clk_n,
@@ -37,6 +36,7 @@ module module_1_stub
     dds_control2_pin,
     dds_cs_pin,
     clock_in_pin,
+    clock_out1_pin,
     axi_spi_0_SCK_pin,
     axi_spi_0_MISO_pin,
     axi_spi_0_MOSI_pin,
@@ -44,12 +44,10 @@ module module_1_stub
     axi_spi_1_SCK_pin,
     axi_spi_1_MISO_pin,
     axi_spi_1_MOSI_pin,
-    axi_spi_1_SS_pin,
-    clock_generator_0_CLKOUT0_pin
+    axi_spi_1_SS_pin
   );
   inout [53:0] processing_system7_0_MIO;
   input processing_system7_0_PS_SRSTB;
-  input processing_system7_0_PS_CLK;
   input processing_system7_0_PS_PORB;
   inout processing_system7_0_DDR_Clk;
   inout processing_system7_0_DDR_Clk_n;
@@ -80,6 +78,7 @@ module module_1_stub
   output [3:0] dds_control2_pin;
   output [21:0] dds_cs_pin;
   input clock_in_pin;
+  output clock_out1_pin;
   output axi_spi_0_SCK_pin;
   input axi_spi_0_MISO_pin;
   output axi_spi_0_MOSI_pin;
@@ -88,14 +87,12 @@ module module_1_stub
   input axi_spi_1_MISO_pin;
   output axi_spi_1_MOSI_pin;
   output axi_spi_1_SS_pin;
-  output clock_generator_0_CLKOUT0_pin;
 
   (* BOX_TYPE = "user_black_box" *)
   module_1
     module_1_i (
       .processing_system7_0_MIO ( processing_system7_0_MIO ),
       .processing_system7_0_PS_SRSTB ( processing_system7_0_PS_SRSTB ),
-      .processing_system7_0_PS_CLK ( processing_system7_0_PS_CLK ),
       .processing_system7_0_PS_PORB ( processing_system7_0_PS_PORB ),
       .processing_system7_0_DDR_Clk ( processing_system7_0_DDR_Clk ),
       .processing_system7_0_DDR_Clk_n ( processing_system7_0_DDR_Clk_n ),
@@ -126,6 +123,7 @@ module module_1_stub
       .dds_control2_pin ( dds_control2_pin ),
       .dds_cs_pin ( dds_cs_pin ),
       .clock_in_pin ( clock_in_pin ),
+      .clock_out1_pin ( clock_out1_pin ),
       .axi_spi_0_SCK_pin ( axi_spi_0_SCK_pin ),
       .axi_spi_0_MISO_pin ( axi_spi_0_MISO_pin ),
       .axi_spi_0_MOSI_pin ( axi_spi_0_MOSI_pin ),
@@ -133,8 +131,7 @@ module module_1_stub
       .axi_spi_1_SCK_pin ( axi_spi_1_SCK_pin ),
       .axi_spi_1_MISO_pin ( axi_spi_1_MISO_pin ),
       .axi_spi_1_MOSI_pin ( axi_spi_1_MOSI_pin ),
-      .axi_spi_1_SS_pin ( axi_spi_1_SS_pin ),
-      .clock_generator_0_CLKOUT0_pin ( clock_generator_0_CLKOUT0_pin )
+      .axi_spi_1_SS_pin ( axi_spi_1_SS_pin )
     );
 
 endmodule

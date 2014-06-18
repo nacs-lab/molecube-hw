@@ -82,8 +82,8 @@ NET axi_spi_1_MISO_pin LOC=C20 | IOSTANDARD= LVCMOS33;  # LA18_CC_N / FMC1_C23
 
 ##################################  FMC2 ##############################################
 # FMC2, column H
-NET clock_generator_0_CLKOUT0_pin          LOC=Y18 | IOSTANDARD= LVCMOS33 | DRIVE=4;  # CLK0_M2C_P / FMC2_H4
-NET clock_in_pin                           LOC=Y6  | IOSTANDARD= LVCMOS33;            # CLK1_M2C_P / FMC2_G2
+NET clock_out1_pin    LOC=Y18 | IOSTANDARD= LVCMOS33 | DRIVE=2 | SLEW=SLOW;  # CLK0_M2C_P / FMC2_H4
+NET clock_in_pin      LOC=Y6  | IOSTANDARD= LVCMOS33;            # CLK1_M2C_P / FMC2_G2
 #NET sync_counter1_pin LOC=AA18 | IOSTANDARD= LVCMOS33;             # CLK0_M2C_N / FMC2_H5
 Net pulse_io_pin<17>  LOC=V14 | IOSTANDARD = LVCMOS33 | DRIVE=4; 	# LA02_P / FMC2_H07
 #input: Net pulse_io_pin<19>  LOC=V15 | IOSTANDARD = LVCMOS33 | DRIVE=4; 	# LA02_N / FMC2_H08
