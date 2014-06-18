@@ -60,10 +60,10 @@ module user_logic
 
 // -- ADD USER PARAMETERS BELOW THIS LINE ------------
 // --USER parameters added here
-parameter U_PULSE_WIDTH	    = 32;
-parameter U_DDS_DATA_WIDTH	= 16;
-parameter U_DDS_ADDR_WIDTH	= 7;
-parameter U_DDS_CTRL_WIDTH	= 4;
+parameter U_PULSE_WIDTH     = 32;
+parameter U_DDS_DATA_WIDTH  = 16;
+parameter U_DDS_ADDR_WIDTH  = 7;
+parameter U_DDS_CTRL_WIDTH  = 4;
 parameter N_DDS = 8;
 parameter N_COUNTER = 1;
 parameter N_CORR_BINS = 16;
@@ -117,7 +117,7 @@ input      [C_NUM_REG-1 : 0]              Bus2IP_WrCE;
 output     [C_SLV_DWIDTH-1 : 0]           IP2Bus_Data;
 input      [C_SLV_AWIDTH-1 : 0]           Bus2IP_Addr;
 input                                     Bus2IP_RNW;
-input	     [C_SLV_CSWIDTH-1 : 0]          Bus2IP_CS;
+input      [C_SLV_CSWIDTH-1 : 0]          Bus2IP_CS;
 output                                    IP2Bus_RdAck;
 output                                    IP2Bus_WrAck;
 output                                    IP2Bus_Error;
@@ -201,116 +201,116 @@ reg [(rFIFO_ADDR_BITS-1):0]  rFIFO_fill;
 
       if ( Bus2IP_Resetn == 1'b0 )
              begin
-		  slv_reg0 <= 0;
-		  slv_reg1 <= 0;
-		  slv_reg2 <= 0;
-		  slv_reg3 <= 0;
-		  slv_reg4 <= 0;
-		  slv_reg5 <= 0;
-		  slv_reg6 <= 0;
-		  slv_reg7 <= 0;
-		  slv_reg8 <= 0;
-		  slv_reg9 <= 0;
-		  slv_reg10 <= 0;
-		  slv_reg11 <= 0;
-		  slv_reg12 <= 0;
-		  slv_reg13 <= 0;
-		  slv_reg14 <= 0;
-		  slv_reg15 <= 0;
-		  slv_reg16 <= 0;
-		  slv_reg17 <= 0;
-		  slv_reg18 <= 0;
-		  slv_reg19 <= 0;
-		  slv_reg20 <= 0;
-		  slv_reg21 <= 0;
-		  slv_reg22 <= 0;
-		  slv_reg23 <= 0;
-		  slv_reg24 <= 0;
-		  slv_reg25 <= 0;
-		  slv_reg26 <= 0;
-		  slv_reg27 <= 0;
-		  slv_reg28 <= 0;
-		  slv_reg29 <= 0;
-		  slv_reg30 <= 0;
-		  slv_reg31 <= 0;
-		end
+      slv_reg0 <= 0;
+      slv_reg1 <= 0;
+      slv_reg2 <= 0;
+      slv_reg3 <= 0;
+      slv_reg4 <= 0;
+      slv_reg5 <= 0;
+      slv_reg6 <= 0;
+      slv_reg7 <= 0;
+      slv_reg8 <= 0;
+      slv_reg9 <= 0;
+      slv_reg10 <= 0;
+      slv_reg11 <= 0;
+      slv_reg12 <= 0;
+      slv_reg13 <= 0;
+      slv_reg14 <= 0;
+      slv_reg15 <= 0;
+      slv_reg16 <= 0;
+      slv_reg17 <= 0;
+      slv_reg18 <= 0;
+      slv_reg19 <= 0;
+      slv_reg20 <= 0;
+      slv_reg21 <= 0;
+      slv_reg22 <= 0;
+      slv_reg23 <= 0;
+      slv_reg24 <= 0;
+      slv_reg25 <= 0;
+      slv_reg26 <= 0;
+      slv_reg27 <= 0;
+      slv_reg28 <= 0;
+      slv_reg29 <= 0;
+      slv_reg30 <= 0;
+      slv_reg31 <= 0;
+    end
       else
       
-	  if(slv_write_ack == 1) 
-	  	slv_write_ack <= 0; 
-	  else begin
-	  	case ( slv_reg_write_sel )
-		32'b10000000000000000000000000000000 : begin slv_reg0 <= Bus2IP_Data; slv_write_ack <= 1; end
-		32'b01000000000000000000000000000000 : begin slv_reg1 <= Bus2IP_Data; slv_write_ack <= 1; end
-		32'b00010000000000000000000000000000 : begin slv_reg3 <= Bus2IP_Data; slv_write_ack <= 1; end
-		default:
-			begin //this came from Xilinx.  Don't know what it does.
-			    slv_reg0 <= slv_reg0;
-			    slv_reg1 <= slv_reg1;
-			    slv_reg2 <= slv_reg2;
-			    slv_reg3 <= slv_reg3;
-			    slv_reg4 <= slv_reg4;
-			    slv_reg5 <= slv_reg5;
-			    slv_reg6 <= slv_reg6;
-			    slv_reg7 <= slv_reg7;
-			    slv_reg8 <= slv_reg8;
-			    slv_reg9 <= slv_reg9;
-			    slv_reg10 <= slv_reg10;
-			    slv_reg11 <= slv_reg11;
-			    slv_reg12 <= slv_reg12;
-			    slv_reg13 <= slv_reg13;
-			    slv_reg14 <= slv_reg14;
-			    slv_reg15 <= slv_reg15;
-			    slv_reg16 <= slv_reg16;
-			    slv_reg17 <= slv_reg17;
-			    slv_reg18 <= slv_reg18;
-			    slv_reg19 <= slv_reg19;
-			    slv_reg20 <= slv_reg20;
-			    slv_reg21 <= slv_reg21;
-			    slv_reg22 <= slv_reg22;
-			    slv_reg23 <= slv_reg23;
-			    slv_reg24 <= slv_reg24;
-			    slv_reg25 <= slv_reg25;
-			    slv_reg26 <= slv_reg26;
-			    slv_reg27 <= slv_reg27;
-			    slv_reg28 <= slv_reg28;
-			    slv_reg29 <= slv_reg29;
-			    slv_reg30 <= slv_reg30;
-			    slv_reg31 <= slv_reg31;
-			end
-	  endcase
+    if(slv_write_ack == 1) 
+      slv_write_ack <= 0; 
+    else begin
+      case ( slv_reg_write_sel )
+    32'b10000000000000000000000000000000 : begin slv_reg0 <= Bus2IP_Data; slv_write_ack <= 1; end
+    32'b01000000000000000000000000000000 : begin slv_reg1 <= Bus2IP_Data; slv_write_ack <= 1; end
+    32'b00010000000000000000000000000000 : begin slv_reg3 <= Bus2IP_Data; slv_write_ack <= 1; end
+    default:
+      begin //this came from Xilinx.  Don't know what it does.
+          slv_reg0 <= slv_reg0;
+          slv_reg1 <= slv_reg1;
+          slv_reg2 <= slv_reg2;
+          slv_reg3 <= slv_reg3;
+          slv_reg4 <= slv_reg4;
+          slv_reg5 <= slv_reg5;
+          slv_reg6 <= slv_reg6;
+          slv_reg7 <= slv_reg7;
+          slv_reg8 <= slv_reg8;
+          slv_reg9 <= slv_reg9;
+          slv_reg10 <= slv_reg10;
+          slv_reg11 <= slv_reg11;
+          slv_reg12 <= slv_reg12;
+          slv_reg13 <= slv_reg13;
+          slv_reg14 <= slv_reg14;
+          slv_reg15 <= slv_reg15;
+          slv_reg16 <= slv_reg16;
+          slv_reg17 <= slv_reg17;
+          slv_reg18 <= slv_reg18;
+          slv_reg19 <= slv_reg19;
+          slv_reg20 <= slv_reg20;
+          slv_reg21 <= slv_reg21;
+          slv_reg22 <= slv_reg22;
+          slv_reg23 <= slv_reg23;
+          slv_reg24 <= slv_reg24;
+          slv_reg25 <= slv_reg25;
+          slv_reg26 <= slv_reg26;
+          slv_reg27 <= slv_reg27;
+          slv_reg28 <= slv_reg28;
+          slv_reg29 <= slv_reg29;
+          slv_reg30 <= slv_reg30;
+          slv_reg31 <= slv_reg31;
+      end
+    endcase
       
-  	   	  
-	  slv_reg2[0] <= underflow_out;
-	  slv_reg2[1] <= correlation_data_ready;
-	  slv_reg2[2] <= pulses_finished_out;
-	  slv_reg2[(rFIFO_ADDR_BITS+3):4] <= rFIFO_fill;
-	 
-	  slv_reg4 <= correlation_data_out[31:0];
-	  slv_reg5 <= correlation_data_out[63:32];
-	  slv_reg6 <= correlation_data_out[95:64];
-	  slv_reg7 <= correlation_data_out[127:96];
+          
+    slv_reg2[0] <= underflow_out;
+    slv_reg2[1] <= correlation_data_ready;
+    slv_reg2[2] <= pulses_finished_out;
+    slv_reg2[(rFIFO_ADDR_BITS+3):4] <= rFIFO_fill;
+   
+    slv_reg4 <= correlation_data_out[31:0];
+    slv_reg5 <= correlation_data_out[63:32];
+    slv_reg6 <= correlation_data_out[95:64];
+    slv_reg7 <= correlation_data_out[127:96];
 
-	end
+  end
 end // SLAVE_REG_WRITE_PROC
 
   // implement slave model register read mux
 //  always @( posedge Bus2IP_Clk )
 //    begin 
-//		if(Bus2IP_RNW && (Bus2IP_CS[0]) ) begin
-//			case ( Bus2IP_Addr[4:0] )
-//			  0 : slv_ip2bus_data <= slv_reg0;
-//			  1 : slv_ip2bus_data <= slv_reg1;
-//			  2 : slv_ip2bus_data <= slv_reg2;
-//			  3 : slv_ip2bus_data <= slv_reg3;
-//			  4 : slv_ip2bus_data <= slv_reg4;
-//			  5 : slv_ip2bus_data <= slv_reg5;
-//			  6 : slv_ip2bus_data <= slv_reg6;
-//			  7 : slv_ip2bus_data <= slv_reg7;
-//			  31 : slv_ip2bus_data <= rFIFO[rFIFO_read_addr];
-//			  default : slv_ip2bus_data <= 0;
-//			endcase
-//		end
+//    if(Bus2IP_RNW && (Bus2IP_CS[0]) ) begin
+//      case ( Bus2IP_Addr[4:0] )
+//        0 : slv_ip2bus_data <= slv_reg0;
+//        1 : slv_ip2bus_data <= slv_reg1;
+//        2 : slv_ip2bus_data <= slv_reg2;
+//        3 : slv_ip2bus_data <= slv_reg3;
+//        4 : slv_ip2bus_data <= slv_reg4;
+//        5 : slv_ip2bus_data <= slv_reg5;
+//        6 : slv_ip2bus_data <= slv_reg6;
+//        7 : slv_ip2bus_data <= slv_reg7;
+//        31 : slv_ip2bus_data <= rFIFO[rFIFO_read_addr];
+//        default : slv_ip2bus_data <= 0;
+//      endcase
+//    end
   //  end // SLAVE_REG_READ_PROC
 
 always @( slv_reg_read_sel or slv_reg0 or slv_reg1 or slv_reg2 or slv_reg3 or slv_reg4 or slv_reg5 or slv_reg6 or slv_reg7 or slv_reg8 or slv_reg9 or slv_reg10 or slv_reg11 or slv_reg12 or slv_reg13 or slv_reg14 or slv_reg15 or slv_reg16 or slv_reg17 or slv_reg18 or slv_reg19 or slv_reg20 or slv_reg21 or slv_reg22 or slv_reg23 or slv_reg24 or slv_reg25 or slv_reg26 or slv_reg27 or slv_reg28 or slv_reg29 or slv_reg30 or slv_reg31 )
@@ -403,29 +403,29 @@ assign rFIFO_RdReqNegEdge = ~rFIFO_RdReq & rFIFO_RdReqPrev;
 always @( posedge Bus2IP_Clk)
 begin
    if(~Bus2IP_Resetn) begin
-	   rFIFO_fill <= 0;
-	   rFIFO_read_addr <= 0;
-	   rFIFO_write_addr <= 0;
-	   rFIFO_WrReqPrev <= 0;
-	   rFIFO_RdReqPrev <= 0;
-	end else begin
-	    rFIFO_WrReqPrev <= rFIFO_WrReq;
-	    rFIFO_RdReqPrev <= rFIFO_RdReq;
-	    
-		if(rFIFO_WrReqPosEdge) begin
-			rFIFO[rFIFO_write_addr] <= result; 
-         	rFIFO_write_addr <= rFIFO_write_addr+1; 
-		end
-		
-		if(rFIFO_RdReq) //rFIFO_RdReq should de-assert after one cycle.
-		    rFIFO_read_addr <= rFIFO_read_addr+1;
-		
-		if(rFIFO_WrReqPosEdge & !rFIFO_RdReq)
-		    rFIFO_fill <= rFIFO_fill+1;
-		    
-		if(!rFIFO_WrReqPosEdge & rFIFO_RdReq)
-		    rFIFO_fill <= rFIFO_fill+31;
-	end
+     rFIFO_fill <= 0;
+     rFIFO_read_addr <= 0;
+     rFIFO_write_addr <= 0;
+     rFIFO_WrReqPrev <= 0;
+     rFIFO_RdReqPrev <= 0;
+  end else begin
+      rFIFO_WrReqPrev <= rFIFO_WrReq;
+      rFIFO_RdReqPrev <= rFIFO_RdReq;
+      
+    if(rFIFO_WrReqPosEdge) begin
+      rFIFO[rFIFO_write_addr] <= result; 
+          rFIFO_write_addr <= rFIFO_write_addr+1; 
+    end
+    
+    if(rFIFO_RdReq) //rFIFO_RdReq should de-assert after one cycle.
+        rFIFO_read_addr <= rFIFO_read_addr+1;
+    
+    if(rFIFO_WrReqPosEdge & !rFIFO_RdReq)
+        rFIFO_fill <= rFIFO_fill+1;
+        
+    if(!rFIFO_WrReqPosEdge & rFIFO_RdReq)
+        rFIFO_fill <= rFIFO_fill+31;
+  end
 end
 
 wire tc_write_ack;
@@ -436,6 +436,8 @@ assign pulse_io = (ttl_out | slv_reg0) & (~slv_reg1);
 
 //Writing to register 31 sends data to timing controller
 wire tc_instruction_ready = (slv_reg_write_sel ==  32'b00000000000000000000000000000001 );
+
+wire resetp = ~Bus2IP_Resetn;
 
 timing_controller 
   #(.N_CORR_BINS(N_CORR_BINS), 
@@ -450,32 +452,63 @@ timing_controller
   tc(
   .clock(Bus2IP_Clk), 
   .resetn(Bus2IP_Resetn), 
-	.bus_data(Bus2IP_Data), 
+  .bus_data(Bus2IP_Data), 
   .bus_data_ready(tc_instruction_ready), 
   .bus_data_ack(tc_write_ack), 
   .rFIFO_data(result), 
   .rFIFO_WrReq(rFIFO_WrReq),
   .dds_addr(dds_addr), 
-	.dds_data_I(dds_data_I), 
+  .dds_data_I(dds_data_I), 
   .dds_data_O(dds_data_O), 
-	.dds_data_T(dds_data_T), 
+  .dds_data_T(dds_data_T), 
   .dds_control(dds_control), 
   .dds_addr2(dds_addr2), 
-	.dds_data2_I(dds_data2_I), 
+  .dds_data2_I(dds_data2_I), 
   .dds_data2_O(dds_data2_O), 
-	.dds_data2_T(dds_data2_T), 
+  .dds_data2_T(dds_data2_T), 
   .dds_control2(dds_control2), 
   .dds_cs(dds_cs),
-	.ttl_out(ttl_out), 
+  .ttl_out(ttl_out), 
   .underflow_out(underflow_out),
-	.counter_in(counter_in), 
+  .counter_in(counter_in), 
   .sync_in(sync_in),
-	.correlation_reset(slv_reg3[0]), 
+  .correlation_reset(slv_reg3[0]), 
   .correlation_data_out(correlation_data_out), 
   .correlation_data_ready(correlation_data_ready), 
   .pulses_finished_out(pulses_finished_out),
   .pulse_controller_hold(slv_reg3[7]),
   .init(slv_reg3[8]),
   .clock_out(clock_out));
-
+/*
+// ODELAYE2: Output Fixed or Variable Delay Element
+//7 Series
+// Xilinx HDL Libraries Guide, version 14.3
+(* IODELAY_GROUP = <iodelay_group_name> *) // Specifies group name for associated IDELAYs/ODELAYs and IDELAYCTRL
+  ODELAYE2 #(
+  .CINVCTRL_SEL("FALSE"), // Enable dynamic clock inversion (FALSE, TRUE)
+  .DELAY_SRC("CLKIN"), // Delay input (ODATAIN, CLKIN)
+  .HIGH_PERFORMANCE_MODE("FALSE"), // Reduced jitter ("TRUE"), Reduced power ("FALSE")
+  .ODELAY_TYPE("VAR_LOAD"), // FIXED, VARIABLE, VAR_LOAD, VAR_LOAD_PIPE
+  .ODELAY_VALUE(0), // Output delay tap setting (0-31)
+  .PIPE_SEL("FALSE"), // Select pipelined mode, FALSE, TRUE
+  .REFCLK_FREQUENCY(200.0), // IDELAYCTRL clock input frequency in MHz (190.0-210.0).
+  .SIGNAL_PATTERN("DATA") // DATA, CLOCK input signal
+)
+ODELAYE2_inst (
+  .CNTVALUEOUT(), // 5-bit output: Counter value output
+  .DATAOUT(DDS_SYNC_OUT), // 1-bit output: Delayed data/clock output
+  .C(clk200), // 1-bit input: Clock input
+  .CE(1),// 1-bit input: Active high enable increment/decrement input
+  .CINVCTRL(0),// 1-bit input: Dynamic clock inversion input
+  .CLKIN(CLKIN),// 1-bit input: Clock delay input
+  .CNTVALUEIN(CNTVALUEIN),// 5-bit input: Counter value input
+  .INC(INC),// 1-bit input: Increment / Decrement tap delay input
+  .LD(LD),// 1-bit input: Loads ODELAY_VALUE tap delay in VARIABLE mode, in VAR_LOAD or
+          // VAR_LOAD_PIPE mode, loads the value of CNTVALUEIN
+  .LDPIPEEN(0),// 1-bit input: Enables the pipeline register to load data
+  .ODATAIN(0),// 1-bit input: Output delay data input
+  .REGRST(REGRST) // 1-bit input: Active-high reset tap-delay input
+);
+// End of ODELAYE2_inst instantiation
+*/
 endmodule
