@@ -51,7 +51,7 @@ module timing_controller(clock, resetn,
 			 rFIFO_data, rFIFO_WrReq,
 			 dds_addr, dds_data_I, dds_data_O, dds_data_T, dds_control, 
        dds_addr2, dds_data2_I, dds_data2_O, dds_data2_T, dds_control2, dds_cs,
-			 ttl_out, underflow_out, counter_in, sync_in,
+			 dds_FUD, ttl_out, underflow_out, counter_in, sync_in,
 			 correlation_reset, correlation_data_out, correlation_data_ready, pulses_finished_out,
        pulse_controller_hold, init, clock_out);
 
@@ -66,7 +66,7 @@ parameter TIMER_WIDTH 				= 24;
 parameter N_DDS 				= 8;
 parameter U_DDS_DATA_WIDTH	= 16;
 parameter U_DDS_ADDR_WIDTH	= 7;
-parameter U_DDS_CTRL_WIDTH	= 4;
+parameter U_DDS_CTRL_WIDTH	= 3;
 parameter N_COUNTER 				= 1;
 parameter DDS_OPCODE_WIDTH 			= 16;
 parameter DDS_OPERAND_WIDTH 			= 32;
@@ -112,6 +112,7 @@ output dds_data2_T;
 output [(U_DDS_CTRL_WIDTH-1):0] dds_control;
 output [(U_DDS_CTRL_WIDTH-1):0] dds_control2;
 
+output [1:0] dds_FUD;
 output [(N_DDS-1):0] dds_cs;
 input [(N_COUNTER-1):0] counter_in;
 
@@ -182,6 +183,7 @@ dds_controller #( .N_DDS(N_DDS),
 		.dds_data2_T(dds_data2_T), 
     .dds_control2(dds_control2), 
     .dds_cs(dds_cs),
+    .dds_FUD(dds_FUD),
 		.result_data(dds_result), 
     .result_WrReq(dds_WrReq));
 

@@ -36,7 +36,7 @@ module user_logic
   // --USER ports added here
   pulse_io,
   dds_addr, dds_data_I, dds_data_O, dds_data_T, dds_control, dds_cs,
-  dds_addr2, dds_data2_I, dds_data2_O, dds_data2_T, dds_control2,
+  dds_addr2, dds_data2_I, dds_data2_O, dds_data2_T, dds_control2, dds_FUD,
   counter_in, sync_in, clock_out,
   // -- ADD USER PORTS ABOVE THIS LINE ---------------
 
@@ -63,7 +63,7 @@ module user_logic
 parameter U_PULSE_WIDTH     = 32;
 parameter U_DDS_DATA_WIDTH  = 16;
 parameter U_DDS_ADDR_WIDTH  = 7;
-parameter U_DDS_CTRL_WIDTH  = 4;
+parameter U_DDS_CTRL_WIDTH  = 3;
 parameter N_DDS = 8;
 parameter N_COUNTER = 1;
 parameter N_CORR_BINS = 16;
@@ -96,6 +96,7 @@ output dds_data_T, dds_data2_T;
 output [0:(U_DDS_CTRL_WIDTH-1)] dds_control;
 output [0:(U_DDS_CTRL_WIDTH-1)] dds_control2;
 
+output [1:0] dds_FUD;
 output [0:(N_DDS-1)] dds_cs;
 
 input [0:(N_COUNTER-1)] counter_in;
@@ -468,6 +469,7 @@ timing_controller
   .dds_data2_T(dds_data2_T), 
   .dds_control2(dds_control2), 
   .dds_cs(dds_cs),
+  .dds_FUD(dds_FUD),
   .ttl_out(ttl_out), 
   .underflow_out(underflow_out),
   .counter_in(counter_in), 

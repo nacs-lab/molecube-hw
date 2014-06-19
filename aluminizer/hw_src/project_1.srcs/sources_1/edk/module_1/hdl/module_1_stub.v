@@ -36,6 +36,7 @@ module module_1_stub
     dds_data2_pin,
     dds_control2_pin,
     dds_cs_pin,
+    dds_FUD_pin,
     clock_in_pin,
     clock_out1_pin,
     axi_spi_0_SCK_pin,
@@ -74,11 +75,12 @@ module module_1_stub
   input sync_counter0_n_pin;
   output [6:0] dds_addr_pin;
   inout [15:0] dds_data_pin;
-  output [3:0] dds_control_pin;
+  output [2:0] dds_control_pin;
   output [6:0] dds_addr2_pin;
   inout [15:0] dds_data2_pin;
-  output [3:0] dds_control2_pin;
+  output [2:0] dds_control2_pin;
   output [21:0] dds_cs_pin;
+  output [1:0] dds_FUD_pin;
   input clock_in_pin;
   output clock_out1_pin;
   output axi_spi_0_SCK_pin;
@@ -125,6 +127,7 @@ module module_1_stub
       .dds_data2_pin ( dds_data2_pin ),
       .dds_control2_pin ( dds_control2_pin ),
       .dds_cs_pin ( dds_cs_pin ),
+      .dds_FUD_pin ( dds_FUD_pin ),
       .clock_in_pin ( clock_in_pin ),
       .clock_out1_pin ( clock_out1_pin ),
       .axi_spi_0_SCK_pin ( axi_spi_0_SCK_pin ),
@@ -173,6 +176,7 @@ module module_1
     dds_data2_pin,
     dds_control2_pin,
     dds_cs_pin,
+    dds_FUD_pin,
     clock_in_pin,
     clock_out1_pin,
     axi_spi_0_SCK_pin,
@@ -211,11 +215,12 @@ module module_1
   input sync_counter0_n_pin;
   output [6:0] dds_addr_pin;
   inout [15:0] dds_data_pin;
-  output [3:0] dds_control_pin;
+  output [2:0] dds_control_pin;
   output [6:0] dds_addr2_pin;
   inout [15:0] dds_data2_pin;
-  output [3:0] dds_control2_pin;
+  output [2:0] dds_control2_pin;
   output [21:0] dds_cs_pin;
+  output [1:0] dds_FUD_pin;
   input clock_in_pin;
   output clock_out1_pin;
   output axi_spi_0_SCK_pin;

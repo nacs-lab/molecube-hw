@@ -8,16 +8,16 @@
 
 module dds_controller(clock, reset, write_enable, opcode, operand, 
                dds_addr, dds_data_I, dds_data_O, dds_data_T, dds_control, 
-               dds_addr2, dds_data2_I, dds_data2_O, dds_data2_T, dds_control2, dds_cs,
-               result_data, result_WrReq);
+               dds_addr2, dds_data2_I, dds_data2_O, dds_data2_T, dds_control2, 
+               dds_cs, dds_FUD, result_data, result_WrReq);
 
 // synthesis attribute iostandard of dds_bus is LVCMOS33;
-
+ 
 parameter N_DDS = 22;
 parameter DDS_BANK_SIZE     = 11;
 parameter U_DDS_DATA_WIDTH  = 16;
 parameter U_DDS_ADDR_WIDTH  = 7;
-parameter U_DDS_CTRL_WIDTH  = 4;
+parameter U_DDS_CTRL_WIDTH  = 3;
 parameter DDS_OPCODE_WIDTH  = 16;
 parameter DDS_OPERAND_WIDTH = 32;
 parameter RESULT_WIDTH      = 32;
@@ -61,32 +61,34 @@ output [(U_DDS_CTRL_WIDTH-1):0] dds_control2;
 
 output [(N_DDS-1):0] dds_cs;
 
+// FUD = IO_UPDATE on DDS boards can be raised on posedge of clock.
+// It will return to 0 on negedge of clock.
+// This short pulse (5 ns or so) allows alignment of DDS SYNC_CLK
+// and SYNC_IN/OUT with FUD. The signal idles high.              
+output [1:0] dds_FUD;
+
 reg [(U_DDS_ADDR_WIDTH-1):0] dds_addr_reg;
 reg [(U_DDS_DATA_WIDTH-1):0] dds_data_reg;
 reg dds_data_T_reg;
 
 reg dds_w_strobe_n;
 reg dds_r_strobe_n;
-wire dds_FUD; // FUD = IO_UPDATE on DDS boards can be raised on posedge of clock.
-              // It will return to 0 on negedge of clock.
-              // This short pulse (5 ns or so) allows alignment of DDS SYNC_CLK
-              // and SYNC_IN/OUT with FUD. The signal idles high.
 
 reg dds_reset;
 reg [(N_DDS-1):0] dds_cs_reg;
 
 reg [1:0] active_dds_bank;
 
-assign dds_addr    = active_dds_bank[0] ? dds_addr_reg   : 0;
-assign dds_data_O  = active_dds_bank[0] ? dds_data_reg   : 0;
-assign dds_data_T  = active_dds_bank[0] ? dds_data_T_reg : 0;
+assign dds_addr    = active_dds_bank[0] ? dds_addr_reg   : 1'b0;
+assign dds_data_O  = active_dds_bank[0] ? dds_data_reg   : 1'b0;
+assign dds_data_T  = active_dds_bank[0] ? dds_data_T_reg : 1'b0;
 
-assign dds_addr2   = active_dds_bank[1] ? dds_addr_reg   : 0;
-assign dds_data2_O = active_dds_bank[1] ? dds_data_reg   : 0;
-assign dds_data2_T = active_dds_bank[1] ? dds_data_T_reg : 0;
+assign dds_addr2   = active_dds_bank[1] ? dds_addr_reg   : 1'b0;
+assign dds_data2_O = active_dds_bank[1] ? dds_data_reg   : 1'b0;
+assign dds_data2_T = active_dds_bank[1] ? dds_data_T_reg : 1'b0;
 
-assign dds_control  = active_dds_bank[0] ? {dds_reset, dds_FUD, dds_r_strobe_n, dds_w_strobe_n} : {0, 1, 1, 1};
-assign dds_control2 = active_dds_bank[1] ? {dds_reset, dds_FUD, dds_r_strobe_n, dds_w_strobe_n} : {0, 1, 1, 1};
+assign dds_control  = active_dds_bank[0] ? {dds_reset, dds_r_strobe_n, dds_w_strobe_n} : {1'b0, 1'b1, 1'b1};
+assign dds_control2 = active_dds_bank[1] ? {dds_reset, dds_r_strobe_n, dds_w_strobe_n} : {1'b0, 1'b1, 1'b1};
 
 assign dds_cs = dds_cs_reg;
 
@@ -109,9 +111,10 @@ reg [(N_DDS-1):0] dds_sel_mask; // set active DDS via separate command
 
 // Setup dds_FUD as DDR signal (goes low for a half-period of clock
 
-reg dds_FUD0, dds_FUD1, dds_FUD2; //aux signals for dds_FUD DDR signal
-                                  //dds_FUD0 will be low for 1 clock cycle
-                                  
+reg dds_FUDx; //aux signal for dds_FUD DDR signal
+              //dds_FUD0 will be low for 1 clock cycle
+
+reg ddr_reset;                                  
 // ODDR: Output Double Data Rate Output Register with Set, Reset
 // and Clock Enable.
 // 7 Series
@@ -120,21 +123,35 @@ ODDR #(
 .DDR_CLK_EDGE("OPPOSITE_EDGE"), // "OPPOSITE_EDGE" or "SAME_EDGE"
 .INIT(1'b1), // Initial value of Q: 1'b0 or 1'b1
 .SRTYPE("SYNC") // Set/Reset type: "SYNC" or "ASYNC"
-) ODDR_inst (
-.Q(dds_FUD), // 1-bit DDR output
+) sODDR_inst1 (
+.Q(dds_FUD[0]), // 1-bit DDR output
 .C(clock), // 1-bit clock input
-.CE(1), // 1-bit clock enable input
-.D1(dds_FUD0), // 1-bit data input (positive edge)
-.D2(1), // 1-bit data input (negative edge)
-.R(reset), // 1-bit reset
-.S(0) // 1-bit set
+.CE(1'b1), // 1-bit clock enable input
+.D1(dds_FUDx), // 1-bit data input (positive edge)
+.D2(1'b1), // 1-bit data input (negative edge)
+.R(ddr_reset), // 1-bit reset
+.S(1'b0) // 1-bit set
 );
+
+ODDR #(
+.DDR_CLK_EDGE("OPPOSITE_EDGE"), // "OPPOSITE_EDGE" or "SAME_EDGE"
+.INIT(1'b1), // Initial value of Q: 1'b0 or 1'b1
+.SRTYPE("SYNC") // Set/Reset type: "SYNC" or "ASYNC"
+) ODDR_inst2 (
+.Q(dds_FUD[1]), // 1-bit DDR output
+.C(clock), // 1-bit clock input
+.CE(1'b1), // 1-bit clock enable input
+.D1(dds_FUDx), // 1-bit data input (positive edge)
+.D2(1'b1), // 1-bit data input (negative edge)
+.R(ddr_reset), // 1-bit reset
+.S(1'b0) // 1-bit set
+);
+
 // End of ODDR_inst instantiation
 
-always @(posedge clock or posedge reset)
+always @(posedge clock)
 begin
-  if(reset)
-  begin
+  if(reset) begin
     cycle <= 0;
     sub_cycle <= 0;
     
@@ -152,18 +169,11 @@ begin
     dds_data_T_reg  <= 1;
     
     result_WrReq_reg <= 0;
-    dds_FUD1 <= 1;
-    dds_FUD2 <= 1;
-  end
-  else
-  begin 
-    if(dds_FUD1 == 1 && dds_FUD2 == 0) begin
-      dds_FUD1 <= 0;
-      dds_FUD0 <= 0;
-    end else
-      dds_FUD0 <= 1;
-    
-    if(cycle == 0)  begin
+    dds_FUDx <= 1;
+    ddr_reset <= 1;
+  end else begin 
+    ddr_reset <= 0;
+    if(cycle == 0) begin
       dds_w_strobe_n  <= 1;
       dds_r_strobe_n  <= 1;
       dds_reset <= 0;
@@ -178,8 +188,7 @@ begin
       sub_cycle <= 0;
       dds_sel_mask <= 0;
       
-      dds_FUD1 <= 1;
-      dds_FUD2 <= 1; 
+      dds_FUDx <= 1;
             
       //wait for write_enable to start
       if(write_enable) begin
@@ -213,7 +222,7 @@ begin
           3 : begin dds_addr_reg <= 6'h2D; dds_w_strobe_n <= 1; end
           4 : begin dds_data_reg <= operand_reg[15:0]; dds_w_strobe_n <= 0; end
           5 : dds_w_strobe_n <= 1;
-          6 : dds_FUD2 <= 0; 
+          6 : dds_FUDx <= 0; 
           endcase
           end
           
@@ -224,7 +233,7 @@ begin
           3 : begin dds_addr_reg <= 6'h33; dds_w_strobe_n <= 1; end
           4 : begin dds_data_reg <= operand_reg[15:0]; dds_w_strobe_n <= 0; end
           5 : dds_w_strobe_n <= 1;
-          6 : dds_FUD2 <= 0; 
+          6 : dds_FUDx <= 0; 
           endcase
           end
           
@@ -233,7 +242,7 @@ begin
           1 : begin dds_addr_reg <= opcode_reg[DDS_REG_B:DDS_REG_A]; end
           2 : begin dds_data_reg <= operand_reg[15:0]; dds_w_strobe_n <= 0; end
           3 : dds_w_strobe_n <= 1;
-          6 : dds_FUD2 <= 0; 
+          6 : dds_FUDx <= 0; 
           endcase
           end
           
@@ -297,7 +306,7 @@ begin
           3 : begin dds_addr_reg <= opcode_reg[DDS_REG_B:DDS_REG_A]; dds_w_strobe_n <= 1; end
           4 : begin dds_data_reg <= operand_reg[15:0]; dds_w_strobe_n <= 0; end
           5 : dds_w_strobe_n <= 1;
-          6 : dds_FUD2 <= 0; 
+          6 : dds_FUDx <= 0; 
           endcase
           end
       endcase

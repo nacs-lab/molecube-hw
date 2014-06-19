@@ -36,6 +36,7 @@ module module_1
     dds_data2_pin,
     dds_control2_pin,
     dds_cs_pin,
+    dds_FUD_pin,
     clock_in_pin,
     clock_out1_pin,
     axi_spi_0_SCK_pin,
@@ -74,11 +75,12 @@ module module_1
   input sync_counter0_n_pin;
   output [6:0] dds_addr_pin;
   inout [15:0] dds_data_pin;
-  output [3:0] dds_control_pin;
+  output [2:0] dds_control_pin;
   output [6:0] dds_addr2_pin;
   inout [15:0] dds_data2_pin;
-  output [3:0] dds_control2_pin;
+  output [2:0] dds_control2_pin;
   output [21:0] dds_cs_pin;
+  output [1:0] dds_FUD_pin;
   input clock_in_pin;
   output clock_out1_pin;
   output axi_spi_0_SCK_pin;
@@ -161,10 +163,11 @@ module module_1
   wire clock_in;
   wire clock_out1;
   wire [0:0] counter0_in;
+  wire [1:0] dds_FUD;
   wire [6:0] dds_addr;
   wire [6:0] dds_addr2;
-  wire [3:0] dds_control;
-  wire [3:0] dds_control2;
+  wire [2:0] dds_control;
+  wire [2:0] dds_control2;
   wire [21:0] dds_cs;
   wire [15:0] dds_data2_I;
   wire [15:0] dds_data2_O;
@@ -207,6 +210,7 @@ module module_1
   assign dds_addr2_pin = dds_addr2;
   assign dds_control2_pin = dds_control2;
   assign dds_cs_pin = dds_cs;
+  assign dds_FUD_pin = dds_FUD;
   assign clock_in = clock_in_pin;
   assign clock_out1_pin = clock_out1;
   assign axi_spi_0_SCK_pin = axi_spi_0_SCK;
@@ -944,6 +948,7 @@ module module_1
       .dds_addr2 ( dds_addr2 ),
       .dds_control2 ( dds_control2 ),
       .dds_cs ( dds_cs ),
+      .dds_FUD ( dds_FUD ),
       .counter_in ( counter0_in[0:0] ),
       .sync_in ( sync_counter0_in[0] ),
       .clock_out (  ),
@@ -2922,6 +2927,7 @@ module module_1_pulse_controller_0_wrapper
     dds_addr2,
     dds_control2,
     dds_cs,
+    dds_FUD,
     counter_in,
     sync_in,
     clock_out,
@@ -2953,10 +2959,11 @@ module module_1_pulse_controller_0_wrapper
   output S_AXI_AWREADY;
   output [31:0] pulse_io;
   output [6:0] dds_addr;
-  output [3:0] dds_control;
+  output [2:0] dds_control;
   output [6:0] dds_addr2;
-  output [3:0] dds_control2;
+  output [2:0] dds_control2;
   output [21:0] dds_cs;
+  output [1:0] dds_FUD;
   input [0:0] counter_in;
   input sync_in;
   output clock_out;

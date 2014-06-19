@@ -38,11 +38,12 @@
  PORT sync_counter0_n_pin = sync_counter0_n, DIR = I
  PORT dds_addr_pin = dds_addr, DIR = O, VEC = [6:0]
  PORT dds_data_pin = dds_data, DIR = IO, VEC = [15:0]
- PORT dds_control_pin = dds_control, DIR = O, VEC = [3:0]
+ PORT dds_control_pin = dds_control, DIR = O, VEC = [2:0]
  PORT dds_addr2_pin = dds_addr2, DIR = O, VEC = [6:0]
  PORT dds_data2_pin = dds_data2, DIR = IO, VEC = [15:0]
- PORT dds_control2_pin = dds_control2, DIR = O, VEC = [3:0]
+ PORT dds_control2_pin = dds_control2, DIR = O, VEC = [2:0]
  PORT dds_cs_pin = dds_cs, DIR = O, VEC = [21:0]
+ PORT dds_FUD_pin = dds_FUD, DIR = O, VEC = [1:0]
 # PORT clock_out = clock_out, DIR = O
  PORT clock_in_pin = clock_in, DIR = I, SIGIS = CLK, CLK_FREQ = 100000000
  PORT clock_out1_pin = clock_out1, DIR = O, SIGIS = CLK, CLK_FREQ = 100000000
@@ -180,6 +181,7 @@ BEGIN pulse_controller
  PORT dds_data2 = dds_data2
  PORT dds_control2 = dds_control2
  PORT dds_cs = dds_cs
+ PORT dds_FUD = dds_FUD
  PORT counter_in = counter0_in
  PORT sync_in = sync_counter0_in
 END

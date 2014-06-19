@@ -106,7 +106,7 @@ entity pulse_controller is
    N_DDS : integer := 8;
    U_DDS_DATA_WIDTH : integer := 16;
    U_DDS_ADDR_WIDTH : integer := 7;
-   U_DDS_CTRL_WIDTH : integer := 4;   
+   U_DDS_CTRL_WIDTH : integer := 3;   
 	 N_COUNTER : integer := 1;
     -- ADD USER GENERICS ABOVE THIS LINE ---------------
 
@@ -142,6 +142,7 @@ entity pulse_controller is
    dds_data2_T	: out std_logic;
 	 dds_control2	: out std_logic_vector(0 to U_DDS_CTRL_WIDTH-1);
 	 dds_cs		    : out std_logic_vector(0 to N_DDS-1);
+   dds_FUD	    : out std_logic_vector(0 to 1); -- DDR --
 	 counter_in 	: in std_logic_vector := (0 to N_COUNTER-1 => '0');
 	 sync_in 	    : in std_logic := '0';
    clock_out    : out std_logic;
@@ -299,6 +300,7 @@ architecture IMP of pulse_controller is
     dds_data2_T 	: out std_logic;
 	  dds_control2	: out std_logic_vector(0 to U_DDS_CTRL_WIDTH-1);
 		dds_cs		    : out std_logic_vector(0 to N_DDS-1);
+    dds_FUD		    : out std_logic_vector(0 to 1); -- DDR --
 		counter_in	  : in  std_logic_vector(0 to N_COUNTER-1);
 		sync_in		    : in  std_logic;
     clock_out     : out std_logic;
@@ -435,6 +437,7 @@ begin
       dds_data2_T => dds_data2_T,
       dds_control2	=> dds_control2,
       dds_cs		=> dds_cs,
+      dds_FUD		=> dds_FUD,
       counter_in 	=> counter_in,
       sync_in 	=> sync_in,
       clock_out => clock_out,

@@ -33,10 +33,11 @@ entity module_1_pulse_controller_0_wrapper is
     S_AXI_AWREADY : out std_logic;
     pulse_io : out std_logic_vector(31 downto 0);
     dds_addr : out std_logic_vector(6 downto 0);
-    dds_control : out std_logic_vector(3 downto 0);
+    dds_control : out std_logic_vector(2 downto 0);
     dds_addr2 : out std_logic_vector(6 downto 0);
-    dds_control2 : out std_logic_vector(3 downto 0);
+    dds_control2 : out std_logic_vector(2 downto 0);
     dds_cs : out std_logic_vector(21 downto 0);
+    dds_FUD : out std_logic_vector(1 downto 0);
     counter_in : in std_logic_vector(0 to 0);
     sync_in : in std_logic;
     clock_out : out std_logic;
@@ -98,6 +99,7 @@ architecture STRUCTURE of module_1_pulse_controller_0_wrapper is
       dds_addr2 : out std_logic_vector((U_DDS_ADDR_WIDTH-1) downto 0);
       dds_control2 : out std_logic_vector((U_DDS_CTRL_WIDTH-1) downto 0);
       dds_cs : out std_logic_vector((N_DDS-1) downto 0);
+      dds_FUD : out std_logic_vector(1 downto 0);
       counter_in : in std_logic_vector((N_COUNTER-1) to 0);
       sync_in : in std_logic;
       clock_out : out std_logic;
@@ -130,7 +132,7 @@ begin
       N_DDS => 22,
       U_DDS_DATA_WIDTH => 16,
       U_DDS_ADDR_WIDTH => 7,
-      U_DDS_CTRL_WIDTH => 4,
+      U_DDS_CTRL_WIDTH => 3,
       N_COUNTER => 1
     )
     port map (
@@ -159,6 +161,7 @@ begin
       dds_addr2 => dds_addr2,
       dds_control2 => dds_control2,
       dds_cs => dds_cs,
+      dds_FUD => dds_FUD,
       counter_in => counter_in,
       sync_in => sync_in,
       clock_out => clock_out,
