@@ -102,12 +102,12 @@ entity pulse_controller is
   (
     -- ADD USER GENERICS BELOW THIS LINE ---------------
     --USER generics added here
-	 U_PULSE_WIDTH : integer := 32;
+   U_PULSE_WIDTH : integer := 32;
    N_DDS : integer := 8;
    U_DDS_DATA_WIDTH : integer := 16;
    U_DDS_ADDR_WIDTH : integer := 7;
    U_DDS_CTRL_WIDTH : integer := 3;   
-	 N_COUNTER : integer := 1;
+   N_COUNTER : integer := 1;
     -- ADD USER GENERICS ABOVE THIS LINE ---------------
 
     -- DO NOT EDIT BELOW THIS LINE ---------------------
@@ -130,21 +130,23 @@ entity pulse_controller is
   (
     -- ADD USER PORTS BELOW THIS LINE ------------------
     --USER ports added here
-	 pulse_io   	: out std_logic_vector(0 to U_PULSE_WIDTH-1);
-	 dds_addr   	: out std_logic_vector(0 to U_DDS_ADDR_WIDTH-1);
-	 dds_data_I	  : in std_logic_vector := (0 to U_DDS_DATA_WIDTH-1 => '0') ;
-	 dds_data_O	  : out std_logic_vector(0 to U_DDS_DATA_WIDTH-1);
-	 dds_data_T 	: out std_logic;
-	 dds_control	: out std_logic_vector(0 to U_DDS_CTRL_WIDTH-1);
-   dds_addr2   	: out std_logic_vector(0 to U_DDS_ADDR_WIDTH-1);
-	 dds_data2_I	: in std_logic_vector := (0 to U_DDS_DATA_WIDTH-1 => '0') ;
-	 dds_data2_O	: out std_logic_vector(0 to U_DDS_DATA_WIDTH-1);
-   dds_data2_T	: out std_logic;
-	 dds_control2	: out std_logic_vector(0 to U_DDS_CTRL_WIDTH-1);
-	 dds_cs		    : out std_logic_vector(0 to N_DDS-1);
-   dds_FUD	    : out std_logic_vector(0 to 1); -- DDR --
-	 counter_in 	: in std_logic_vector := (0 to N_COUNTER-1 => '0');
-	 sync_in 	    : in std_logic := '0';
+   pulse_io     : out std_logic_vector(0 to U_PULSE_WIDTH-1);
+   dds_addr     : out std_logic_vector(0 to U_DDS_ADDR_WIDTH-1);
+   dds_data_I   : in std_logic_vector := (0 to U_DDS_DATA_WIDTH-1 => '0') ;
+   dds_data_O   : out std_logic_vector(0 to U_DDS_DATA_WIDTH-1);
+   dds_data_T   : out std_logic;
+   dds_control  : out std_logic_vector(0 to U_DDS_CTRL_WIDTH-1);
+   dds_addr2    : out std_logic_vector(0 to U_DDS_ADDR_WIDTH-1);
+   dds_data2_I  : in std_logic_vector := (0 to U_DDS_DATA_WIDTH-1 => '0') ;
+   dds_data2_O  : out std_logic_vector(0 to U_DDS_DATA_WIDTH-1);
+   dds_data2_T  : out std_logic;
+   dds_control2 : out std_logic_vector(0 to U_DDS_CTRL_WIDTH-1);
+   dds_cs       : out std_logic_vector(0 to N_DDS-1);
+   dds_FUD      : out std_logic_vector(0 to 1); -- DDR --
+   dds_syncI    : in std_logic; 
+   dds_syncO    : out std_logic;
+   counter_in   : in std_logic_vector := (0 to N_COUNTER-1 => '0');
+   sync_in      : in std_logic := '0';
    clock_out    : out std_logic;
     -- ADD USER PORTS ABOVE THIS LINE ------------------
 
@@ -212,10 +214,10 @@ architecture IMP of pulse_controller is
       0  => (RST_NUM_CE),                 -- number of ce for soft reset space
       1  => (USER_SLV_NUM_REG)            -- number of ce for user logic slave space
     );
-	 
+   
   constant USER_SLV_DWIDTH                : integer              := C_S_AXI_DATA_WIDTH;
   constant USER_SLV_AWIDTH                : integer              := C_S_AXI_ADDR_WIDTH;
-  constant USER_SLV_CSWIDTH					: integer              := (IPIF_ARD_ADDR_RANGE_ARRAY'LENGTH)/2;
+  constant USER_SLV_CSWIDTH         : integer              := (IPIF_ARD_ADDR_RANGE_ARRAY'LENGTH)/2;
 
   ------------------------------------------
   -- Width of triggered reset in bus clocks
@@ -280,29 +282,31 @@ architecture IMP of pulse_controller is
       -- Bus protocol parameters, do not add to or delete
       C_NUM_REG                      : integer              := 32;
       C_SLV_DWIDTH                   : integer              := 32;
-	  C_SLV_AWIDTH                   : integer              := 32;
-	  C_SLV_CSWIDTH                   : integer             := 2
+      C_SLV_AWIDTH                   : integer              := 32;
+      C_SLV_CSWIDTH                  : integer             := 2
       -- DO NOT EDIT ABOVE THIS LINE ---------------------
     );
     port
     (
       -- ADD USER PORTS BELOW THIS LINE ------------------
       --USER ports added here
-		pulse_io      : out std_logic_vector(0 to U_PULSE_WIDTH-1);
-		dds_addr   	  : out std_logic_vector(0 to U_DDS_ADDR_WIDTH-1);
- 	  dds_data_I	  : in  std_logic_vector(0 to U_DDS_DATA_WIDTH-1) ;
- 	  dds_data_O	  : out std_logic_vector(0 to U_DDS_DATA_WIDTH-1);
-	  dds_data_T 	  : out std_logic;
-	  dds_control	  : out std_logic_vector(0 to U_DDS_CTRL_WIDTH-1);
-    dds_addr2   	: out std_logic_vector(0 to U_DDS_ADDR_WIDTH-1);
-	  dds_data2_I  	: in  std_logic_vector(0 to U_DDS_DATA_WIDTH-1) ;
-	  dds_data2_O  	: out std_logic_vector(0 to U_DDS_DATA_WIDTH-1);
-    dds_data2_T 	: out std_logic;
-	  dds_control2	: out std_logic_vector(0 to U_DDS_CTRL_WIDTH-1);
-		dds_cs		    : out std_logic_vector(0 to N_DDS-1);
-    dds_FUD		    : out std_logic_vector(0 to 1); -- DDR --
-		counter_in	  : in  std_logic_vector(0 to N_COUNTER-1);
-		sync_in		    : in  std_logic;
+    pulse_io      : out std_logic_vector(0 to U_PULSE_WIDTH-1);
+    dds_addr      : out std_logic_vector(0 to U_DDS_ADDR_WIDTH-1);
+    dds_data_I    : in  std_logic_vector(0 to U_DDS_DATA_WIDTH-1) ;
+    dds_data_O    : out std_logic_vector(0 to U_DDS_DATA_WIDTH-1);
+    dds_data_T    : out std_logic;
+    dds_control   : out std_logic_vector(0 to U_DDS_CTRL_WIDTH-1);
+    dds_addr2     : out std_logic_vector(0 to U_DDS_ADDR_WIDTH-1);
+    dds_data2_I   : in  std_logic_vector(0 to U_DDS_DATA_WIDTH-1) ;
+    dds_data2_O   : out std_logic_vector(0 to U_DDS_DATA_WIDTH-1);
+    dds_data2_T   : out std_logic;
+    dds_control2  : out std_logic_vector(0 to U_DDS_CTRL_WIDTH-1);
+    dds_cs        : out std_logic_vector(0 to N_DDS-1);
+    dds_FUD       : out std_logic_vector(0 to 1); -- DDR --
+    dds_syncI     : in std_logic; 
+    dds_syncO     : out std_logic;
+    counter_in    : in  std_logic_vector(0 to N_COUNTER-1);
+    sync_in       : in  std_logic;
     clock_out     : out std_logic;
       -- ADD USER PORTS ABOVE THIS LINE ------------------
 
@@ -311,9 +315,9 @@ architecture IMP of pulse_controller is
       Bus2IP_Clk                     : in  std_logic;
       Bus2IP_Resetn                  : in  std_logic;
       Bus2IP_Data                    : in  std_logic_vector(C_SLV_DWIDTH-1 downto 0);
-		  Bus2IP_Addr                    : in  std_logic_vector(C_SLV_AWIDTH-1 downto 0);
-		  Bus2IP_RNW                     : in  std_logic;
-		  Bus2IP_CS                      : in  std_logic_vector((IPIF_ARD_ADDR_RANGE_ARRAY'LENGTH)/2-1 downto 0);
+      Bus2IP_Addr                    : in  std_logic_vector(C_SLV_AWIDTH-1 downto 0);
+      Bus2IP_RNW                     : in  std_logic;
+      Bus2IP_CS                      : in  std_logic_vector((IPIF_ARD_ADDR_RANGE_ARRAY'LENGTH)/2-1 downto 0);
       Bus2IP_BE                      : in  std_logic_vector(C_SLV_DWIDTH/8-1 downto 0);
       Bus2IP_RdCE                    : in  std_logic_vector(C_NUM_REG-1 downto 0);
       Bus2IP_WrCE                    : in  std_logic_vector(C_NUM_REG-1 downto 0);
@@ -418,28 +422,31 @@ begin
 
       C_NUM_REG                => USER_NUM_REG,
       C_SLV_DWIDTH             => USER_SLV_DWIDTH,
-      C_SLV_AWIDTH						 => USER_SLV_AWIDTH,
+      C_SLV_AWIDTH             => USER_SLV_AWIDTH,
       C_SLV_CSWIDTH            => USER_SLV_CSWIDTH
     )
     port map
     (
       -- MAP USER PORTS BELOW THIS LINE ------------------
       --USER ports mapped here
-      pulse_io	=> pulse_io,
-      dds_addr   	=> dds_addr,
-      dds_data_I	=> dds_data_I,
-      dds_data_O	=> dds_data_O,
-      dds_data_T 	=> dds_data_T,
-      dds_control	=> dds_control,
+      pulse_io  => pulse_io,
+      dds_addr    => dds_addr,
+      dds_data_I  => dds_data_I,
+      dds_data_O  => dds_data_O,
+      dds_data_T  => dds_data_T,
+      dds_control => dds_control,
       dds_addr2   => dds_addr2,
-      dds_data2_I	=> dds_data2_I,
-      dds_data2_O	=> dds_data2_O,
+      dds_data2_I => dds_data2_I,
+      dds_data2_O => dds_data2_O,
       dds_data2_T => dds_data2_T,
-      dds_control2	=> dds_control2,
-      dds_cs		=> dds_cs,
-      dds_FUD		=> dds_FUD,
-      counter_in 	=> counter_in,
-      sync_in 	=> sync_in,
+      dds_control2  => dds_control2,
+      dds_cs    => dds_cs,
+      dds_FUD   => dds_FUD,
+      dds_syncI  => dds_syncI;
+      dds_syncO  => dds_syncO;
+   
+      counter_in  => counter_in,
+      sync_in   => sync_in,
       clock_out => clock_out,
       -- MAP USER PORTS ABOVE THIS LINE ------------------
 

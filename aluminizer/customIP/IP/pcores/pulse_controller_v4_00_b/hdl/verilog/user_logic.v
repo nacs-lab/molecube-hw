@@ -37,6 +37,7 @@ module user_logic
   pulse_io,
   dds_addr, dds_data_I, dds_data_O, dds_data_T, dds_control, dds_cs,
   dds_addr2, dds_data2_I, dds_data2_O, dds_data2_T, dds_control2, dds_FUD,
+  dds_syncI, dds_syncO,
   counter_in, sync_in, clock_out,
   // -- ADD USER PORTS ABOVE THIS LINE ---------------
 
@@ -470,6 +471,8 @@ timing_controller
   .dds_control2(dds_control2), 
   .dds_cs(dds_cs),
   .dds_FUD(dds_FUD),
+  .dds_syncI(dds_sync_I), 
+  .dds_syncO(dds_sync_O),
   .ttl_out(ttl_out), 
   .underflow_out(underflow_out),
   .counter_in(counter_in), 

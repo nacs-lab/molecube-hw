@@ -1,15 +1,65 @@
 `timescale 1ns / 1ps
 
-//opcode[0:3] 0=set_freq, 1=set_phase, 2=set_byte, 3=get_byte, 4=reset, 15=set_two_words
-//opcode[DDS_ID_A:DDS_ID_B] DDS number (0...31)
-//opcode[DDS_REG_A:DDS_REG_B] DDS memory address
+/*
+ dds_controller is a module to communicate with multiple DDS boards.
+ The current configuration (June, 2014) consists of two banks of 11 boards each.
+ Reads/writes to the boards occur via a bus backplane that has
+ 16 data bits, 7 addr bits, and 4 or 5 control bits.
+ 
+ dds_controller is instantiated in timing_controller, to generate precisely 
+ timed RF pulses.
+ 
+ The DDS chips are AD9914, and the data sheet contains many details about
+ device operation and programming.
+ 
+ All DDS commands require (MAX_CYCLES+1)*(CLK_DIV+1)=28 cycles (280 ns).
+ The effective programming clock rate is 25 MHz.
 
-//All DDS commands require (MAX_CYCLES+1)*(CLK_DIV+1)=28 cycles (280 ns)
+ The signals clock, reset, write_enable, opcode, operand come from the timing controller.
+ A new opcode & operand are loaded upon write_enable going high.
+ When data is read from a DDS, it goes to result_data, and result_WrReq signals
+ data availability.
+
+ External signals connecting to the DDS boards:
+ dds_addr, dds_data_I, dds_data_O, dds_data_T, dds_control, 
+ dds_addr2, dds_data2_I, dds_data2_O, dds_data2_T, dds_control2, 
+ dds_cs, dds_FUD, dds_syncO, dds_syncI
+ 
+ opcode[3:0] DDS command
+ 
+   0 = set freq.  ftw = operand[31:0]
+   1 = set phase. ptw = operand[15:0]
+   2 = set word (two bytes). operand[15:0]
+   3 = get word (two bytes)
+   4 = reset one DDS specified by DDS number
+   5 = Reset several DDS synchronously. Selected DDS are the high bits of operand.
+   6 = Select several DDS boards (via dds_cs) until they are deselected.
+       Allows synchronous programming of frequencies.  Overrides DDS number.
+       Selected DDS are the high bits of operand
+   
+   7 = increment/decrement phase of dds_syncO
+   8 = count high-time of dds_syncI
+  14 = get two words (4 bytes)
+  15 = set two words (4 bytes) operand[31:0]
+  
+  opcode[8:4] DDS number (0...31).  Specify target DDS for command.
+              Overridden by if DDS are selected via opcode 6
+  
+  opcode[15:9] DDS memory address for get / set word commands. 
+               One word operations use addr and addr-1.
+               Two word operations use addr+2...addr-1. (this seems inconvenient)
+
+ ___
+  |R
+ 
+  Work in progress: align DDS SYNC_CLK with FPGA clock
+  
+*/
 
 module dds_controller(clock, reset, write_enable, opcode, operand, 
                dds_addr, dds_data_I, dds_data_O, dds_data_T, dds_control, 
                dds_addr2, dds_data2_I, dds_data2_O, dds_data2_T, dds_control2, 
-               dds_cs, dds_FUD, result_data, result_WrReq);
+               dds_cs, dds_FUD, dds_syncO, dds_syncI, result_data, result_WrReq);
 
 // synthesis attribute iostandard of dds_bus is LVCMOS33;
  
@@ -61,11 +111,15 @@ output [(U_DDS_CTRL_WIDTH-1):0] dds_control2;
 
 output [(N_DDS-1):0] dds_cs;
 
-// FUD = IO_UPDATE on DDS boards can be raised on posedge of clock.
-// It will return to 0 on negedge of clock.
+// FUD = IO_UPDATE on DDS boards can be lowered on posedge of clock.
+// It will return to 1 on negedge of clock.
 // This short pulse (5 ns or so) allows alignment of DDS SYNC_CLK
 // and SYNC_IN/OUT with FUD. The signal idles high.              
 output [1:0] dds_FUD;
+
+input dds_syncI;
+output dds_syncO;
+reg [7:0] syncI_counter; // only 4 bits needed?
 
 reg [(U_DDS_ADDR_WIDTH-1):0] dds_addr_reg;
 reg [(U_DDS_DATA_WIDTH-1):0] dds_data_reg;
@@ -109,7 +163,7 @@ reg [1:0]  sub_cycle;
 
 reg [(N_DDS-1):0] dds_sel_mask; // set active DDS via separate command
 
-// Setup dds_FUD as DDR signal (goes low for a half-period of clock
+// Setup dds_FUD as DDR signal (goes low for only a half-period of clock)
 
 reg dds_FUDx; //aux signal for dds_FUD DDR signal
               //dds_FUD0 will be low for 1 clock cycle
@@ -149,6 +203,55 @@ ODDR #(
 
 // End of ODDR_inst instantiation
 
+/*
+ Create dds_syncO signal (clock/16) with software-adjustable phase for
+ dynamic alignment of DDS SYNC_CLK with dds_FUD.  
+ Adjustment steps are 1/56 of VCO period (but 4 steps will occur per update).
+ 
+ Use MMCME2_ADV which contains a PLL.
+ VCO has a range of 600 - 1200 MHz.  Operate at 800 MHz.
+ See UG472.
+*/
+
+// MMCME2_ADV: Advanced Mixed Mode Clock Manager
+//             Virtex-7
+// Xilinx HDL Language Template, version 14.7
+
+wire CLOCK_FB;
+reg PSINCDEC, PSEN;
+
+MMCME2_ADV #(
+  .BANDWIDTH("OPTIMIZED"),        // Jitter programming (OPTIMIZED, HIGH, LOW)
+  .CLKFBOUT_MULT_F(2.0),          // Multiply value for all CLKOUT (2.000-64.000).
+  // CLKIN_PERIOD: Input clock period in ns to ps resolution (i.e. 33.333 is 30 MHz).
+  .CLKIN1_PERIOD(10.0),
+  // CLKOUT0_DIVIDE - CLKOUT6_DIVIDE: Divide amount for CLKOUT (1-128)
+  .CLKOUT1_DIVIDE(32),
+  .CLKOUT4_CASCADE("FALSE"),      // Cascade CLKOUT4 counter with CLKOUT6 (FALSE, TRUE)
+  .COMPENSATION("ZHOLD"),         // ZHOLD, BUF_IN, EXTERNAL, INTERNAL
+  .DIVCLK_DIVIDE(16),              // Master division value (1-106)
+  // REF_JITTER: Reference input jitter in UI (0.000-0.999).
+  .REF_JITTER1(0.0),
+  .REF_JITTER2(0.0),
+  .STARTUP_WAIT("FALSE"),         // Delays DONE until MMCM is locked (FALSE, TRUE)
+ )
+MMCME2_ADV_inst (
+  // Clock Outputs: 1-bit (each) output: User configurable clock outputs
+  .CLKOUT1(dds_syncO),           // 1-bit output: CLKOUT1
+  .CLKIN1(clock),             // 1-bit input: Primary clock
+  .RST(reset),                   // 1-bit input: Reset
+  // Dynamic Phase Shift Ports: 1-bit (each) input: Ports used for dynamic phase shifting of the outputs
+  .PSCLK(clock),               // 1-bit input: Phase shift clock
+  .PSEN(PSEN),                 // 1-bit input: Phase shift enable
+  .PSINCDEC(PSINCDEC),         // 1-bit input: Phase shift increment/decrement
+  // Feedback Clocks: 1-bit (each) output: Clock feedback ports
+  .CLKFBOUT(CLOCK_FB),         // 1-bit output: Feedback clock
+  // Feedback Clocks: 1-bit (each) input: Clock feedback ports
+  .CLKFBIN(CLOCK_FB)            // 1-bit input: Feedback clock
+);
+
+// End of MMCME2_ADV_inst instantiation
+   
 always @(posedge clock)
 begin
   if(reset) begin
@@ -171,6 +274,10 @@ begin
     result_WrReq_reg <= 0;
     dds_FUDx <= 1;
     ddr_reset <= 1;
+    
+    PSEN <= 0;
+    PSINCDEC <= 0;
+    syncI_counter <= 0;
   end else begin 
     ddr_reset <= 0;
     if(cycle == 0) begin
@@ -189,6 +296,7 @@ begin
       dds_sel_mask <= 0;
       
       dds_FUDx <= 1;
+      syncI_counter <= 0;
             
       //wait for write_enable to start
       if(write_enable) begin
@@ -277,7 +385,25 @@ begin
           1 : dds_sel_mask <= operand_reg[(N_DDS-1):0];
           endcase
           end
+      
+      7 : begin //increment / decrement phase of dds_syncO via MMCM
+          case(cycle)
+          1 : PSINCDEC <= operand_reg[0];
+          2 : PSEN <= 1;
+          3 : PSEN <= 0;
+          endcase
+          end
           
+      8 : begin //count high-time of dds_syncI
+          if(cycle != 6) begin
+            if(dds_syncI)
+              syncI_counter = syncI_counter + 1'b1;
+          end else begin   
+            result_reg <= syncI_Counter;
+            result_WrReq_reg <= 1; //write request to result buffer
+          end
+          end
+           
       14 : begin // get two memory words (four bytes) from addr-1 to addr+2
           case(cycle)
           1 : begin dds_addr_reg <= opcode_reg[DDS_REG_B:DDS_REG_A]; dds_data_T_reg <= 1; result_reg <= 0; end
