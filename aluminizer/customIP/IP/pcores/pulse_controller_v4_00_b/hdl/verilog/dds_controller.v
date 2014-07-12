@@ -12,7 +12,7 @@
  The DDS chips are AD9914, and the data sheet contains many details about
  device operation and programming.
  
- All DDS commands require (MAX_CYCLES+1)*(CLK_DIV+1)=28 cycles (280 ns).
+ All DDS commands require (MAX_CYCLES)*(CLK_DIV+1)+1=25 cycles (250 ns).
  The effective programming clock rate is 25 MHz.
 
  The signals clock, reset, write_enable, opcode, operand come from the timing controller.
@@ -172,10 +172,11 @@ reg ddr_reset;
 parameter FUD_DDR_MODE = 0;
 generate
   if (FUD_DDR_MODE==0) begin
-    assign dds_FUD[0] = dds_FUDx;
+// FUD idles low.  transition to high transfers registers into DDS core
+    assign dds_FUD[0] = dds_FUDx;  
     assign dds_FUD[1] = dds_FUDx;
   end else begin
-    // Setup dds_FUD as DDR signal (goes low for only a half-period of clock)
+    // Setup dds_FUD as DDR signal (goes high for only a half-period of clock)
                                
     // ODDR: Output Double Data Rate Output Register with Set, Reset
     // and Clock Enable.
@@ -183,28 +184,28 @@ generate
     // Xilinx HDL Libraries Guide, version 14.3
     ODDR #(
     .DDR_CLK_EDGE("OPPOSITE_EDGE"), // "OPPOSITE_EDGE" or "SAME_EDGE"
-    .INIT(1'b1), // Initial value of Q: 1'b0 or 1'b1
+    .INIT(1'b0), // Initial value of Q: 1'b0 or 1'b1
     .SRTYPE("SYNC") // Set/Reset type: "SYNC" or "ASYNC"
     ) sODDR_inst1 (
     .Q(dds_FUD[0]), // 1-bit DDR output
     .C(clock), // 1-bit clock input
     .CE(1'b1), // 1-bit clock enable input
     .D1(dds_FUDx), // 1-bit data input (positive edge)
-    .D2(1'b1), // 1-bit data input (negative edge)
+    .D2(1'b0), // 1-bit data input (negative edge)
     .R(ddr_reset), // 1-bit reset
     .S(1'b0) // 1-bit set
     );
 
     ODDR #(
     .DDR_CLK_EDGE("OPPOSITE_EDGE"), // "OPPOSITE_EDGE" or "SAME_EDGE"
-    .INIT(1'b1), // Initial value of Q: 1'b0 or 1'b1
+    .INIT(1'b0), // Initial value of Q: 1'b0 or 1'b1
     .SRTYPE("SYNC") // Set/Reset type: "SYNC" or "ASYNC"
     ) ODDR_inst2 (
     .Q(dds_FUD[1]), // 1-bit DDR output
     .C(clock), // 1-bit clock input
     .CE(1'b1), // 1-bit clock enable input
     .D1(dds_FUDx), // 1-bit data input (positive edge)
-    .D2(1'b1), // 1-bit data input (negative edge)
+    .D2(1'b0), // 1-bit data input (negative edge)
     .R(ddr_reset), // 1-bit reset
     .S(1'b0) // 1-bit set
     );
@@ -284,7 +285,7 @@ begin
     dds_data_T_reg  <= 1;
     
     result_WrReq_reg <= 0;
-    dds_FUDx <= 1;
+    dds_FUDx <= 0;
     ddr_reset <= 1;
     
     PSEN <= 0;
@@ -307,7 +308,7 @@ begin
       sub_cycle <= 0;
       dds_sel_mask <= 0;
       
-      dds_FUDx <= 1;
+      dds_FUDx <= 0;
       syncI_counter <= 0;
             
       //wait for write_enable to start
@@ -342,7 +343,7 @@ begin
           3 : begin dds_addr_reg <= 6'h2D; dds_w_strobe_n <= 1; end
           4 : begin dds_data_reg <= operand_reg[15:0]; dds_w_strobe_n <= 0; end
           5 : dds_w_strobe_n <= 1;
-          6 : dds_FUDx <= 0; 
+          6 : dds_FUDx <= 1; 
           endcase
           end
           
@@ -353,7 +354,7 @@ begin
           3 : begin dds_addr_reg <= 6'h33; dds_w_strobe_n <= 1; end
           4 : begin dds_data_reg <= operand_reg[15:0]; dds_w_strobe_n <= 0; end
           5 : dds_w_strobe_n <= 1;
-          6 : dds_FUDx <= 0; 
+          6 : dds_FUDx <= 1; 
           endcase
           end
           
@@ -362,7 +363,7 @@ begin
           1 : begin dds_addr_reg <= opcode_reg[DDS_REG_B:DDS_REG_A]; end
           2 : begin dds_data_reg <= operand_reg[15:0]; dds_w_strobe_n <= 0; end
           3 : dds_w_strobe_n <= 1;
-          6 : dds_FUDx <= 0; 
+          4 : dds_FUDx <= 1; 
           endcase
           end
           
@@ -445,7 +446,7 @@ begin
           3 : begin dds_addr_reg <= opcode_reg[DDS_REG_B:DDS_REG_A]; dds_w_strobe_n <= 1; end
           4 : begin dds_data_reg <= operand_reg[15:0]; dds_w_strobe_n <= 0; end
           5 : dds_w_strobe_n <= 1;
-          6 : dds_FUDx <= 0; 
+          6 : dds_FUDx <= 1; 
           endcase
           end
       endcase
