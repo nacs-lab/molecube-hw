@@ -73,8 +73,8 @@ PORT dds_data2 = dds_data2, DIR = IO, VEC = [(U_DDS_DATA_WIDTH-1):0], THREE_STAT
 PORT dds_control2 = dds_control2, DIR = O, VEC = [(U_DDS_CTRL_WIDTH-1):0]
 PORT dds_cs = dds_cs, DIR = O, VEC = [(N_DDS-1):0]
 PORT dds_FUD = dds_FUD, DIR = O, VEC = [1:0]
-PORT dds_syncI = dds_syncI, DIR = I;
-PORT dds_syncO = dds_syncO, DIR = O;
+PORT dds_syncI = dds_syncI, DIR = I
+PORT dds_syncO = dds_syncO, DIR = O
 PORT counter_in = counter_in, DIR = I, VEC = [(N_COUNTER-1):0]
 PORT sync_in = sync_in, DIR = I
 PORT clock_out = clock_out, DIR = O

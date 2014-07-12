@@ -119,6 +119,7 @@ output [1:0] dds_FUD;
 
 input dds_syncI;
 output dds_syncO;
+// count cycles where dds_syncI was high
 reg [7:0] syncI_counter; // only 4 bits needed?
 
 reg [(U_DDS_ADDR_WIDTH-1):0] dds_addr_reg;
@@ -163,45 +164,56 @@ reg [1:0]  sub_cycle;
 
 reg [(N_DDS-1):0] dds_sel_mask; // set active DDS via separate command
 
-// Setup dds_FUD as DDR signal (goes low for only a half-period of clock)
-
 reg dds_FUDx; //aux signal for dds_FUD DDR signal
-              //dds_FUD0 will be low for 1 clock cycle
+              //dds_FUDx will be low for 1 clock cycle
 
-reg ddr_reset;                                  
-// ODDR: Output Double Data Rate Output Register with Set, Reset
-// and Clock Enable.
-// 7 Series
-// Xilinx HDL Libraries Guide, version 14.3
-ODDR #(
-.DDR_CLK_EDGE("OPPOSITE_EDGE"), // "OPPOSITE_EDGE" or "SAME_EDGE"
-.INIT(1'b1), // Initial value of Q: 1'b0 or 1'b1
-.SRTYPE("SYNC") // Set/Reset type: "SYNC" or "ASYNC"
-) sODDR_inst1 (
-.Q(dds_FUD[0]), // 1-bit DDR output
-.C(clock), // 1-bit clock input
-.CE(1'b1), // 1-bit clock enable input
-.D1(dds_FUDx), // 1-bit data input (positive edge)
-.D2(1'b1), // 1-bit data input (negative edge)
-.R(ddr_reset), // 1-bit reset
-.S(1'b0) // 1-bit set
-);
+reg ddr_reset;       
 
-ODDR #(
-.DDR_CLK_EDGE("OPPOSITE_EDGE"), // "OPPOSITE_EDGE" or "SAME_EDGE"
-.INIT(1'b1), // Initial value of Q: 1'b0 or 1'b1
-.SRTYPE("SYNC") // Set/Reset type: "SYNC" or "ASYNC"
-) ODDR_inst2 (
-.Q(dds_FUD[1]), // 1-bit DDR output
-.C(clock), // 1-bit clock input
-.CE(1'b1), // 1-bit clock enable input
-.D1(dds_FUDx), // 1-bit data input (positive edge)
-.D2(1'b1), // 1-bit data input (negative edge)
-.R(ddr_reset), // 1-bit reset
-.S(1'b0) // 1-bit set
-);
+parameter FUD_DDR_MODE = 0;
+generate
+  if (FUD_DDR_MODE==0) begin
+    assign dds_FUD[0] = dds_FUDx;
+    assign dds_FUD[1] = dds_FUDx;
+  end else begin
+    // Setup dds_FUD as DDR signal (goes low for only a half-period of clock)
+                               
+    // ODDR: Output Double Data Rate Output Register with Set, Reset
+    // and Clock Enable.
+    // 7 Series
+    // Xilinx HDL Libraries Guide, version 14.3
+    ODDR #(
+    .DDR_CLK_EDGE("OPPOSITE_EDGE"), // "OPPOSITE_EDGE" or "SAME_EDGE"
+    .INIT(1'b1), // Initial value of Q: 1'b0 or 1'b1
+    .SRTYPE("SYNC") // Set/Reset type: "SYNC" or "ASYNC"
+    ) sODDR_inst1 (
+    .Q(dds_FUD[0]), // 1-bit DDR output
+    .C(clock), // 1-bit clock input
+    .CE(1'b1), // 1-bit clock enable input
+    .D1(dds_FUDx), // 1-bit data input (positive edge)
+    .D2(1'b1), // 1-bit data input (negative edge)
+    .R(ddr_reset), // 1-bit reset
+    .S(1'b0) // 1-bit set
+    );
 
-// End of ODDR_inst instantiation
+    ODDR #(
+    .DDR_CLK_EDGE("OPPOSITE_EDGE"), // "OPPOSITE_EDGE" or "SAME_EDGE"
+    .INIT(1'b1), // Initial value of Q: 1'b0 or 1'b1
+    .SRTYPE("SYNC") // Set/Reset type: "SYNC" or "ASYNC"
+    ) ODDR_inst2 (
+    .Q(dds_FUD[1]), // 1-bit DDR output
+    .C(clock), // 1-bit clock input
+    .CE(1'b1), // 1-bit clock enable input
+    .D1(dds_FUDx), // 1-bit data input (positive edge)
+    .D2(1'b1), // 1-bit data input (negative edge)
+    .R(ddr_reset), // 1-bit reset
+    .S(1'b0) // 1-bit set
+    );
+    // End of ODDR_inst instantiation
+  end
+endgenerate
+
+
+
 
 /*
  Create dds_syncO signal (clock/16) with software-adjustable phase for
@@ -233,7 +245,7 @@ MMCME2_ADV #(
   // REF_JITTER: Reference input jitter in UI (0.000-0.999).
   .REF_JITTER1(0.0),
   .REF_JITTER2(0.0),
-  .STARTUP_WAIT("FALSE"),         // Delays DONE until MMCM is locked (FALSE, TRUE)
+  .STARTUP_WAIT("FALSE")         // Delays DONE until MMCM is locked (FALSE, TRUE)
  )
 MMCME2_ADV_inst (
   // Clock Outputs: 1-bit (each) output: User configurable clock outputs
@@ -251,7 +263,7 @@ MMCME2_ADV_inst (
 );
 
 // End of MMCME2_ADV_inst instantiation
-   
+
 always @(posedge clock)
 begin
   if(reset) begin
@@ -366,7 +378,8 @@ begin
       4 : begin // DDS reset (should be low for about 10 ns minimum)
           case(cycle)
           1 : dds_reset <= 0;
-          5 : dds_reset <= 1;
+          3 : dds_reset <= 1;
+          6 : dds_reset <= 0;
           endcase
           end
           
@@ -397,9 +410,9 @@ begin
       8 : begin //count high-time of dds_syncI
           if(cycle != 6) begin
             if(dds_syncI)
-              syncI_counter = syncI_counter + 1'b1;
+              syncI_counter <= syncI_counter + 1'b1;
           end else begin   
-            result_reg <= syncI_Counter;
+            result_reg <= syncI_counter;
             result_WrReq_reg <= 1; //write request to result buffer
           end
           end

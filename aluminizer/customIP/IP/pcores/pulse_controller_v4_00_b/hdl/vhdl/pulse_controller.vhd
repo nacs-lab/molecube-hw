@@ -442,8 +442,8 @@ begin
       dds_control2  => dds_control2,
       dds_cs    => dds_cs,
       dds_FUD   => dds_FUD,
-      dds_syncI  => dds_syncI;
-      dds_syncO  => dds_syncO;
+      dds_syncI  => dds_syncI,
+      dds_syncO  => dds_syncO,
    
       counter_in  => counter_in,
       sync_in   => sync_in,

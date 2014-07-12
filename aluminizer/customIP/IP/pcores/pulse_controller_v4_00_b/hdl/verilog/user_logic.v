@@ -99,6 +99,8 @@ output [0:(U_DDS_CTRL_WIDTH-1)] dds_control2;
 
 output [1:0] dds_FUD;
 output [0:(N_DDS-1)] dds_cs;
+input  dds_syncI;
+output dds_syncO;
 
 input [0:(N_COUNTER-1)] counter_in;
 input sync_in;
@@ -471,8 +473,8 @@ timing_controller
   .dds_control2(dds_control2), 
   .dds_cs(dds_cs),
   .dds_FUD(dds_FUD),
-  .dds_syncI(dds_sync_I), 
-  .dds_syncO(dds_sync_O),
+  .dds_syncI(dds_syncI), 
+  .dds_syncO(dds_syncO),
   .ttl_out(ttl_out), 
   .underflow_out(underflow_out),
   .counter_in(counter_in), 
