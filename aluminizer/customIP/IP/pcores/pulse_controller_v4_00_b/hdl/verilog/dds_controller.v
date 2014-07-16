@@ -425,17 +425,15 @@ begin
           3 : begin // get data on bus
                 result_reg[15:0] <= active_dds_bank[0] ? dds_data_I : dds_data2_I; 
                 dds_r_strobe_n <= 1; 
-                result_WrReq_reg <= 1; //write request to result buffer
                 dds_addr_reg <= opcode_reg[DDS_REG_B:DDS_REG_A]+2; //advance address
               end
           //initiate second read from DDS
           4 : begin dds_r_strobe_n <= 0; result_WrReq_reg <= 0; end 
           5 : begin // get data on bus
                 result_reg[31:16] <= active_dds_bank[0] ? dds_data_I : dds_data2_I; 
-                dds_r_strobe_n <= 1; 
-                result_WrReq_reg <= 1; //write request to result buffer
+                dds_r_strobe_n <= 1;
               end
-          6 : result_WrReq_reg <= 0;
+          6 : result_WrReq_reg <= 1;
           endcase
           end
           
