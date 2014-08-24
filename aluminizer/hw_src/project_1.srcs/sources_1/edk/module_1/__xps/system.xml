@@ -220,7 +220,7 @@
       <DESCRIPTION TYPE="SHORT">Processing System</DESCRIPTION>
       <DESCRIPTION TYPE="LONG">Processing System wrapper for Series 7</DESCRIPTION>
       <DOCUMENTATION>
-        <DOCUMENT SOURCE="/home/trosen/nist/opt/Xilinx/14.7/ISE_DS/EDK/hw/XilinxProcessorIPLib/pcores/processing_system7_v4_03_a/doc/pg082-processing_system7.pdf" TYPE="IP"/>
+        <DOCUMENT SOURCE="/tmp/planahead/planahead/14.7/ISE_DS/EDK/hw/XilinxProcessorIPLib/pcores/processing_system7_v4_03_a/doc/pg082-processing_system7.pdf" TYPE="IP"/>
       </DOCUMENTATION>
       <LICENSEINFO ICON_NAME="ps_core_preferred"/>
       <PARAMETERS>
@@ -2535,7 +2535,7 @@
       <DESCRIPTION TYPE="SHORT">Differential Signaling IO Buffer</DESCRIPTION>
       <DESCRIPTION TYPE="LONG">Differential Signaling IO Buffer Primitive</DESCRIPTION>
       <DOCUMENTATION>
-        <DOCUMENT SOURCE="/home/trosen/nist/opt/Xilinx/14.7/ISE_DS/EDK/hw/XilinxProcessorIPLib/pcores/util_ds_buf_v1_01_a/doc/util_ds_buf.pdf" TYPE="IP"/>
+        <DOCUMENT SOURCE="/tmp/planahead/planahead/14.7/ISE_DS/EDK/hw/XilinxProcessorIPLib/pcores/util_ds_buf_v1_01_a/doc/util_ds_buf.pdf" TYPE="IP"/>
       </DOCUMENTATION>
       <LICENSEINFO ICON_NAME="ps_core_earlyaccess"/>
       <PARAMETERS>
