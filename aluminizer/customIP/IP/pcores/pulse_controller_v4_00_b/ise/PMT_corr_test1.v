@@ -1,25 +1,25 @@
 `timescale 1ns / 1ps
 
 ////////////////////////////////////////////////////////////////////////////////
-// Company: 
+// Company:
 // Engineer:
 //
 // Create Date:   07:27:26 01/03/2014
 // Design Name:   PMT_correlation2
-// Module Name:   /home/trosen/x/PMT_corr/test1.v
+// Module Name:   ise/PMT_corr_test1.v
 // Project Name:  PMT_corr
-// Target Device:  
-// Tool versions:  
-// Description: 
+// Target Device:
+// Tool versions:
+// Description:
 //
 // Verilog Test Fixture created by ISE for module: PMT_correlation2
 //
 // Dependencies:
-// 
+//
 // Revision:
 // Revision 0.01 - File Created
 // Additional Comments:
-// 
+//
 ////////////////////////////////////////////////////////////////////////////////
 
 module test1;

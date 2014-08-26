@@ -3,7 +3,7 @@
    <wave_state>
    </wave_state>
    <db_ref_list>
-      <db_ref path="/tmp/planahead/customIP/IP/pcores/pulse_controller_v4_00_b/ise/test1_isim_beh.wdb" id="1" type="auto">
+      <db_ref path="/tmp/xilinx/customIP/IP/pcores/pulse_controller_v4_00_b/ise/test1_isim_beh.wdb" id="1" type="auto">
          <top_modules>
             <top_module name="glbl" />
             <top_module name="test1" />
