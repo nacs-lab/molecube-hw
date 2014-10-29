@@ -48,7 +48,7 @@
  PORT dds_syncO_pin = dds_syncO, DIR = O
 # PORT clock_out = clock_out, DIR = O
  PORT clock_in_pin = clock_in, DIR = I, SIGIS = CLK, CLK_FREQ = 100000000
- PORT clock_out1_pin = clock_out1, DIR = O, SIGIS = CLK, CLK_FREQ = 100000000
+ PORT clock_out1_pin = clock_out, DIR = O, SIGIS = CLK, CLK_FREQ = 100000000
 
  PORT axi_spi_0_SCK_pin = axi_spi_0_SCK, DIR = O
  PORT axi_spi_0_MISO_pin = axi_spi_0_MISO, DIR = I
