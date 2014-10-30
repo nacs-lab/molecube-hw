@@ -158,7 +158,7 @@ NET clock_in_pin LOC = Y6 | IOSTANDARD = LVCMOS33;
 # CLK0_M2C_N / FMC2_H05
 # NET sync_counter1_pin LOC = AA18 | IOSTANDARD = LVCMOS33;
 # LA02_P / FMC2_H07
-Net pulse_io_pin<17> LOC = V14 | IOSTANDARD = LVCMOS33 | DRIVE = 4;
+Net pulse_io_pin<26> LOC = V14 | IOSTANDARD = LVCMOS33 | DRIVE = 4;
 # LA02_N / FMC2_H08
 Net pulse_io_pin<19> LOC = V15 | IOSTANDARD = LVCMOS33 | DRIVE = 4;
 # LA04_P / FMC2_H10
@@ -288,7 +288,7 @@ Net pulse_io_pin<22> LOC = U17 | IOSTANDARD = LVCMOS33 | DRIVE = 4;
 # LA06_N / FMC2_C11
 Net pulse_io_pin<23> LOC = V17 | IOSTANDARD = LVCMOS33 | DRIVE = 4;
 # LA10_P / FMC2_C14
-Net pulse_io_pin<26> LOC = Y20 | IOSTANDARD = LVCMOS33 | DRIVE = 4;
+Net pulse_io_pin<17> LOC = Y20 | IOSTANDARD = LVCMOS33 | DRIVE = 4;
 # LA10_N / FMC2_C15
 # input: Net pulse_io_pin<12> LOC = Y21 | IOSTANDARD = LVCMOS33 | DRIVE = 4;
 # LA14_P / FMC2_C18
