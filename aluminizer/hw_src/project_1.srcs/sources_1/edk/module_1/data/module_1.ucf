@@ -102,7 +102,7 @@ Net dds_cs_pin<10> LOC = A19 | IOSTANDARD = LVCMOS33 | DRIVE = 4;
 # LA01_CC_P / FMC1_D09
 # NET axi_spi_4_MISO_pin LOC = N20 | IOSTANDARD = LVCMOS33;
 # LA05_P / FMC1_D11
-Net pulse_io_pin<08> LOC = N17 | IOSTANDARD = LVCMOS33 | DRIVE = 4;
+# input: Net pulse_io_pin<20> LOC = N17 | IOSTANDARD = LVCMOS33 | DRIVE = 4;
 # LA05_N / FMC1_D12
 Net pulse_io_pin<09> LOC = N18 | IOSTANDARD = LVCMOS33 | DRIVE = 4;
 # LA09_P / FMC1_D14
@@ -271,7 +271,7 @@ Net pulse_io_pin<19> LOC = W22 | IOSTANDARD = LVCMOS33 | DRIVE = 4;
 Net pulse_io_pin<27> LOC = AA7 | IOSTANDARD = LVCMOS33 | DRIVE = 4;
 # LA17_CC_N / FMC2_D21
 # NET axi_spi_3_SS_pin LOC = AA6 | IOSTANDARD = LVCMOS33 | DRIVE = 8;
-Net pulse_io_pin<20> LOC = AA6 | IOSTANDARD = LVCMOS33 | DRIVE = 4;
+# input: Net pulse_io_pin<08> LOC = AA6 | IOSTANDARD = LVCMOS33 | DRIVE = 4;
 # LA23_P / FMC2_D23
 # Net axi_spi_4_MOSI_pin LOC = V12 | IOSTANDARD = LVCMOS33 | DRIVE = 8;
 Net pulse_io_pin<06> LOC = V12 | IOSTANDARD = LVCMOS33 | DRIVE = 4;
