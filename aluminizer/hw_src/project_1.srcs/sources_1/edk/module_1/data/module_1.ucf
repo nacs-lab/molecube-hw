@@ -3,8 +3,8 @@
 # FMC1, column H
 NET counter0_in_pin<0> LOC=L18 | IOSTANDARD=LVCMOS33;             # CLK0_M2C_P / FMC1_H4
 #NET dds_syncI_pin    LOC=L19 | IOSTANDARD=LVCMOS33;              # CLK0_M2C_N / FMC1_H5
-Net pulse_io_pin<1>  LOC=L21 | IOSTANDARD = LVCMOS33 | DRIVE=4;   # LA02_P / FMC1_H07
-Net pulse_io_pin<3>  LOC=L22 | IOSTANDARD = LVCMOS33 | DRIVE=4;   # LA02_N / FMC1_H08
+Net pulse_io_pin<01>  LOC=L21 | IOSTANDARD = LVCMOS33 | DRIVE=4;   # LA02_P / FMC1_H07
+Net pulse_io_pin<03>  LOC=L22 | IOSTANDARD = LVCMOS33 | DRIVE=4;   # LA02_N / FMC1_H08
 Net dds_data_pin<14> LOC=M21 | IOSTANDARD = LVCMOS33 | DRIVE=4;   # LA04_P / FMC1_H10
 Net dds_data_pin<12> LOC=M22 | IOSTANDARD = LVCMOS33 | DRIVE=4;   # LA04_N / FMC1_H11
 Net dds_data_pin<10> LOC=J15 | IOSTANDARD = LVCMOS33 | DRIVE=4;   # LA07_P / FMC1_H13
