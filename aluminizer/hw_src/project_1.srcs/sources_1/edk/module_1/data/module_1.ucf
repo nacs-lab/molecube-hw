@@ -1,4 +1,3 @@
-
 # Main I/O
 
 # FMC1, column H
@@ -19,7 +18,7 @@ Net dds_addr_pin<3>   LOC=E20 | IOSTANDARD = LVCMOS33 | DRIVE=4;  # LA19_N / FMC
 Net dds_addr_pin<1>   LOC=F21 | IOSTANDARD = LVCMOS33 | DRIVE=4;  # LA21_P / FMC1_H25
 Net dds_FUD_pin<0>    LOC=F22 | IOSTANDARD = LVCMOS33 | DRIVE=4; # LA21_N / FMC1_H26 / FUD
 Net dds_control_pin<0> LOC=A21 | IOSTANDARD =LVCMOS33 | DRIVE=4 ; # LA24_P / FMC1_H28 / WRB
-Net dds_cs_pin<0>    LOC=A22  | IOSTANDARD = LVCMOS33 | DRIVE=4;  # LA24_N / FMC1_H29 
+Net dds_cs_pin<0>    LOC=A22  | IOSTANDARD = LVCMOS33 | DRIVE=4;  # LA24_N / FMC1_H29
 Net dds_cs_pin<2>    LOC=D22  | IOSTANDARD = LVCMOS33 | DRIVE=4;  # LA28_P / FMC1_H31
 Net dds_cs_pin<4>    LOC=C22  | IOSTANDARD = LVCMOS33 | DRIVE=4;  # LA28_N / FMC1_H32
 Net dds_cs_pin<6>    LOC=E21  | IOSTANDARD = LVCMOS33 | DRIVE=4;  # LA30_P / FMC1_H34
@@ -51,7 +50,7 @@ Net dds_cs_pin<7>    LOC=A17  | IOSTANDARD = LVCMOS33 | DRIVE=4;  # LA31_N / FMC
 Net dds_cs_pin<9>    LOC=A18  | IOSTANDARD = LVCMOS33 | DRIVE=4;  # LA33_P / FMC1_G36
 Net dds_cs_pin<10>   LOC=A19  | IOSTANDARD = LVCMOS33 | DRIVE=4;  # LA33_N / FMC1_G37
 
-# FMC1, column D 
+# FMC1, column D
 NET pulse_io_pin<04> LOC=N19  | IOSTANDARD = LVCMOS33 | DRIVE=4;  # LA01_CC_P / FMC1_D8
 NET pulse_io_pin<05> LOC=N20  | IOSTANDARD = LVCMOS33 | DRIVE=4;  # LA01_CC_P / FMC1_D9
 Net pulse_io_pin<08> LOC=N17  | IOSTANDARD = LVCMOS33 | DRIVE=4;  # LA05_P / FMC1_D11
@@ -67,7 +66,7 @@ Net axi_spi_1_SS_pin   LOC=G16 | IOSTANDARD= LVCMOS33 | DRIVE=8;  # LA23_N / FMC
 #Net axi_spi_2_MISO_pin LOC=F18 | IOSTANDARD= LVCMOS33;  # LA26_P / FMC1_D26
 #Net axi_spi_2_SS_pin   LOC=E18 | IOSTANDARD= LVCMOS33 | DRIVE=8;  # LA26_N / FMC1_D27
 
-# FMC1, column C 
+# FMC1, column C
 Net pulse_io_pin<06> LOC=J18  | IOSTANDARD = LVCMOS33 | DRIVE=4;  # LA06_P / FMC1_C10
 Net pulse_io_pin<07> LOC=K18  | IOSTANDARD = LVCMOS33 | DRIVE=4;  # LA06_N / FMC1_C11
 Net pulse_io_pin<10> LOC=L17  | IOSTANDARD = LVCMOS33 | DRIVE=4;  # LA10_P / FMC1_C14
@@ -101,7 +100,7 @@ Net dds_addr2_pin<3>   LOC=T6 | IOSTANDARD = LVCMOS33 | DRIVE=4;  # LA19_N / FMC
 Net dds_addr2_pin<1>   LOC=V5 | IOSTANDARD = LVCMOS33 | DRIVE=4;  # LA21_P / FMC2_H25
 Net dds_FUD_pin<1>     LOC=V4 | IOSTANDARD = LVCMOS33 | DRIVE=4; # LA21_N / FMC2_H26 / FUD
 Net dds_control2_pin<0> LOC=U6 | IOSTANDARD =LVCMOS33 | DRIVE=4;  # LA24_P / FMC2_H28 / WRB
-Net dds_cs_pin<11>    LOC=U5  | IOSTANDARD = LVCMOS33 | DRIVE=4;  # LA24_N / FMC2_H29 
+Net dds_cs_pin<11>    LOC=U5  | IOSTANDARD = LVCMOS33 | DRIVE=4;  # LA24_N / FMC2_H29
 Net dds_cs_pin<13>    LOC=AB5  | IOSTANDARD = LVCMOS33 | DRIVE=4; # LA28_P / FMC2_H31
 Net dds_cs_pin<15>    LOC=AB4  | IOSTANDARD = LVCMOS33 | DRIVE=4; # LA28_N / FMC2_H32
 Net dds_cs_pin<17>    LOC=AB7  | IOSTANDARD = LVCMOS33 | DRIVE=4; # LA30_P / FMC2_H34
@@ -133,7 +132,7 @@ Net dds_cs_pin<18>    LOC=AB9  | IOSTANDARD = LVCMOS33 | DRIVE=4;   # LA31_N / F
 Net dds_cs_pin<20>    LOC=Y11  | IOSTANDARD = LVCMOS33 | DRIVE=4;   # LA33_P / FMC2_G36
 Net dds_cs_pin<21>    LOC=Y10  | IOSTANDARD = LVCMOS33 | DRIVE=4;   # LA33_P / FMC2_G37
 
-# FMC2, column D 
+# FMC2, column D
 #input: NET pulse_io_pin<20> LOC=W16  | IOSTANDARD = LVCMOS33 | DRIVE=4;  # LA01_CC_P / FMC2_D8
 Net pulse_io_pin<20> LOC=AA6 | IOSTANDARD= LVCMOS33 | DRIVE=4;  # LA17_CC_N / FMC2_D21
 NET pulse_io_pin<21> LOC=Y16  | IOSTANDARD = LVCMOS33 | DRIVE=4;  # LA01_CC_P / FMC2_D9
@@ -151,7 +150,7 @@ Net pulse_io_pin<30> LOC=V22  | IOSTANDARD = LVCMOS33 | DRIVE=4;  # LA13_P / FMC
 #Net axi_spi_5_MISO_pin LOC=U12 | IOSTANDARD= LVCMOS33;  # LA26_P / FMC2_D26
 #Net axi_spi_5_SS_pin   LOC=U11 | IOSTANDARD= LVCMOS33 | DRIVE=8;  # LA26_N / FMC2_D27
 
-# FMC2, column C 
+# FMC2, column C
 Net pulse_io_pin<22> LOC=U17  | IOSTANDARD = LVCMOS33 | DRIVE=4;  # LA06_P / FMC2_C10
 Net pulse_io_pin<23> LOC=V17  | IOSTANDARD = LVCMOS33 | DRIVE=4;  # LA06_N / FMC2_C11
 Net pulse_io_pin<26> LOC=Y20  | IOSTANDARD = LVCMOS33 | DRIVE=4;  # LA10_P / FMC2_C14
@@ -177,6 +176,3 @@ NET pulse_io_pin<31> LOC=T22  | IOSTANDARD = LVCMOS33 | DRIVE=4;  # LA14_P / FMC
 
 
 # board select
-
-
-
