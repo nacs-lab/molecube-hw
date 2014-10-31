@@ -281,9 +281,9 @@ Net pulse_io_pin<06> LOC = V12 | IOSTANDARD = LVCMOS33 | DRIVE = 4;
 # LA23_N / FMC2_D24
 Net pulse_io_pin<07> LOC = W12 | IOSTANDARD = LVCMOS33 | DRIVE = 4;
 # LA26_P / FMC2_D26
-Net pulse_io_pin<02> LOC = U12 | IOSTANDARD = LVCMOS33 | DRIVE = 4;
+Net pulse_io_pin<01> LOC = U12 | IOSTANDARD = LVCMOS33 | DRIVE = 4;
 # LA26_N / FMC2_D27
-# input: Net pulse_io_pin<00> LOC = U11 | IOSTANDARD = LVCMOS33 | DRIVE = 4;
+Net pulse_io_pin<03> LOC = U11 | IOSTANDARD = LVCMOS33 | DRIVE = 4;
 
 # FMC2, column C
 # LA06_P / FMC2_C10
@@ -303,9 +303,9 @@ Net pulse_io_pin<10> LOC = U22 | IOSTANDARD = LVCMOS33 | DRIVE = 4;
 # LA18_CC_N / FMC2_C23
 NET pulse_io_pin<05> LOC = AA8 | IOSTANDARD = LVCMOS33 | DRIVE = 4;
 # LA27_P / FMC2_C26
-Net pulse_io_pin<03> LOC = AB2 | IOSTANDARD = LVCMOS33 | DRIVE = 4;
+# input: Net pulse_io_pin<00> LOC = AB2 | IOSTANDARD = LVCMOS33 | DRIVE = 4;
 # LA27_N / FMC2_C27
-Net pulse_io_pin<01> LOC = AB1 | IOSTANDARD = LVCMOS33 | DRIVE = 4;
+Net pulse_io_pin<02> LOC = AB1 | IOSTANDARD = LVCMOS33 | DRIVE = 4;
 
 
 ### DDS pins
