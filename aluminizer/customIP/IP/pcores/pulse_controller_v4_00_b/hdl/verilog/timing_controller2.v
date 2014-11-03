@@ -35,7 +35,8 @@
  bits 55...32 = duration (in clock cycles)
  push bits 31...0 onto rFIFO for loop-back testing
 
- 5 ENABLE/DISABLE CLOCK OUT bit 0 = high/low
+ 5 ENABLE CLOCK OUT
+ period - 1 = bits 7...0. disabled when bits 7...0 = 255
 
  bit 59, disable underflow flag.  Prevents underflow from going high.
 
@@ -262,8 +263,8 @@ module timing_controller(clock, resetn,
 
 
    always @(posedge clock or posedge reset) begin
-      if(reset | init) begin
-         if(reset) begin
+      if (reset | init) begin
+         if (reset) begin
             ttl_out_reg <= 0;
          end
 
@@ -288,8 +289,8 @@ module timing_controller(clock, resetn,
          force_release <= 0;
       end else begin
          //Get new instructions if FIFO has space.  The bus will hang if FIFO is full, until there is space.
-         if(bus_data_ack) begin
-            if(fifo_next_word_dest == 0) begin
+         if (bus_data_ack) begin
+            if (fifo_next_word_dest == 0) begin
                fifo_low_word <= bus_data;   //TTL or DDS operand word
                fifo_next_word_dest <= 1;
             end else begin
@@ -305,7 +306,7 @@ module timing_controller(clock, resetn,
             clock_out_counter <= 0;
             clock_out_reg <= 0;
          end else begin
-            if(clock_out_counter == clock_out_div) begin
+            if (clock_out_counter == clock_out_div) begin
                clock_out_counter <= 0;
                clock_out_reg <= ~clock_out_reg;
             end else
@@ -321,7 +322,7 @@ module timing_controller(clock, resetn,
               loopback_data <= 0;
 
               //here read_addr == write_addr means FIFO is empty
-              if((fifo_read_addr !== fifo_write_addr) & ~pulses_hold) begin
+              if ((fifo_read_addr !== fifo_write_addr) & ~pulses_hold) begin
                  state <= 1;
                  PMT_RdReq <= 0;
                  pulses_finished <= 0;
@@ -343,7 +344,7 @@ module timing_controller(clock, resetn,
               PMT_invert_sync <= instruction[PMT_INVERT_SYNC_BIT];
 
               case(instruction[INSTRUCTION_BITA:INSTRUCTION_BITB])
-                0 : begin // set digital output
+                0 : begin // set digital output for given duration
                    timer <= instruction[TIMER_BITA:TIMER_BITB];
                    ttl_out_reg <= instruction[TTL_BITA:TTL_BITB];
                 end
@@ -384,7 +385,7 @@ module timing_controller(clock, resetn,
               dds_we <= 0;
               PMT_RdReq <= 0;
 
-              if(timer == 3) state <= 0;  // minimum pulse time is 3 cycles
+              if (timer == 3) state <= 0;  // minimum pulse time is 3 cycles
               else timer <= timer + MAX_VAL; // decrement timer
            end
          endcase
