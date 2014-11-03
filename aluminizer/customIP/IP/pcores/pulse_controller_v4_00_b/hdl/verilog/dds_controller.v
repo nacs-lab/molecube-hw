@@ -12,8 +12,7 @@
  The DDS chips are AD9914, and the data sheet contains many details about
  device operation and programming.
  
- All DDS commands require (MAX_CYCLES)*(CLK_DIV+1)+1=25 cycles (250 ns).
- The effective programming clock rate is 25 MHz.
+ All DDS commands require (MAX_CYCLES+1)*(CLK_DIV+1)+1 cycles.
 
  The signals clock, reset, write_enable, opcode, operand come from the timing controller.
  A new opcode & operand are loaded upon write_enable going high.
@@ -72,7 +71,7 @@ parameter DDS_OPCODE_WIDTH  = 16;
 parameter DDS_OPERAND_WIDTH = 32;
 parameter RESULT_WIDTH      = 32;
 
-parameter MAX_CYCLES = 6;
+parameter MAX_CYCLES = 7;
 parameter CLK_DIV = 3;
 
 //first and last bit of DDS id in opcode
@@ -161,6 +160,7 @@ assign result_data = result_reg;
 
 reg [3:0]  cycle;
 reg [1:0]  sub_cycle;
+//reg  sub_cycle;
 
 reg [(N_DDS-1):0] dds_sel_mask; // set active DDS via separate command
 
@@ -173,8 +173,8 @@ parameter FUD_DDR_MODE = 0;
 generate
   if (FUD_DDR_MODE==0) begin
 // FUD idles low.  transition to high transfers registers into DDS core
-    assign dds_FUD[0] = dds_FUDx;  
-    assign dds_FUD[1] = dds_FUDx;
+    assign dds_FUD[0] =  active_dds_bank[0] ? dds_FUDx : 1'b0;  
+    assign dds_FUD[1] =  active_dds_bank[1] ? dds_FUDx : 1'b0; ;
   end else begin
     // Setup dds_FUD as DDR signal (goes high for only a half-period of clock)
                                
@@ -363,7 +363,7 @@ begin
           1 : begin dds_addr_reg <= opcode_reg[DDS_REG_B:DDS_REG_A]; end
           2 : begin dds_data_reg <= operand_reg[15:0]; dds_w_strobe_n <= 0; end
           3 : dds_w_strobe_n <= 1;
-          4 : dds_FUDx <= 1; 
+          6 : dds_FUDx <= 1; 
           endcase
           end
           
@@ -378,17 +378,14 @@ begin
           
       4 : begin // DDS reset (should be low for about 10 ns minimum)
           case(cycle)
-          1 : dds_reset <= 0;
-          3 : dds_reset <= 1;
-          6 : dds_reset <= 0;
+          6 : dds_reset <= 1;
           endcase
           end
           
       5 : begin // DDS reset (boards selected by operand)
           case(cycle)
           1 : dds_cs_reg <= operand_reg[(N_DDS-1):0];
-          3 : dds_reset <= 1;
-          6 : dds_reset <= 0;
+          6 : dds_reset <= 1;
           endcase
           end
           
@@ -449,10 +446,12 @@ begin
           end
       endcase
       
-      if(cycle == MAX_CYCLES) cycle <= 0; //All DDS commands require 4*7=28 cycles (280 ns)
+      //All DDS commands require 1 + 4*(MAX_CYCLES+1) cycles
+      if(cycle == MAX_CYCLES) cycle <= 0; 
       else begin
         sub_cycle <= sub_cycle + 1;
         if(sub_cycle == 2'b11) //divide clock rate by 4 for DDS programming
+        //if(sub_cycle == 1'b1) //divide clock rate by 2 for DDS programming
           cycle <= cycle + 1;
       end
     end

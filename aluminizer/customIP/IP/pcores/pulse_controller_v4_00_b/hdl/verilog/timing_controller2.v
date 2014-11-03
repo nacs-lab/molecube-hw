@@ -353,7 +353,7 @@ module timing_controller(clock, resetn,
                    dds_opcode <= instruction[47:32];
                    dds_operand <= instruction[31:0];
                    dds_we <= 1; // write to DDS
-                   timer <= 30; //instruction takes 280 ns.  Allocate 300 ns.
+                   timer <= 50; //instruction takes 320 ns.  Allocate 500 ns.
                 end
 
                 2 : begin //read PMT
