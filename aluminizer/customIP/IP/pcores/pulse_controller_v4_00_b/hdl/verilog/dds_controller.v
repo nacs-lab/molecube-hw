@@ -118,10 +118,13 @@ module dds_controller(clock, reset, write_enable, opcode, operand,
 
    input dds_syncI;
    output dds_syncO;
-   // count cycles where dds_syncI was high
-   reg [7:0] syncI_counter; // only 4 bits needed?
 
+
+   //delay dds_addr by 1 cycle (10 ns)
+   //to meet timing for AD9914 (tASU)
    reg [(U_DDS_ADDR_WIDTH-1):0] dds_addr_reg;
+   reg [(U_DDS_ADDR_WIDTH-1):0] dds_addr_reg_next;
+
    reg [(U_DDS_DATA_WIDTH-1):0] dds_data_reg;
    reg dds_data_T_reg;
 
@@ -214,8 +217,6 @@ module dds_controller(clock, reset, write_enable, opcode, operand,
    endgenerate
 
 
-
-
    /*
     Create dds_syncO signal (clock/16) with software-adjustable phase for
     dynamic alignment of DDS SYNC_CLK with dds_FUD.
@@ -230,40 +231,49 @@ module dds_controller(clock, reset, write_enable, opcode, operand,
    //             Virtex-7
    // Xilinx HDL Language Template, version 14.7
 
-   wire CLOCK_FB;
-   reg PSINCDEC, PSEN;
+   // Leave out DDS sync features.
+   // This was never finished.
 
-   MMCME2_ADV #(
-                .BANDWIDTH("OPTIMIZED"),        // Jitter programming (OPTIMIZED, HIGH, LOW)
-                .CLKFBOUT_MULT_F(2.0),          // Multiply value for all CLKOUT (2.000-64.000).
-                // CLKIN_PERIOD: Input clock period in ns to ps resolution (i.e. 33.333 is 30 MHz).
-                .CLKIN1_PERIOD(10.0),
-                // CLKOUT0_DIVIDE - CLKOUT6_DIVIDE: Divide amount for CLKOUT (1-128)
-                .CLKOUT1_DIVIDE(32),
-                .CLKOUT4_CASCADE("FALSE"),      // Cascade CLKOUT4 counter with CLKOUT6 (FALSE, TRUE)
-                .COMPENSATION("ZHOLD"),         // ZHOLD, BUF_IN, EXTERNAL, INTERNAL
-                .DIVCLK_DIVIDE(16),              // Master division value (1-106)
-                // REF_JITTER: Reference input jitter in UI (0.000-0.999).
-                .REF_JITTER1(0.0),
-                .REF_JITTER2(0.0),
-                .STARTUP_WAIT("FALSE")         // Delays DONE until MMCM is locked (FALSE, TRUE)
-                )
-   MMCME2_ADV_inst (
-                    // Clock Outputs: 1-bit (each) output: User configurable clock outputs
-                    .CLKOUT1(dds_syncO),           // 1-bit output: CLKOUT1
-                    .CLKIN1(clock),             // 1-bit input: Primary clock
-                    .RST(reset),                   // 1-bit input: Reset
-                    // Dynamic Phase Shift Ports: 1-bit (each) input: Ports used for dynamic phase shifting of the outputs
-                    .PSCLK(clock),               // 1-bit input: Phase shift clock
-                    .PSEN(PSEN),                 // 1-bit input: Phase shift enable
-                    .PSINCDEC(PSINCDEC),         // 1-bit input: Phase shift increment/decrement
-                    // Feedback Clocks: 1-bit (each) output: Clock feedback ports
-                    .CLKFBOUT(CLOCK_FB),         // 1-bit output: Feedback clock
-                    // Feedback Clocks: 1-bit (each) input: Clock feedback ports
-                    .CLKFBIN(CLOCK_FB)            // 1-bit input: Feedback clock
-                    );
+   /*
 
-   // End of MMCME2_ADV_inst instantiation
+    // count cycles where dds_syncI was high
+    reg [7:0] syncI_counter; // only 4 bits needed?
+    wire CLOCK_FB;
+    reg PSINCDEC, PSEN;
+
+    MMCME2_ADV #(
+    .BANDWIDTH("OPTIMIZED"),        // Jitter programming (OPTIMIZED, HIGH, LOW)
+    .CLKFBOUT_MULT_F(2.0),          // Multiply value for all CLKOUT (2.000-64.000).
+    // CLKIN_PERIOD: Input clock period in ns to ps resolution (i.e. 33.333 is 30 MHz).
+    .CLKIN1_PERIOD(10.0),
+    // CLKOUT0_DIVIDE - CLKOUT6_DIVIDE: Divide amount for CLKOUT (1-128)
+    .CLKOUT1_DIVIDE(32),
+    .CLKOUT4_CASCADE("FALSE"),      // Cascade CLKOUT4 counter with CLKOUT6 (FALSE, TRUE)
+    .COMPENSATION("ZHOLD"),         // ZHOLD, BUF_IN, EXTERNAL, INTERNAL
+    .DIVCLK_DIVIDE(16),              // Master division value (1-106)
+    // REF_JITTER: Reference input jitter in UI (0.000-0.999).
+    .REF_JITTER1(0.0),
+    .REF_JITTER2(0.0),
+    .STARTUP_WAIT("FALSE")         // Delays DONE until MMCM is locked (FALSE, TRUE)
+    )
+    MMCME2_ADV_inst (
+    // Clock Outputs: 1-bit (each) output: User configurable clock outputs
+    .CLKOUT1(dds_syncO),           // 1-bit output: CLKOUT1
+    .CLKIN1(clock),             // 1-bit input: Primary clock
+    .RST(reset),                   // 1-bit input: Reset
+    // Dynamic Phase Shift Ports: 1-bit (each) input: Ports used for dynamic phase shifting of the outputs
+    .PSCLK(clock),               // 1-bit input: Phase shift clock
+    .PSEN(PSEN),                 // 1-bit input: Phase shift enable
+    .PSINCDEC(PSINCDEC),         // 1-bit input: Phase shift increment/decrement
+    // Feedback Clocks: 1-bit (each) output: Clock feedback ports
+    .CLKFBOUT(CLOCK_FB),         // 1-bit output: Feedback clock
+    // Feedback Clocks: 1-bit (each) input: Clock feedback ports
+    .CLKFBIN(CLOCK_FB)            // 1-bit input: Feedback clock
+    );
+
+    // End of MMCME2_ADV_inst instantiation
+end
+    */
 
    always @(posedge clock)
      begin
@@ -281,6 +291,7 @@ module dds_controller(clock, reset, write_enable, opcode, operand,
            dds_cs_reg <= ~0; //all ones
 
            dds_addr_reg  <= 0;
+           dds_addr_reg_next <= 0;
            dds_data_reg  <= 0;
            dds_data_T_reg  <= 1;
 
@@ -288,17 +299,22 @@ module dds_controller(clock, reset, write_enable, opcode, operand,
            dds_FUDx <= 0;
            ddr_reset <= 1;
 
-           PSEN <= 0;
-           PSINCDEC <= 0;
-           syncI_counter <= 0;
+           /* remove DDS sync until finished
+            PSEN <= 0;
+            PSINCDEC <= 0;
+            syncI_counter <= 0;
+            */
+
         end else begin
            ddr_reset <= 0;
+           dds_addr_reg  <= dds_addr_reg_next;
+
            if(cycle == 0) begin
               dds_w_strobe_n  <= 1;
               dds_r_strobe_n  <= 1;
               dds_reset <= 0;
 
-              dds_addr_reg  <= 0;
+              dds_addr_reg_next <= 0;
               dds_data_reg  <= 0;
               dds_data_T_reg <= 0;
 
@@ -309,7 +325,10 @@ module dds_controller(clock, reset, write_enable, opcode, operand,
               dds_sel_mask <= 0;
 
               dds_FUDx <= 0;
-              syncI_counter <= 0;
+
+              /* remove DDS sync until finished
+               syncI_counter <= 0;
+               */
 
               //wait for write_enable to start
               if(write_enable) begin
@@ -338,9 +357,9 @@ module dds_controller(clock, reset, write_enable, opcode, operand,
               case (opcode_reg[3:0])
                 0 : begin // set frequency for profile 0
                    case(cycle)
-                     1 : begin dds_addr_reg <= 6'h2F; end
+                     1 : begin dds_addr_reg_next <= 6'h2F; end
                      2 : begin dds_data_reg <= operand_reg[31:16]; dds_w_strobe_n <= 0; end
-                     3 : begin dds_addr_reg <= 6'h2D; dds_w_strobe_n <= 1; end
+                     3 : begin dds_addr_reg_next <= 6'h2D; dds_w_strobe_n <= 1; end
                      4 : begin dds_data_reg <= operand_reg[15:0]; dds_w_strobe_n <= 0; end
                      5 : dds_w_strobe_n <= 1;
                      6 : dds_FUDx <= 1;
@@ -349,9 +368,9 @@ module dds_controller(clock, reset, write_enable, opcode, operand,
 
                 1 : begin // set phase (two high bytes), amplitude (two low bytes) for profile 0
                    case(cycle)
-                     1 : begin dds_addr_reg <= 6'h31; end
+                     1 : begin dds_addr_reg_next <= 6'h31; end
                      2 : begin dds_data_reg <= operand_reg[31:16]; dds_w_strobe_n <= 0; end
-                     3 : begin dds_addr_reg <= 6'h33; dds_w_strobe_n <= 1; end
+                     3 : begin dds_addr_reg_next <= 6'h33; dds_w_strobe_n <= 1; end
                      4 : begin dds_data_reg <= operand_reg[15:0]; dds_w_strobe_n <= 0; end
                      5 : dds_w_strobe_n <= 1;
                      6 : dds_FUDx <= 1;
@@ -360,7 +379,7 @@ module dds_controller(clock, reset, write_enable, opcode, operand,
 
                 2 : begin // set memory word (two bytes) from addr-1 to addr
                    case(cycle)
-                     1 : begin dds_addr_reg <= opcode_reg[DDS_REG_B:DDS_REG_A]; end
+                     1 : begin dds_addr_reg_next <= opcode_reg[DDS_REG_B:DDS_REG_A]; end
                      2 : begin dds_data_reg <= operand_reg[15:0]; dds_w_strobe_n <= 0; end
                      3 : dds_w_strobe_n <= 1;
                      6 : dds_FUDx <= 1;
@@ -369,7 +388,7 @@ module dds_controller(clock, reset, write_enable, opcode, operand,
 
                 3 : begin // get memory word (two bytes) from addr-1 to addr
                    case(cycle)
-                     1 : begin dds_addr_reg <= opcode_reg[DDS_REG_B:DDS_REG_A]; dds_data_T_reg <= 1; result_reg <= 0; end
+                     1 : begin dds_addr_reg_next <= opcode_reg[DDS_REG_B:DDS_REG_A]; dds_data_T_reg <= 1; result_reg <= 0; end
                      3 : dds_r_strobe_n <= 0;
                      5 : result_reg[15:0] <= active_dds_bank[0] ? dds_data_I : dds_data2_I;
                      6 : begin dds_r_strobe_n <= 1; result_WrReq_reg <= 1; end
@@ -397,32 +416,34 @@ module dds_controller(clock, reset, write_enable, opcode, operand,
                    endcase
                 end
 
-                7 : begin //increment / decrement phase of dds_syncO via MMCM
-                   case(cycle)
-                     1 : PSINCDEC <= operand_reg[0];
-                     2 : PSEN <= 1;
-                     3 : PSEN <= 0;
-                   endcase
-                end
+                /* remove DDS sync until finished
+                 7 : begin //increment / decrement phase of dds_syncO via MMCM
+                 case(cycle)
+                 1 : PSINCDEC <= operand_reg[0];
+                 2 : PSEN <= 1;
+                 3 : PSEN <= 0;
+          endcase
+          end
 
-                8 : begin //count high-time of dds_syncI
-                   if(cycle != 6) begin
-                      if(dds_syncI)
-                        syncI_counter <= syncI_counter + 1'b1;
-                   end else begin
-                      result_reg <= syncI_counter;
-                      result_WrReq_reg <= 1; //write request to result buffer
-                   end
-                end
+                 8 : begin //count high-time of dds_syncI
+                 if(cycle != 6) begin
+                 if(dds_syncI)
+                 syncI_counter <= syncI_counter + 1'b1;
+          end else begin
+                 result_reg <= syncI_counter;
+                 result_WrReq_reg <= 1; //write request to result buffer
+          end
+          end
+                 */
 
                 14 : begin // get two memory words (four bytes) from addr-1 to addr+2
                    case(cycle)
-                     1 : begin dds_addr_reg <= opcode_reg[DDS_REG_B:DDS_REG_A]; dds_data_T_reg <= 1; result_reg <= 0; end
+                     1 : begin dds_addr_reg_next <= opcode_reg[DDS_REG_B:DDS_REG_A]; dds_data_T_reg <= 1; result_reg <= 0; end
                      2 : dds_r_strobe_n <= 0; //initiate first read from DDS
                      3 : begin // get data on bus
                         result_reg[15:0] <= active_dds_bank[0] ? dds_data_I : dds_data2_I;
                         dds_r_strobe_n <= 1;
-                        dds_addr_reg <= opcode_reg[DDS_REG_B:DDS_REG_A]+2; //advance address
+                        dds_addr_reg_next <= opcode_reg[DDS_REG_B:DDS_REG_A]+2'b10; //advance address
                      end
                      //initiate second read from DDS
                      4 : begin dds_r_strobe_n <= 0; result_WrReq_reg <= 0; end
@@ -436,9 +457,9 @@ module dds_controller(clock, reset, write_enable, opcode, operand,
 
                 15 : begin // set two memory words (four bytes) from addr-1 to addr+2
                    case(cycle)
-                     1 : begin dds_addr_reg <= opcode_reg[DDS_REG_B:DDS_REG_A]+2; end
+                     1 : begin dds_addr_reg_next <= opcode_reg[DDS_REG_B:DDS_REG_A]+2'b10; end
                      2 : begin dds_data_reg <= operand_reg[31:16]; dds_w_strobe_n <= 0; end
-                     3 : begin dds_addr_reg <= opcode_reg[DDS_REG_B:DDS_REG_A]; dds_w_strobe_n <= 1; end
+                     3 : begin dds_addr_reg_next <= opcode_reg[DDS_REG_B:DDS_REG_A]; dds_w_strobe_n <= 1; end
                      4 : begin dds_data_reg <= operand_reg[15:0]; dds_w_strobe_n <= 0; end
                      5 : dds_w_strobe_n <= 1;
                      6 : dds_FUDx <= 1;
@@ -449,10 +470,10 @@ module dds_controller(clock, reset, write_enable, opcode, operand,
               //All DDS commands require 1 + 4*(MAX_CYCLES+1) cycles
               if(cycle == MAX_CYCLES) cycle <= 0;
               else begin
-                 sub_cycle <= sub_cycle + 1;
+                 sub_cycle <= sub_cycle + 1'b1;
                  if(sub_cycle == 2'b11) //divide clock rate by 4 for DDS programming
                    //if(sub_cycle == 1'b1) //divide clock rate by 2 for DDS programming
-                   cycle <= cycle + 1;
+                   cycle <= cycle + 1'b1;
               end
            end
         end
