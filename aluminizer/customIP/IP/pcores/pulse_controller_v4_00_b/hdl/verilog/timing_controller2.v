@@ -98,7 +98,7 @@ module timing_controller(clock, resetn,
 
    input pulse_controller_hold; // pulses wait until this goes low
 
-   input [(BUS_DATA_WIDTH-1):0] bus_data;
+   input [(BUS_DATA_WIDTH - 1):0] bus_data;
    input bus_data_ready;
    output bus_data_ack; // acknowledge that we read the data
 
