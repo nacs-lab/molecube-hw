@@ -37,3 +37,4 @@ cache/
 implementation/
 synthesis/
 elaborate/
+*.jou
