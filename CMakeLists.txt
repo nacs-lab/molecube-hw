@@ -9,7 +9,7 @@ set(PLANAHEAD_PPR_FILE aluminizer/hw_src/project_1.ppr)
 set(PLANAHEAD_RUN_FILE aluminizer/hw_src/project_1.data/runs/runs.xml)
 
 add_custom_target(prepare-dir ALL
-  COMMAND "${PROJECT_SOURCE_DIR}/prepare-dir.sh"
+  COMMAND bash "${PROJECT_SOURCE_DIR}/prepare-dir.sh"
   "${PROJECT_SOURCE_DIR}/aluminizer" "${PROJECT_BINARY_DIR}"
   "${PLANAHEAD_RUN_FILE}"
   WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}")
