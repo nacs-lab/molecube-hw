@@ -202,101 +202,102 @@ module user_logic
      slv_read_ack      = Bus2IP_RdCE[0] || Bus2IP_RdCE[1] || Bus2IP_RdCE[2] || Bus2IP_RdCE[3] || Bus2IP_RdCE[4] || Bus2IP_RdCE[5] || Bus2IP_RdCE[6] || Bus2IP_RdCE[7] || Bus2IP_RdCE[8] || Bus2IP_RdCE[9] || Bus2IP_RdCE[10] || Bus2IP_RdCE[11] || Bus2IP_RdCE[12] || Bus2IP_RdCE[13] || Bus2IP_RdCE[14] || Bus2IP_RdCE[15] || Bus2IP_RdCE[16] || Bus2IP_RdCE[17] || Bus2IP_RdCE[18] || Bus2IP_RdCE[19] || Bus2IP_RdCE[20] || Bus2IP_RdCE[21] || Bus2IP_RdCE[22] || Bus2IP_RdCE[23] || Bus2IP_RdCE[24] || Bus2IP_RdCE[25] || Bus2IP_RdCE[26] || Bus2IP_RdCE[27] || Bus2IP_RdCE[28] || Bus2IP_RdCE[29] || Bus2IP_RdCE[30] || Bus2IP_RdCE[31];
 
    // implement slave model register(s)
-   always @( posedge Bus2IP_Clk )
-     begin
+   always @(posedge Bus2IP_Clk) begin
+      if (Bus2IP_Resetn == 1'b0) begin
+         slv_reg0 <= 0;
+         slv_reg1 <= 0;
+         slv_reg2 <= 0;
+         slv_reg3 <= 0;
+         slv_reg4 <= 0;
+         slv_reg5 <= 0;
+         slv_reg6 <= 0;
+         slv_reg7 <= 0;
+         slv_reg8 <= 0;
+         slv_reg9 <= 0;
+         slv_reg10 <= 0;
+         slv_reg11 <= 0;
+         slv_reg12 <= 0;
+         slv_reg13 <= 0;
+         slv_reg14 <= 0;
+         slv_reg15 <= 0;
+         slv_reg16 <= 0;
+         slv_reg17 <= 0;
+         slv_reg18 <= 0;
+         slv_reg19 <= 0;
+         slv_reg20 <= 0;
+         slv_reg21 <= 0;
+         slv_reg22 <= 0;
+         slv_reg23 <= 0;
+         slv_reg24 <= 0;
+         slv_reg25 <= 0;
+         slv_reg26 <= 0;
+         slv_reg27 <= 0;
+         slv_reg28 <= 0;
+         slv_reg29 <= 0;
+         slv_reg30 <= 0;
+         slv_reg31 <= 0;
+      end
+      else
+        if (slv_write_ack == 1)
+          slv_write_ack <= 0;
+        else begin
+           case (slv_reg_write_sel)
+             32'b10000000000000000000000000000000 : begin
+                slv_reg0 <= Bus2IP_Data; slv_write_ack <= 1;
+             end
+             32'b01000000000000000000000000000000 : begin
+                slv_reg1 <= Bus2IP_Data; slv_write_ack <= 1;
+             end
+             32'b00010000000000000000000000000000 : begin
+                slv_reg3 <= Bus2IP_Data; slv_write_ack <= 1;
+             end
+             default: begin //this came from Xilinx.  Don't know what it does.
+                slv_reg0 <= slv_reg0;
+                slv_reg1 <= slv_reg1;
+                slv_reg2 <= slv_reg2;
+                slv_reg3 <= slv_reg3;
+                slv_reg4 <= slv_reg4;
+                slv_reg5 <= slv_reg5;
+                slv_reg6 <= slv_reg6;
+                slv_reg7 <= slv_reg7;
+                slv_reg8 <= slv_reg8;
+                slv_reg9 <= slv_reg9;
+                slv_reg10 <= slv_reg10;
+                slv_reg11 <= slv_reg11;
+                slv_reg12 <= slv_reg12;
+                slv_reg13 <= slv_reg13;
+                slv_reg14 <= slv_reg14;
+                slv_reg15 <= slv_reg15;
+                slv_reg16 <= slv_reg16;
+                slv_reg17 <= slv_reg17;
+                slv_reg18 <= slv_reg18;
+                slv_reg19 <= slv_reg19;
+                slv_reg20 <= slv_reg20;
+                slv_reg21 <= slv_reg21;
+                slv_reg22 <= slv_reg22;
+                slv_reg23 <= slv_reg23;
+                slv_reg24 <= slv_reg24;
+                slv_reg25 <= slv_reg25;
+                slv_reg26 <= slv_reg26;
+                slv_reg27 <= slv_reg27;
+                slv_reg28 <= slv_reg28;
+                slv_reg29 <= slv_reg29;
+                slv_reg30 <= slv_reg30;
+                slv_reg31 <= slv_reg31;
+             end
+           endcase
 
-        if ( Bus2IP_Resetn == 1'b0 )
-          begin
-             slv_reg0 <= 0;
-             slv_reg1 <= 0;
-             slv_reg2 <= 0;
-             slv_reg3 <= 0;
-             slv_reg4 <= 0;
-             slv_reg5 <= 0;
-             slv_reg6 <= 0;
-             slv_reg7 <= 0;
-             slv_reg8 <= 0;
-             slv_reg9 <= 0;
-             slv_reg10 <= 0;
-             slv_reg11 <= 0;
-             slv_reg12 <= 0;
-             slv_reg13 <= 0;
-             slv_reg14 <= 0;
-             slv_reg15 <= 0;
-             slv_reg16 <= 0;
-             slv_reg17 <= 0;
-             slv_reg18 <= 0;
-             slv_reg19 <= 0;
-             slv_reg20 <= 0;
-             slv_reg21 <= 0;
-             slv_reg22 <= 0;
-             slv_reg23 <= 0;
-             slv_reg24 <= 0;
-             slv_reg25 <= 0;
-             slv_reg26 <= 0;
-             slv_reg27 <= 0;
-             slv_reg28 <= 0;
-             slv_reg29 <= 0;
-             slv_reg30 <= 0;
-             slv_reg31 <= 0;
-          end
-        else
+           slv_reg2[0] <= underflow_out;
+           slv_reg2[1] <= correlation_data_ready;
+           slv_reg2[2] <= pulses_finished_out;
+           slv_reg2[(rFIFO_ADDR_BITS+3):4] <= rFIFO_fill;
 
-          if(slv_write_ack == 1)
-            slv_write_ack <= 0;
-          else begin
-             case ( slv_reg_write_sel )
-               32'b10000000000000000000000000000000 : begin slv_reg0 <= Bus2IP_Data; slv_write_ack <= 1; end
-               32'b01000000000000000000000000000000 : begin slv_reg1 <= Bus2IP_Data; slv_write_ack <= 1; end
-               32'b00010000000000000000000000000000 : begin slv_reg3 <= Bus2IP_Data; slv_write_ack <= 1; end
-               default:
-                 begin //this came from Xilinx.  Don't know what it does.
-                    slv_reg0 <= slv_reg0;
-                    slv_reg1 <= slv_reg1;
-                    slv_reg2 <= slv_reg2;
-                    slv_reg3 <= slv_reg3;
-                    slv_reg4 <= slv_reg4;
-                    slv_reg5 <= slv_reg5;
-                    slv_reg6 <= slv_reg6;
-                    slv_reg7 <= slv_reg7;
-                    slv_reg8 <= slv_reg8;
-                    slv_reg9 <= slv_reg9;
-                    slv_reg10 <= slv_reg10;
-                    slv_reg11 <= slv_reg11;
-                    slv_reg12 <= slv_reg12;
-                    slv_reg13 <= slv_reg13;
-                    slv_reg14 <= slv_reg14;
-                    slv_reg15 <= slv_reg15;
-                    slv_reg16 <= slv_reg16;
-                    slv_reg17 <= slv_reg17;
-                    slv_reg18 <= slv_reg18;
-                    slv_reg19 <= slv_reg19;
-                    slv_reg20 <= slv_reg20;
-                    slv_reg21 <= slv_reg21;
-                    slv_reg22 <= slv_reg22;
-                    slv_reg23 <= slv_reg23;
-                    slv_reg24 <= slv_reg24;
-                    slv_reg25 <= slv_reg25;
-                    slv_reg26 <= slv_reg26;
-                    slv_reg27 <= slv_reg27;
-                    slv_reg28 <= slv_reg28;
-                    slv_reg29 <= slv_reg29;
-                    slv_reg30 <= slv_reg30;
-                    slv_reg31 <= slv_reg31;
-                 end
-             endcase
-
-             slv_reg2[0] <= underflow_out;
-             slv_reg2[1] <= correlation_data_ready;
-             slv_reg2[2] <= pulses_finished_out;
-             slv_reg2[(rFIFO_ADDR_BITS+3):4] <= rFIFO_fill;
-
-             slv_reg4 <= correlation_data_out[31:0];
-             slv_reg5 <= correlation_data_out[63:32];
-             slv_reg6 <= correlation_data_out[95:64];
-             slv_reg7 <= correlation_data_out[127:96];
-          end
-     end // SLAVE_REG_WRITE_PROC
+           slv_reg4 <= correlation_data_out[31:0];
+           slv_reg5 <= correlation_data_out[63:32];
+           slv_reg6 <= correlation_data_out[95:64];
+           slv_reg7 <= correlation_data_out[127:96];
+        end
+   end // SLAVE_REG_WRITE_PROC
 
    // implement slave model register read mux
    //  always @( posedge Bus2IP_Clk )
@@ -317,10 +318,15 @@ module user_logic
    //    end
    //  end // SLAVE_REG_READ_PROC
 
-   always @( slv_reg_read_sel or slv_reg0 or slv_reg1 or slv_reg2 or slv_reg3 or slv_reg4 or slv_reg5 or slv_reg6 or slv_reg7 or slv_reg8 or slv_reg9 or slv_reg10 or slv_reg11 or slv_reg12 or slv_reg13 or slv_reg14 or slv_reg15 or slv_reg16 or slv_reg17 or slv_reg18 or slv_reg19 or slv_reg20 or slv_reg21 or slv_reg22 or slv_reg23 or slv_reg24 or slv_reg25 or slv_reg26 or slv_reg27 or slv_reg28 or slv_reg29 or slv_reg30 or slv_reg31 )
+   always @(slv_reg_read_sel or slv_reg0 or slv_reg1 or slv_reg2 or
+            slv_reg3 or slv_reg4 or slv_reg5 or slv_reg6 or slv_reg7 or
+            slv_reg8 or slv_reg9 or slv_reg10 or slv_reg11 or slv_reg12 or
+            slv_reg13 or slv_reg14 or slv_reg15 or slv_reg16 or slv_reg17 or
+            slv_reg18 or slv_reg19 or slv_reg20 or slv_reg21 or slv_reg22 or
+            slv_reg23 or slv_reg24 or slv_reg25 or slv_reg26 or slv_reg27 or
+            slv_reg28 or slv_reg29 or slv_reg30 or slv_reg31 )
      begin
-
-        case ( slv_reg_read_sel )
+        case (slv_reg_read_sel)
           32'b10000000000000000000000000000000 : slv_ip2bus_data <= slv_reg0;
           32'b01000000000000000000000000000000 : slv_ip2bus_data <= slv_reg1;
           32'b00100000000000000000000000000000 : slv_ip2bus_data <= slv_reg2;
@@ -404,9 +410,9 @@ module user_logic
    assign rFIFO_RdReq = (slv_reg_read_sel == 32'b00000000000000000000000000000001);
    assign rFIFO_RdReqNegEdge = ~rFIFO_RdReq & rFIFO_RdReqPrev;
 
-   always @( posedge Bus2IP_Clk)
+   always @(posedge Bus2IP_Clk)
      begin
-        if(~Bus2IP_Resetn) begin
+        if (~Bus2IP_Resetn) begin
            rFIFO_fill <= 0;
            rFIFO_read_addr <= 0;
            rFIFO_write_addr <= 0;
@@ -433,7 +439,7 @@ module user_logic
      end
 
    wire tc_write_ack;
-   wire [(U_PULSE_WIDTH-1):0] ttl_out;
+   wire [(U_PULSE_WIDTH - 1):0] ttl_out;
 
    //assume slave register width == pulse width
    assign pulse_io = (ttl_out | slv_reg0) & (~slv_reg1);
