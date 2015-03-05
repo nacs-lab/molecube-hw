@@ -57,7 +57,7 @@
  PORT axi_spi_1_MISO_pin = axi_spi_1_MISO, DIR = I
  PORT axi_spi_1_MOSI_pin = axi_spi_1_MOSI, DIR = O
  PORT axi_spi_1_SS_pin = axi_spi_1_SS, DIR = O
- 
+
 
 # PORT axi_spi_2_SCK_pin = axi_spi_2_SCK, DIR = O
 # PORT axi_spi_2_MISO_pin = axi_spi_2_MISO, DIR = I

@@ -68,7 +68,7 @@ use axi_lite_ipif_v1_01_a.axi_lite_ipif;
 --   C_SLV_DWIDTH                 -- Slave interface data bus width
 --
 -- Definition of Ports:
---   S_AXI_ACLK                   -- AXI4LITE slave: Clock 
+--   S_AXI_ACLK                   -- AXI4LITE slave: Clock
 --   S_AXI_ARESETN                -- AXI4LITE slave: Reset
 --   S_AXI_AWADDR                 -- AXI4LITE slave: Write address
 --   S_AXI_AWVALID                -- AXI4LITE slave: Write address valid
@@ -89,9 +89,9 @@ use axi_lite_ipif_v1_01_a.axi_lite_ipif;
 --   S_AXI_AWREADY                -- AXI4LITE slave: Wrte address ready
 ------------------------------------------------------------------------------
 
--- First is a pulse_controller entity. -- 
+-- First is a pulse_controller entity. --
 -- The entity declaration is like a class declaration.  --
--- It defines what signals and parameters are used.     -- 
+-- It defines what signals and parameters are used.     --
 -- Then comes a pulse_controller architechture --
 -- The architechture is like a function declaration --
 -- It contains a user_logic component that contains intances of: --
@@ -99,80 +99,80 @@ use axi_lite_ipif_v1_01_a.axi_lite_ipif;
 
 entity pulse_controller is
   generic
-  (
-    -- ADD USER GENERICS BELOW THIS LINE ---------------
-    --USER generics added here
-   U_PULSE_WIDTH : integer := 32;
-   N_DDS : integer := 8;
-   U_DDS_DATA_WIDTH : integer := 16;
-   U_DDS_ADDR_WIDTH : integer := 7;
-   U_DDS_CTRL_WIDTH : integer := 3;   
-   N_COUNTER : integer := 1;
-    -- ADD USER GENERICS ABOVE THIS LINE ---------------
+    (
+      -- ADD USER GENERICS BELOW THIS LINE ---------------
+      --USER generics added here
+      U_PULSE_WIDTH : integer := 32;
+      N_DDS : integer := 8;
+      U_DDS_DATA_WIDTH : integer := 16;
+      U_DDS_ADDR_WIDTH : integer := 7;
+      U_DDS_CTRL_WIDTH : integer := 3;
+      N_COUNTER : integer := 1;
+      -- ADD USER GENERICS ABOVE THIS LINE ---------------
 
-    -- DO NOT EDIT BELOW THIS LINE ---------------------
-    -- Bus protocol parameters, do not add to or delete
-    C_S_AXI_DATA_WIDTH             : integer              := 32;
-    C_S_AXI_ADDR_WIDTH             : integer              := 32;
-    C_S_AXI_MIN_SIZE               : std_logic_vector     := X"000001FF";
-    C_USE_WSTRB                    : integer              := 0;
-    C_DPHASE_TIMEOUT               : integer              := 8;
-    C_BASEADDR                     : std_logic_vector     := X"FFFFFFFF";
-    C_HIGHADDR                     : std_logic_vector     := X"00000000";
-    C_FAMILY                       : string               := "virtex6";
-    C_NUM_REG                      : integer              := 32;
-    C_NUM_MEM                      : integer              := 1;
-    C_SLV_AWIDTH                   : integer              := 32;
-    C_SLV_DWIDTH                   : integer              := 32
-    -- DO NOT EDIT ABOVE THIS LINE ---------------------
-  );
+      -- DO NOT EDIT BELOW THIS LINE ---------------------
+      -- Bus protocol parameters, do not add to or delete
+      C_S_AXI_DATA_WIDTH             : integer              := 32;
+      C_S_AXI_ADDR_WIDTH             : integer              := 32;
+      C_S_AXI_MIN_SIZE               : std_logic_vector     := X"000001FF";
+      C_USE_WSTRB                    : integer              := 0;
+      C_DPHASE_TIMEOUT               : integer              := 8;
+      C_BASEADDR                     : std_logic_vector     := X"FFFFFFFF";
+      C_HIGHADDR                     : std_logic_vector     := X"00000000";
+      C_FAMILY                       : string               := "virtex6";
+      C_NUM_REG                      : integer              := 32;
+      C_NUM_MEM                      : integer              := 1;
+      C_SLV_AWIDTH                   : integer              := 32;
+      C_SLV_DWIDTH                   : integer              := 32
+      -- DO NOT EDIT ABOVE THIS LINE ---------------------
+      );
   port
-  (
-    -- ADD USER PORTS BELOW THIS LINE ------------------
-    --USER ports added here
-   pulse_io     : out std_logic_vector(0 to U_PULSE_WIDTH-1);
-   dds_addr     : out std_logic_vector(0 to U_DDS_ADDR_WIDTH-1);
-   dds_data_I   : in std_logic_vector := (0 to U_DDS_DATA_WIDTH-1 => '0') ;
-   dds_data_O   : out std_logic_vector(0 to U_DDS_DATA_WIDTH-1);
-   dds_data_T   : out std_logic;
-   dds_control  : out std_logic_vector(0 to U_DDS_CTRL_WIDTH-1);
-   dds_addr2    : out std_logic_vector(0 to U_DDS_ADDR_WIDTH-1);
-   dds_data2_I  : in std_logic_vector := (0 to U_DDS_DATA_WIDTH-1 => '0') ;
-   dds_data2_O  : out std_logic_vector(0 to U_DDS_DATA_WIDTH-1);
-   dds_data2_T  : out std_logic;
-   dds_control2 : out std_logic_vector(0 to U_DDS_CTRL_WIDTH-1);
-   dds_cs       : out std_logic_vector(0 to N_DDS-1);
-   dds_FUD      : out std_logic_vector(0 to 1); -- DDR --
-   dds_syncI    : in std_logic; 
-   dds_syncO    : out std_logic;
-   counter_in   : in std_logic_vector := (0 to N_COUNTER-1 => '0');
-   sync_in      : in std_logic := '0';
-   clock_out    : out std_logic;
-    -- ADD USER PORTS ABOVE THIS LINE ------------------
+    (
+      -- ADD USER PORTS BELOW THIS LINE ------------------
+      --USER ports added here
+      pulse_io     : out std_logic_vector(0 to U_PULSE_WIDTH-1);
+      dds_addr     : out std_logic_vector(0 to U_DDS_ADDR_WIDTH-1);
+      dds_data_I   : in std_logic_vector := (0 to U_DDS_DATA_WIDTH-1 => '0') ;
+      dds_data_O   : out std_logic_vector(0 to U_DDS_DATA_WIDTH-1);
+      dds_data_T   : out std_logic;
+      dds_control  : out std_logic_vector(0 to U_DDS_CTRL_WIDTH-1);
+      dds_addr2    : out std_logic_vector(0 to U_DDS_ADDR_WIDTH-1);
+      dds_data2_I  : in std_logic_vector := (0 to U_DDS_DATA_WIDTH-1 => '0') ;
+      dds_data2_O  : out std_logic_vector(0 to U_DDS_DATA_WIDTH-1);
+      dds_data2_T  : out std_logic;
+      dds_control2 : out std_logic_vector(0 to U_DDS_CTRL_WIDTH-1);
+      dds_cs       : out std_logic_vector(0 to N_DDS-1);
+      dds_FUD      : out std_logic_vector(0 to 1); -- DDR --
+      dds_syncI    : in std_logic;
+      dds_syncO    : out std_logic;
+      counter_in   : in std_logic_vector := (0 to N_COUNTER-1 => '0');
+      sync_in      : in std_logic := '0';
+      clock_out    : out std_logic;
+      -- ADD USER PORTS ABOVE THIS LINE ------------------
 
-    -- DO NOT EDIT BELOW THIS LINE ---------------------
-    -- Bus protocol ports, do not add to or delete
-    S_AXI_ACLK                     : in  std_logic;
-    S_AXI_ARESETN                  : in  std_logic;
-    S_AXI_AWADDR                   : in  std_logic_vector(C_S_AXI_ADDR_WIDTH-1 downto 0);
-    S_AXI_AWVALID                  : in  std_logic;
-    S_AXI_WDATA                    : in  std_logic_vector(C_S_AXI_DATA_WIDTH-1 downto 0);
-    S_AXI_WSTRB                    : in  std_logic_vector((C_S_AXI_DATA_WIDTH/8)-1 downto 0);
-    S_AXI_WVALID                   : in  std_logic;
-    S_AXI_BREADY                   : in  std_logic;
-    S_AXI_ARADDR                   : in  std_logic_vector(C_S_AXI_ADDR_WIDTH-1 downto 0);
-    S_AXI_ARVALID                  : in  std_logic;
-    S_AXI_RREADY                   : in  std_logic;
-    S_AXI_ARREADY                  : out std_logic;
-    S_AXI_RDATA                    : out std_logic_vector(C_S_AXI_DATA_WIDTH-1 downto 0);
-    S_AXI_RRESP                    : out std_logic_vector(1 downto 0);
-    S_AXI_RVALID                   : out std_logic;
-    S_AXI_WREADY                   : out std_logic;
-    S_AXI_BRESP                    : out std_logic_vector(1 downto 0);
-    S_AXI_BVALID                   : out std_logic;
-    S_AXI_AWREADY                  : out std_logic
-    -- DO NOT EDIT ABOVE THIS LINE ---------------------
-  );
+      -- DO NOT EDIT BELOW THIS LINE ---------------------
+      -- Bus protocol ports, do not add to or delete
+      S_AXI_ACLK                     : in  std_logic;
+      S_AXI_ARESETN                  : in  std_logic;
+      S_AXI_AWADDR                   : in  std_logic_vector(C_S_AXI_ADDR_WIDTH-1 downto 0);
+      S_AXI_AWVALID                  : in  std_logic;
+      S_AXI_WDATA                    : in  std_logic_vector(C_S_AXI_DATA_WIDTH-1 downto 0);
+      S_AXI_WSTRB                    : in  std_logic_vector((C_S_AXI_DATA_WIDTH/8)-1 downto 0);
+      S_AXI_WVALID                   : in  std_logic;
+      S_AXI_BREADY                   : in  std_logic;
+      S_AXI_ARADDR                   : in  std_logic_vector(C_S_AXI_ADDR_WIDTH-1 downto 0);
+      S_AXI_ARVALID                  : in  std_logic;
+      S_AXI_RREADY                   : in  std_logic;
+      S_AXI_ARREADY                  : out std_logic;
+      S_AXI_RDATA                    : out std_logic_vector(C_S_AXI_DATA_WIDTH-1 downto 0);
+      S_AXI_RRESP                    : out std_logic_vector(1 downto 0);
+      S_AXI_RVALID                   : out std_logic;
+      S_AXI_WREADY                   : out std_logic;
+      S_AXI_BRESP                    : out std_logic_vector(1 downto 0);
+      S_AXI_BVALID                   : out std_logic;
+      S_AXI_AWREADY                  : out std_logic
+      -- DO NOT EDIT ABOVE THIS LINE ---------------------
+      );
 
   attribute MAX_FANOUT : string;
   attribute SIGIS : string;
@@ -196,25 +196,25 @@ architecture IMP of pulse_controller is
   constant USER_SLV_BASEADDR              : std_logic_vector     := C_BASEADDR or X"00000000";
   constant USER_SLV_HIGHADDR              : std_logic_vector     := C_BASEADDR or X"000000FF";
 
-  constant IPIF_ARD_ADDR_RANGE_ARRAY      : SLV64_ARRAY_TYPE     := 
+  constant IPIF_ARD_ADDR_RANGE_ARRAY      : SLV64_ARRAY_TYPE     :=
     (
       ZERO_ADDR_PAD & RST_BASEADDR,       -- soft reset space base address
       ZERO_ADDR_PAD & RST_HIGHADDR,       -- soft reset space high address
       ZERO_ADDR_PAD & USER_SLV_BASEADDR,  -- user logic slave space base address
       ZERO_ADDR_PAD & USER_SLV_HIGHADDR   -- user logic slave space high address
-    );
+      );
 
   constant RST_NUM_CE                     : integer              := 1;
   constant USER_SLV_NUM_REG               : integer              := 32;
   constant USER_NUM_REG                   : integer              := USER_SLV_NUM_REG;
   constant TOTAL_IPIF_CE                  : integer              := USER_NUM_REG + RST_NUM_CE;
 
-  constant IPIF_ARD_NUM_CE_ARRAY          : INTEGER_ARRAY_TYPE   := 
+  constant IPIF_ARD_NUM_CE_ARRAY          : INTEGER_ARRAY_TYPE   :=
     (
       0  => (RST_NUM_CE),                 -- number of ce for soft reset space
       1  => (USER_SLV_NUM_REG)            -- number of ce for user logic slave space
-    );
-   
+      );
+
   constant USER_SLV_DWIDTH                : integer              := C_S_AXI_DATA_WIDTH;
   constant USER_SLV_AWIDTH                : integer              := C_S_AXI_ADDR_WIDTH;
   constant USER_SLV_CSWIDTH         : integer              := (IPIF_ARD_ADDR_RANGE_ARRAY'LENGTH)/2;
@@ -267,66 +267,66 @@ architecture IMP of pulse_controller is
   ------------------------------------------
   component user_logic is
     generic
-    (
-      -- ADD USER GENERICS BELOW THIS LINE ---------------
-      --USER generics added here
-      U_PULSE_WIDTH : integer := 32;
-      N_DDS : integer := 8;
-      U_DDS_DATA_WIDTH : integer := 16;
-      U_DDS_ADDR_WIDTH : integer := 7;
-      U_DDS_CTRL_WIDTH : integer := 4;   
-      N_COUNTER : integer := 1;
-      -- ADD USER GENERICS ABOVE THIS LINE ---------------
+      (
+        -- ADD USER GENERICS BELOW THIS LINE ---------------
+        --USER generics added here
+        U_PULSE_WIDTH : integer := 32;
+        N_DDS : integer := 8;
+        U_DDS_DATA_WIDTH : integer := 16;
+        U_DDS_ADDR_WIDTH : integer := 7;
+        U_DDS_CTRL_WIDTH : integer := 4;
+        N_COUNTER : integer := 1;
+        -- ADD USER GENERICS ABOVE THIS LINE ---------------
 
-      -- DO NOT EDIT BELOW THIS LINE ---------------------
-      -- Bus protocol parameters, do not add to or delete
-      C_NUM_REG                      : integer              := 32;
-      C_SLV_DWIDTH                   : integer              := 32;
-      C_SLV_AWIDTH                   : integer              := 32;
-      C_SLV_CSWIDTH                  : integer             := 2
-      -- DO NOT EDIT ABOVE THIS LINE ---------------------
-    );
+        -- DO NOT EDIT BELOW THIS LINE ---------------------
+        -- Bus protocol parameters, do not add to or delete
+        C_NUM_REG                      : integer              := 32;
+        C_SLV_DWIDTH                   : integer              := 32;
+        C_SLV_AWIDTH                   : integer              := 32;
+        C_SLV_CSWIDTH                  : integer             := 2
+        -- DO NOT EDIT ABOVE THIS LINE ---------------------
+        );
     port
-    (
-      -- ADD USER PORTS BELOW THIS LINE ------------------
-      --USER ports added here
-    pulse_io      : out std_logic_vector(0 to U_PULSE_WIDTH-1);
-    dds_addr      : out std_logic_vector(0 to U_DDS_ADDR_WIDTH-1);
-    dds_data_I    : in  std_logic_vector(0 to U_DDS_DATA_WIDTH-1) ;
-    dds_data_O    : out std_logic_vector(0 to U_DDS_DATA_WIDTH-1);
-    dds_data_T    : out std_logic;
-    dds_control   : out std_logic_vector(0 to U_DDS_CTRL_WIDTH-1);
-    dds_addr2     : out std_logic_vector(0 to U_DDS_ADDR_WIDTH-1);
-    dds_data2_I   : in  std_logic_vector(0 to U_DDS_DATA_WIDTH-1) ;
-    dds_data2_O   : out std_logic_vector(0 to U_DDS_DATA_WIDTH-1);
-    dds_data2_T   : out std_logic;
-    dds_control2  : out std_logic_vector(0 to U_DDS_CTRL_WIDTH-1);
-    dds_cs        : out std_logic_vector(0 to N_DDS-1);
-    dds_FUD       : out std_logic_vector(0 to 1); -- DDR --
-    dds_syncI     : in std_logic; 
-    dds_syncO     : out std_logic;
-    counter_in    : in  std_logic_vector(0 to N_COUNTER-1);
-    sync_in       : in  std_logic;
-    clock_out     : out std_logic;
-      -- ADD USER PORTS ABOVE THIS LINE ------------------
+      (
+        -- ADD USER PORTS BELOW THIS LINE ------------------
+        --USER ports added here
+        pulse_io      : out std_logic_vector(0 to U_PULSE_WIDTH-1);
+        dds_addr      : out std_logic_vector(0 to U_DDS_ADDR_WIDTH-1);
+        dds_data_I    : in  std_logic_vector(0 to U_DDS_DATA_WIDTH-1) ;
+        dds_data_O    : out std_logic_vector(0 to U_DDS_DATA_WIDTH-1);
+        dds_data_T    : out std_logic;
+        dds_control   : out std_logic_vector(0 to U_DDS_CTRL_WIDTH-1);
+        dds_addr2     : out std_logic_vector(0 to U_DDS_ADDR_WIDTH-1);
+        dds_data2_I   : in  std_logic_vector(0 to U_DDS_DATA_WIDTH-1) ;
+        dds_data2_O   : out std_logic_vector(0 to U_DDS_DATA_WIDTH-1);
+        dds_data2_T   : out std_logic;
+        dds_control2  : out std_logic_vector(0 to U_DDS_CTRL_WIDTH-1);
+        dds_cs        : out std_logic_vector(0 to N_DDS-1);
+        dds_FUD       : out std_logic_vector(0 to 1); -- DDR --
+        dds_syncI     : in std_logic;
+        dds_syncO     : out std_logic;
+        counter_in    : in  std_logic_vector(0 to N_COUNTER-1);
+        sync_in       : in  std_logic;
+        clock_out     : out std_logic;
+        -- ADD USER PORTS ABOVE THIS LINE ------------------
 
-      -- DO NOT EDIT BELOW THIS LINE ---------------------
-      -- Bus protocol ports, do not add to or delete
-      Bus2IP_Clk                     : in  std_logic;
-      Bus2IP_Resetn                  : in  std_logic;
-      Bus2IP_Data                    : in  std_logic_vector(C_SLV_DWIDTH-1 downto 0);
-      Bus2IP_Addr                    : in  std_logic_vector(C_SLV_AWIDTH-1 downto 0);
-      Bus2IP_RNW                     : in  std_logic;
-      Bus2IP_CS                      : in  std_logic_vector((IPIF_ARD_ADDR_RANGE_ARRAY'LENGTH)/2-1 downto 0);
-      Bus2IP_BE                      : in  std_logic_vector(C_SLV_DWIDTH/8-1 downto 0);
-      Bus2IP_RdCE                    : in  std_logic_vector(C_NUM_REG-1 downto 0);
-      Bus2IP_WrCE                    : in  std_logic_vector(C_NUM_REG-1 downto 0);
-      IP2Bus_Data                    : out std_logic_vector(C_SLV_DWIDTH-1 downto 0);
-      IP2Bus_RdAck                   : out std_logic;
-      IP2Bus_WrAck                   : out std_logic;
-      IP2Bus_Error                   : out std_logic
-      -- DO NOT EDIT ABOVE THIS LINE ---------------------
-    );
+        -- DO NOT EDIT BELOW THIS LINE ---------------------
+        -- Bus protocol ports, do not add to or delete
+        Bus2IP_Clk                     : in  std_logic;
+        Bus2IP_Resetn                  : in  std_logic;
+        Bus2IP_Data                    : in  std_logic_vector(C_SLV_DWIDTH-1 downto 0);
+        Bus2IP_Addr                    : in  std_logic_vector(C_SLV_AWIDTH-1 downto 0);
+        Bus2IP_RNW                     : in  std_logic;
+        Bus2IP_CS                      : in  std_logic_vector((IPIF_ARD_ADDR_RANGE_ARRAY'LENGTH)/2-1 downto 0);
+        Bus2IP_BE                      : in  std_logic_vector(C_SLV_DWIDTH/8-1 downto 0);
+        Bus2IP_RdCE                    : in  std_logic_vector(C_NUM_REG-1 downto 0);
+        Bus2IP_WrCE                    : in  std_logic_vector(C_NUM_REG-1 downto 0);
+        IP2Bus_Data                    : out std_logic_vector(C_SLV_DWIDTH-1 downto 0);
+        IP2Bus_RdAck                   : out std_logic;
+        IP2Bus_WrAck                   : out std_logic;
+        IP2Bus_Error                   : out std_logic
+        -- DO NOT EDIT ABOVE THIS LINE ---------------------
+        );
   end component user_logic;
 
 begin
@@ -345,7 +345,7 @@ begin
       C_ARD_ADDR_RANGE_ARRAY         => IPIF_ARD_ADDR_RANGE_ARRAY,
       C_ARD_NUM_CE_ARRAY             => IPIF_ARD_NUM_CE_ARRAY,
       C_FAMILY                       => C_FAMILY
-    )
+      )
     port map
     (
       S_AXI_ACLK                     => S_AXI_ACLK,
@@ -380,7 +380,7 @@ begin
       IP2Bus_RdAck                   => ipif_IP2Bus_RdAck,
       IP2Bus_Error                   => ipif_IP2Bus_Error,
       IP2Bus_Data                    => ipif_IP2Bus_Data
-    );
+      );
 
   ------------------------------------------
   -- instantiate soft_reset
@@ -390,7 +390,7 @@ begin
     (
       C_SIPIF_DWIDTH                 => IPIF_SLV_DWIDTH,
       C_RESET_WIDTH                  => RESET_WIDTH
-    )
+      )
     port map
     (
       Bus2IP_Reset                   => ipif_Bus2IP_Reset,
@@ -402,7 +402,7 @@ begin
       Reset2Bus_WrAck                => rst_IP2Bus_WrAck,
       Reset2Bus_Error                => rst_IP2Bus_Error,
       Reset2Bus_ToutSup              => open
-    );
+      );
 
   ------------------------------------------
   -- instantiate User Logic
@@ -424,7 +424,7 @@ begin
       C_SLV_DWIDTH             => USER_SLV_DWIDTH,
       C_SLV_AWIDTH             => USER_SLV_AWIDTH,
       C_SLV_CSWIDTH            => USER_SLV_CSWIDTH
-    )
+      )
     port map
     (
       -- MAP USER PORTS BELOW THIS LINE ------------------
@@ -444,7 +444,7 @@ begin
       dds_FUD   => dds_FUD,
       dds_syncI  => dds_syncI,
       dds_syncO  => dds_syncO,
-   
+
       counter_in  => counter_in,
       sync_in   => sync_in,
       clock_out => clock_out,
@@ -463,7 +463,7 @@ begin
       IP2Bus_RdAck                   => user_IP2Bus_RdAck,
       IP2Bus_WrAck                   => user_IP2Bus_WrAck,
       IP2Bus_Error                   => user_IP2Bus_Error
-    );
+      );
 
   ------------------------------------------
   -- connect internal signals
