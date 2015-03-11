@@ -89,11 +89,9 @@ module timing_controller(clock, resetn,
    parameter TTL_BITA = 31;
    parameter TTL_BITB = 0;
 
-   // parameter CLOCK_OUT_DIV = 100;
-
    input clock;
    input resetn;
-   input init; // init is like reet, but hold the current TTL outputs
+   input init; // init is like reset, but hold the current TTL outputs
    // toggle this at the start of the sequence.
 
    input pulse_controller_hold; // pulses wait until this goes low
@@ -171,12 +169,12 @@ module timing_controller(clock, resetn,
    wire dds_WrReq;
    wire [0:31] dds_result;
 
-   dds_controller #( .N_DDS(N_DDS),
-                     .DDS_OPCODE_WIDTH(DDS_OPCODE_WIDTH),
-                     .DDS_OPERAND_WIDTH(DDS_OPERAND_WIDTH),
-                     .U_DDS_DATA_WIDTH(U_DDS_DATA_WIDTH),
-                     .U_DDS_ADDR_WIDTH(U_DDS_ADDR_WIDTH),
-                     .U_DDS_CTRL_WIDTH(U_DDS_CTRL_WIDTH))
+   dds_controller#(.N_DDS(N_DDS),
+                   .DDS_OPCODE_WIDTH(DDS_OPCODE_WIDTH),
+                   .DDS_OPERAND_WIDTH(DDS_OPERAND_WIDTH),
+                   .U_DDS_DATA_WIDTH(U_DDS_DATA_WIDTH),
+                   .U_DDS_ADDR_WIDTH(U_DDS_ADDR_WIDTH),
+                   .U_DDS_CTRL_WIDTH(U_DDS_CTRL_WIDTH))
    dds_controller_inst(.clock(clock),
                        .reset(reset),
                        .write_enable(dds_we),
@@ -207,9 +205,8 @@ module timing_controller(clock, resetn,
    wire sync2;
    assign sync2 = sync_in ^ PMT_invert_sync;
 
-   PMT_counter #(.N_COUNTER(N_COUNTER))
-   PMT_counter_inst(
-                    .clock(clock),
+   PMT_counter#(.N_COUNTER(N_COUNTER))
+   PMT_counter_inst(.clock(clock),
                     .reset(reset),
                     .counter_in(counter_in),
                     .count_enable(PMT_enable),
@@ -217,9 +214,9 @@ module timing_controller(clock, resetn,
                     .result_data(PMT_result),
                     .result_WrReq(PMT_WrReq));
 
-   PMT_correlation2 #(.N_BIN(N_CORR_BINS), .N_BIT(N_CORR_BITS))
-   PMT_correlation_inst(
-                        .clk(clock),
+   PMT_correlation2#(.N_BIN(N_CORR_BINS),
+                     .N_BIT(N_CORR_BITS))
+   PMT_correlation_inst(.clk(clock),
                         .reset(reset | correlation_reset),
                         .data_out(correlation_data_out),
                         .dataready_out(correlation_data_ready),
@@ -310,8 +307,7 @@ module timing_controller(clock, resetn,
          end
 
          // emit divided clock with period 2 x (clock_out_div + 1) when
-         // clock_out_enable=1
-
+         // clock_out_div < 255
          if (clock_out_div == 255) begin // reset clock_out
             clock_out_counter <= 0;
             clock_out_reg <= 0;
@@ -319,8 +315,9 @@ module timing_controller(clock, resetn,
             if (clock_out_counter == clock_out_div) begin
                clock_out_counter <= 0;
                clock_out_reg <= ~clock_out_reg;
-            end else
-              clock_out_counter <= clock_out_counter + 1;
+            end else begin
+               clock_out_counter <= clock_out_counter + 1;
+            end
          end
 
          force_release <= force_release | fifo_full;
@@ -396,10 +393,11 @@ module timing_controller(clock, resetn,
               dds_we <= 0;
               PMT_RdReq <= 0;
 
-              if (timer == 3)
-                state <= 0;  // minimum pulse time is 3 cycles
-              else
-                timer <= timer + MAX_VAL; // decrement timer
+              if (timer == 3) begin
+                 state <= 0;  // minimum pulse time is 3 cycles
+              end else begin
+                 timer <= timer + MAX_VAL; // decrement timer
+              end
            end
          endcase
       end
