@@ -147,23 +147,17 @@ module dds_controller(clock, reset, write_enable, opcode, operand,
    assign dds_control = active_dds_bank[0] ? {dds_reset, dds_r_strobe_n, dds_w_strobe_n} : {1'b0, 1'b1, 1'b1};
    assign dds_control2 = active_dds_bank[1] ? {dds_reset, dds_r_strobe_n, dds_w_strobe_n} : {1'b0, 1'b1, 1'b1};
 
-   output [(RESULT_WIDTH-1):0] result_data;
-   output result_WrReq;
+   output reg [(RESULT_WIDTH - 1):0] result_data;
+   output reg result_WrReq;
 
-   reg [(DDS_OPERAND_WIDTH-1):0] operand_reg;
-   reg [(DDS_OPCODE_WIDTH-1):0]  opcode_reg;
+   reg [(DDS_OPERAND_WIDTH - 1):0] operand_reg;
+   reg [(DDS_OPCODE_WIDTH - 1):0] opcode_reg;
 
-   reg result_WrReq_reg;
-   reg [(RESULT_WIDTH-1):0] result_reg;
-
-   assign result_WrReq = result_WrReq_reg;
-   assign result_data = result_reg;
-
-   reg [3:0]  cycle;
-   reg [1:0]  sub_cycle;
+   reg [3:0] cycle;
+   reg [1:0] sub_cycle;
    // reg sub_cycle;
 
-   reg [(N_DDS-1):0] dds_sel_mask; // set active DDS via separate command
+   reg [(N_DDS - 1):0] dds_sel_mask; // set active DDS via separate command
 
    reg dds_FUDx; // aux signal for dds_FUD DDR signal
    // dds_FUDx will be low for 1 clock cycle
@@ -287,7 +281,7 @@ end
          dds_data_reg  <= 0;
          dds_data_T_reg  <= 1;
 
-         result_WrReq_reg <= 0;
+         result_WrReq <= 0;
          dds_FUDx <= 0;
          ddr_reset <= 1;
 
@@ -310,8 +304,8 @@ end
             dds_data_reg  <= 0;
             dds_data_T_reg <= 0;
 
-            result_WrReq_reg <= 0;
-            result_reg <= 0;
+            result_WrReq <= 0;
+            result_data <= 0;
 
             sub_cycle <= 0;
             dds_sel_mask <= 0;
@@ -406,13 +400,13 @@ end
                    1 : begin
                       dds_addr_reg_next <= opcode_reg[DDS_REG_B:DDS_REG_A];
                       dds_data_T_reg <= 1;
-                      result_reg <= 0;
+                      result_data <= 0;
                    end
                    3 : dds_r_strobe_n <= 0;
-                   5 : result_reg[15:0] <= active_dds_bank[0] ? dds_data_I : dds_data2_I;
+                   5 : result_data[15:0] <= active_dds_bank[0] ? dds_data_I : dds_data2_I;
                    6 : begin
                       dds_r_strobe_n <= 1;
-                      result_WrReq_reg <= 1;
+                      result_WrReq <= 1;
                    end
                  endcase
               end
@@ -452,8 +446,8 @@ end
               //       if (dds_syncI)
               //         syncI_counter <= syncI_counter + 1'b1;
               //    end else begin
-              //       result_reg <= syncI_counter;
-              //       result_WrReq_reg <= 1; //write request to result buffer
+              //       result_data <= syncI_counter;
+              //       result_WrReq <= 1; //write request to result buffer
               //    end
               // end
 
@@ -463,11 +457,11 @@ end
                    1 : begin
                       dds_addr_reg_next <= opcode_reg[DDS_REG_B:DDS_REG_A];
                       dds_data_T_reg <= 1;
-                      result_reg <= 0;
+                      result_data <= 0;
                    end
                    2 : dds_r_strobe_n <= 0; //initiate first read from DDS
                    3 : begin // get data on bus
-                      result_reg[15:0] <= active_dds_bank[0] ? dds_data_I : dds_data2_I;
+                      result_data[15:0] <= active_dds_bank[0] ? dds_data_I : dds_data2_I;
                       dds_r_strobe_n <= 1;
                       //advance address
                       dds_addr_reg_next <= opcode_reg[DDS_REG_B:DDS_REG_A] + 2'b10;
@@ -475,13 +469,13 @@ end
                    //initiate second read from DDS
                    4 : begin
                       dds_r_strobe_n <= 0;
-                      result_WrReq_reg <= 0;
+                      result_WrReq <= 0;
                    end
                    5 : begin // get data on bus
-                      result_reg[31:16] <= active_dds_bank[0] ? dds_data_I : dds_data2_I;
+                      result_data[31:16] <= active_dds_bank[0] ? dds_data_I : dds_data2_I;
                       dds_r_strobe_n <= 1;
                    end
-                   6 : result_WrReq_reg <= 1;
+                   6 : result_WrReq <= 1;
                  endcase
               end
 
