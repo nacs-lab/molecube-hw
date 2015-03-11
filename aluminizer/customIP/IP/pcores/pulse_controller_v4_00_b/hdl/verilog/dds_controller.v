@@ -136,15 +136,15 @@ module dds_controller(clock, reset, write_enable, opcode, operand,
 
    reg [1:0] active_dds_bank;
 
-   assign dds_addr    = active_dds_bank[0] ? dds_addr_reg   : 1'b0;
-   assign dds_data_O  = active_dds_bank[0] ? dds_data_reg   : 1'b0;
-   assign dds_data_T  = active_dds_bank[0] ? dds_data_T_reg : 1'b0;
+   assign dds_addr = active_dds_bank[0] ? dds_addr_reg : 1'b0;
+   assign dds_data_O = active_dds_bank[0] ? dds_data_reg : 1'b0;
+   assign dds_data_T = active_dds_bank[0] ? dds_data_T_reg : 1'b0;
 
-   assign dds_addr2   = active_dds_bank[1] ? dds_addr_reg   : 1'b0;
-   assign dds_data2_O = active_dds_bank[1] ? dds_data_reg   : 1'b0;
+   assign dds_addr2 = active_dds_bank[1] ? dds_addr_reg : 1'b0;
+   assign dds_data2_O = active_dds_bank[1] ? dds_data_reg : 1'b0;
    assign dds_data2_T = active_dds_bank[1] ? dds_data_T_reg : 1'b0;
 
-   assign dds_control  = active_dds_bank[0] ? {dds_reset, dds_r_strobe_n, dds_w_strobe_n} : {1'b0, 1'b1, 1'b1};
+   assign dds_control = active_dds_bank[0] ? {dds_reset, dds_r_strobe_n, dds_w_strobe_n} : {1'b0, 1'b1, 1'b1};
    assign dds_control2 = active_dds_bank[1] ? {dds_reset, dds_r_strobe_n, dds_w_strobe_n} : {1'b0, 1'b1, 1'b1};
 
    assign dds_cs = dds_cs_reg;

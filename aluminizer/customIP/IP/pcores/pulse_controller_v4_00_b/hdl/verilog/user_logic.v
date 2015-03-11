@@ -133,9 +133,9 @@ module user_logic
 
    // --USER nets declarations added here, as needed for user logic
    wire [0:(C_SLV_DWIDTH-1)] result;
-   wire underflow_out;
+   wire underflow;
    wire correlation_data_ready;
-   wire pulses_finished_out;
+   wire pulses_finished;
    wire [(N_CORR_BINS*N_CORR_BITS-1):0] correlation_data_out;
 
    // Nets for user logic slave model s/w accessible register example
@@ -287,9 +287,9 @@ module user_logic
              end
            endcase
 
-           slv_reg2[0] <= underflow_out;
+           slv_reg2[0] <= underflow;
            slv_reg2[1] <= correlation_data_ready;
-           slv_reg2[2] <= pulses_finished_out;
+           slv_reg2[2] <= pulses_finished;
            slv_reg2[(rFIFO_ADDR_BITS+3):4] <= rFIFO_fill;
 
            slv_reg4 <= correlation_data_out[31:0];
@@ -371,9 +371,9 @@ module user_logic
    //   pulse_io = (ttl_out | slv_reg0) & (~slv_reg1)
    //
    // slv_reg2 -- status (read)
-   //   slv_reg2[0] <= underflow_out;
+   //   slv_reg2[0] <= underflow;
    //   slv_reg2[1] <= correlation_data_ready;
-   //   slv_reg2[2] <= pulses_finished_out;
+   //   slv_reg2[2] <= pulses_finished;
    //   slv_reg2[(rFIFO_ADDR_BITS+3):4] <= rFIFO_fill;
    //
    // slv_reg3 -- control (write)
@@ -482,13 +482,13 @@ module user_logic
       .dds_syncI(dds_syncI),
       .dds_syncO(dds_syncO),
       .ttl_out(ttl_out),
-      .underflow_out(underflow_out),
+      .underflow(underflow),
       .counter_in(counter_in),
       .sync_in(sync_in),
       .correlation_reset(slv_reg3[0]),
       .correlation_data_out(correlation_data_out),
       .correlation_data_ready(correlation_data_ready),
-      .pulses_finished_out(pulses_finished_out),
+      .pulses_finished(pulses_finished),
       .pulse_controller_hold(slv_reg3[7]),
       .init(slv_reg3[8]),
       .clock_out(clock_out));

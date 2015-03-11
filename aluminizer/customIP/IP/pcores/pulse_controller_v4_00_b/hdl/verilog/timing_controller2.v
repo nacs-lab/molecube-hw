@@ -58,9 +58,9 @@ module timing_controller(clock, resetn,
                          dds_addr2, dds_data2_I, dds_data2_O,
                          dds_data2_T, dds_control2, dds_cs,
                          dds_FUD, dds_syncO, dds_syncI, ttl_out,
-                         underflow_out, counter_in, sync_in,
+                         underflow, counter_in, sync_in,
                          correlation_reset, correlation_data_out,
-                         correlation_data_ready, pulses_finished_out,
+                         correlation_data_ready, pulses_finished,
                          pulse_controller_hold, init, clock_out);
 
    parameter N_CORR_BINS = 16;
@@ -131,15 +131,12 @@ module timing_controller(clock, resetn,
    output correlation_data_ready;
 
    output [(TTL_WIDTH - 1):0] ttl_out;
-   output underflow_out;
-   output pulses_finished_out;
+   output reg underflow;
+   output reg pulses_finished;
 
-   output clock_out;
-   reg clock_out_reg;
+   output reg clock_out;
    reg [7:0] clock_out_counter;
    reg [7:0] clock_out_div;
-
-   assign clock_out = clock_out_reg;
 
    reg [(TTL_WIDTH - 1):0] ttl_out_reg;
    reg [(TIMER_WIDTH - 1):0] timer;
@@ -148,18 +145,14 @@ module timing_controller(clock, resetn,
    reg [2:0] state;
 
    reg timing_check;
-   reg underflow;
 
    reg data_valid;
-   reg pulses_finished;
 
    wire reset;
    assign reset = ~resetn;
 
    wire [1:0]debug;
    assign ttl_out = {ttl_out_reg[31:2], ttl_out_reg[1:0] ^ debug[1:0]};
-   assign underflow_out = underflow;
-   assign pulses_finished_out = pulses_finished;
 
    reg dds_we;
 
@@ -228,7 +221,7 @@ module timing_controller(clock, resetn,
    reg loopback_WrReq;
 
    // allow PMT_counter or DDS_controller or loop back to write into the rFIFO
-   assign rFIFO_WrReq = dds_WrReq  | PMT_WrReq | loopback_WrReq;
+   assign rFIFO_WrReq = dds_WrReq | PMT_WrReq | loopback_WrReq;
    assign rFIFO_data = dds_result | PMT_result | loopback_data;
 
    reg [63:0] instruction;
@@ -287,7 +280,7 @@ module timing_controller(clock, resetn,
          fifo_write_addr <= 0;
          fifo_read_addr <= 0;
          fifo_prev_read_addr <= (FIFO_DEPTH - 1);
-         clock_out_reg <= 0;
+         clock_out <= 0;
          clock_out_counter <= 0;
          clock_out_div <= 255;
          force_release <= 0;
@@ -310,11 +303,11 @@ module timing_controller(clock, resetn,
          // clock_out_div < 255
          if (clock_out_div == 255) begin // reset clock_out
             clock_out_counter <= 0;
-            clock_out_reg <= 0;
+            clock_out <= 0;
          end else begin
             if (clock_out_counter == clock_out_div) begin
                clock_out_counter <= 0;
-               clock_out_reg <= ~clock_out_reg;
+               clock_out <= ~clock_out;
             end else begin
                clock_out_counter <= clock_out_counter + 1;
             end
