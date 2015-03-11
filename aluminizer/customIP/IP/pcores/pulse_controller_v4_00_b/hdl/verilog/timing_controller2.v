@@ -50,6 +50,31 @@
  * Minimum period:   4.916ns{1}   (Maximum frequency: 203.417MHz)
  */
 
+module clock_out_controller(clock, reset, out, div);
+   input clock;
+   input reset;
+   input [7:0] div;
+   output reg out;
+
+   reg [7:0] counter;
+
+   always @(posedge clock or posedge reset) begin
+      if (reset | div == 255) begin
+         // reset
+         out <= 0;
+         counter <= 0;
+      end else begin
+         // emit divided clock with period 2 x (div + 1)
+         if (counter == div) begin
+            counter <= 0;
+            out <= ~out;
+         end else begin
+            counter <= counter + 1;
+         end
+      end
+   end
+endmodule
+
 module timing_controller(clock, resetn,
                          bus_data, bus_data_ready, bus_data_ack,
                          rFIFO_data, rFIFO_WrReq,
@@ -134,8 +159,7 @@ module timing_controller(clock, resetn,
    output reg underflow;
    output reg pulses_finished;
 
-   output reg clock_out;
-   reg [7:0] clock_out_counter;
+   output clock_out;
    reg [7:0] clock_out_div;
 
    reg [(TTL_WIDTH - 1):0] ttl_out_reg;
@@ -150,6 +174,11 @@ module timing_controller(clock, resetn,
 
    wire reset;
    assign reset = ~resetn;
+
+   clock_out_controller clock_out_ctrl(.clock(clock),
+                                       .reset(reset),
+                                       .out(clock_out),
+                                       .div(clock_out_div));
 
    wire [1:0]debug;
    assign ttl_out = {ttl_out_reg[31:2], ttl_out_reg[1:0] ^ debug[1:0]};
@@ -258,7 +287,6 @@ module timing_controller(clock, resetn,
    wire pulses_hold;
    assign pulses_hold = pulse_controller_hold & ~force_release;
 
-
    always @(posedge clock or posedge reset) begin
       if (reset | init) begin
          if (reset) begin
@@ -280,8 +308,6 @@ module timing_controller(clock, resetn,
          fifo_write_addr <= 0;
          fifo_read_addr <= 0;
          fifo_prev_read_addr <= (FIFO_DEPTH - 1);
-         clock_out <= 0;
-         clock_out_counter <= 0;
          clock_out_div <= 255;
          force_release <= 0;
       end else begin
@@ -296,20 +322,6 @@ module timing_controller(clock, resetn,
                fifo[fifo_write_addr] <= extended_bus_data | fifo_low_word;
                fifo_write_addr <= fifo_write_addr + 1;
                fifo_next_word_dest <= 0;
-            end
-         end
-
-         // emit divided clock with period 2 x (clock_out_div + 1) when
-         // clock_out_div < 255
-         if (clock_out_div == 255) begin // reset clock_out
-            clock_out_counter <= 0;
-            clock_out <= 0;
-         end else begin
-            if (clock_out_counter == clock_out_div) begin
-               clock_out_counter <= 0;
-               clock_out <= ~clock_out;
-            end else begin
-               clock_out_counter <= clock_out_counter + 1;
             end
          end
 
