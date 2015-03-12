@@ -147,4 +147,3 @@ module module_1_stub
     );
 
 endmodule
-
