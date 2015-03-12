@@ -1,4 +1,5 @@
-This directory contains files to define a pulse_controller peripheral on a Zynq (or other) FPGA.
+This directory contains files to define a pulse_controller peripheral on a
+Zynq (or other) FPGA.
 Author: Till Rosenband
 
 The pulse_controller has 3 main features:
@@ -7,8 +8,9 @@ The pulse_controller has 3 main features:
 3. Count input pulses (from a PMT or other).
 4. Record timing distribution of PMT pulses with respect to a sync pulse.
    This feature is used for correlated photon counting.
-   
-The design is used by the Xilinx Embedded Development Kit or PlanAhead as part of a repository.
+
+The design is used by the Xilinx Embedded Development Kit or PlanAhead as part
+of a repository.
 
 The peripheral communicates with a CPU accross an AXI bus.
 This design is written in the verilog language.
@@ -17,11 +19,10 @@ Directories and files:
 
 hdl/verilog                         -- verilog design files
 hdl/vhdl                            -- VHDL stub / wrapper
-hdl/ise/*.xise                      -- Xilinx ISE project files 
-hdl/ise/*.wcfg                      -- Xilinx simulator files 
 data/pulse_controller_v2_1_0.mpd    -- Define ports and paramaters for connection to the rest of the FPGA and externally.
 data/pulse_controller_v2_1_0.pao    -- List all source file to build synthesize the peripheral
-data/_pulse_controller_xst.prj      -- Some kind of project files.  Probably unused and obsolete.
 
-If ports are to be added to the design, they must be defined in the .mpd file, the VHDL wrapper, and the verilog file.
-They also need to be added to the global design (MHS and UCF files when using Xilinx PlanAhead/EDK/XPS software)
+If ports are to be added to the design, they must be defined in the .mpd file,
+the VHDL wrapper, and the verilog file.
+They also need to be added to the global design (MHS and UCF files when using
+Xilinx PlanAhead/EDK/XPS software)
