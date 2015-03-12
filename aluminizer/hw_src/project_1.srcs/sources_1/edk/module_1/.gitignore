@@ -1,7 +1,6 @@
 /hdl/
 /data/module_1.ncf
 /module_1.bxml
-/__xps/pa/
-/__xps/ise/_xmsgs/
+/__xps/
 *.make
 *.opt
