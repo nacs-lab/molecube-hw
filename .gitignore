@@ -38,3 +38,5 @@ implementation/
 synthesis/
 elaborate/
 *.jou
+*.str
+*.cache/
