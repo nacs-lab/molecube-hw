@@ -50,15 +50,10 @@
  * Minimum period:   4.916ns{1}   (Maximum frequency: 203.417MHz)
  */
 
-module clock_out_controller(clock, reset, out, div);
-   input clock;
-   input reset;
-   input [7:0] div;
-   output reg out;
-
+module clock_out_controller(input clock, input reset, input [7:0] div,
+                            output reg out);
    reg [7:0] counter;
-
-   always @(posedge clock or posedge reset) begin
+   always @(posedge clock, posedge reset) begin
       if (reset | div == 255) begin
          // reset
          out <= 0;
@@ -75,101 +70,76 @@ module clock_out_controller(clock, reset, out, div);
    end
 endmodule
 
-module timing_controller(clock, resetn,
-                         bus_data, bus_data_ready, bus_data_ack,
-                         rFIFO_data, rFIFO_WrReq,
-                         dds_addr, dds_data_I, dds_data_O,
-                         dds_data_T, dds_control,
-                         dds_addr2, dds_data2_I, dds_data2_O,
-                         dds_data2_T, dds_control2, dds_cs,
-                         dds_FUD, dds_syncO, dds_syncI, ttl_out,
-                         underflow, counter_in, sync_in,
-                         correlation_reset, correlation_data_out,
-                         correlation_data_ready, pulses_finished,
-                         pulse_controller_hold, init, clock_out);
+/**
+ * @init: like reset, but hold the current TTL outputs
+ *       toggle this at the start of the sequence.
+ * @pulse_controller_hold: pulses wait until this goes low.
+ * @bus_data_ack: acknowledge that we read the data.
+ * @dds_data_*: tri-state for dds_data to allow read & write.
+ */
+module timing_controller
+  #(parameter N_CORR_BINS = 16,
+    parameter N_CORR_BITS = 8,
 
-   parameter N_CORR_BINS = 16;
-   parameter N_CORR_BITS = 8;
+    parameter MAX_VAL = 24'hFFFFFF,
+    parameter BUS_DATA_WIDTH = 32,
+    parameter RESULT_WIDTH = 32,
+    parameter TTL_WIDTH = 32,
+    parameter TIMER_WIDTH = 24,
+    parameter N_DDS = 8,
+    parameter U_DDS_DATA_WIDTH = 16,
+    parameter U_DDS_ADDR_WIDTH = 7,
+    parameter U_DDS_CTRL_WIDTH = 3,
+    parameter N_COUNTER = 1,
+    parameter DDS_OPCODE_WIDTH = 16,
+    parameter DDS_OPERAND_WIDTH = 32,
 
-   parameter MAX_VAL = 24'hFFFFFF;
-   parameter BUS_DATA_WIDTH = 32;
-   parameter RESULT_WIDTH = 32;
-   parameter TTL_WIDTH = 32;
-   parameter TIMER_WIDTH = 24;
-   parameter N_DDS = 8;
-   parameter U_DDS_DATA_WIDTH = 16;
-   parameter U_DDS_ADDR_WIDTH = 7;
-   parameter U_DDS_CTRL_WIDTH = 3;
-   parameter N_COUNTER = 1;
-   parameter DDS_OPCODE_WIDTH = 16;
-   parameter DDS_OPERAND_WIDTH = 32;
+    parameter INSTRUCTION_BITA = 63,
+    parameter INSTRUCTION_BITB = 60,
+    parameter PMT_ENABLE_BIT = 63 - 5, // 0x04000000
+    parameter PMT_INVERT_SYNC_BIT = 63 - 6, // 0x02000000
+    parameter ENABLE_TIMING_CHECK_BIT = 63 - 4, // 0x08000000
+    parameter TIMER_BITA = 63 - 8,
+    parameter TIMER_BITB = TIMER_BITA - TIMER_WIDTH + 1,
+    parameter TTL_BITA = 31,
+    parameter TTL_BITB = 0,
+    parameter FIFO_DEPTH = 256,
+    parameter FIFO_ADDR_BTS = 8)
+   (input clock, input resetn,
+    input [(BUS_DATA_WIDTH - 1):0] bus_data,
+    input bus_data_ready, output bus_data_ack,
+    output [(RESULT_WIDTH - 1):0] rFIFO_data, output rFIFO_WrReq,
+    output [(U_DDS_ADDR_WIDTH - 1):0] dds_addr,
+    input [(U_DDS_DATA_WIDTH - 1):0] dds_data_I,
+    output [(U_DDS_DATA_WIDTH - 1):0] dds_data_O,
+    output dds_data_T, output [(U_DDS_CTRL_WIDTH - 1):0] dds_control,
+    output [(U_DDS_ADDR_WIDTH - 1):0] dds_addr2,
+    input [(U_DDS_DATA_WIDTH - 1):0] dds_data2_I,
+    output [(U_DDS_DATA_WIDTH - 1):0] dds_data2_O,
+    output dds_data2_T, output [(U_DDS_CTRL_WIDTH - 1):0] dds_control2,
+    output [(N_DDS - 1):0] dds_cs,
+    output [1:0] dds_FUD, output dds_syncO, input dds_syncI,
+    output [(TTL_WIDTH - 1):0] ttl_out,
+    output reg underflow,
+    input [(N_COUNTER - 1):0] counter_in,
+    input sync_in,
+    input correlation_reset,
+    output [(N_CORR_BINS * N_CORR_BITS - 1):0] correlation_data_out,
+    output correlation_data_ready,
+    output reg pulses_finished, input pulse_controller_hold,
+    input init, output clock_out);
 
-   parameter INSTRUCTION_BITA = 63;
-   parameter INSTRUCTION_BITB = 60;
-   parameter PMT_ENABLE_BIT = 63 - 5; // 0x04000000
-   parameter PMT_INVERT_SYNC_BIT = 63 - 6; // 0x02000000
-   parameter ENABLE_TIMING_CHECK_BIT = 63 - 4; // 0x08000000
-   parameter TIMER_BITA = 63 - 8;
-   parameter TIMER_BITB = TIMER_BITA - TIMER_WIDTH + 1;
-   parameter TTL_BITA = 31;
-   parameter TTL_BITB = 0;
-
-   input clock;
-   input resetn;
-   input init; // init is like reset, but hold the current TTL outputs
-   // toggle this at the start of the sequence.
-
-   input pulse_controller_hold; // pulses wait until this goes low
-
-   input [(BUS_DATA_WIDTH - 1):0] bus_data;
-   input bus_data_ready;
-   output bus_data_ack; // acknowledge that we read the data
-
-   output [(RESULT_WIDTH - 1):0] rFIFO_data;
-   output rFIFO_WrReq;
-
-   output [(U_DDS_ADDR_WIDTH-1):0] dds_addr;
-   output [(U_DDS_ADDR_WIDTH-1):0] dds_addr2;
-
-   // tri-state for dds_data to allow read & write
-   output [(U_DDS_DATA_WIDTH-1):0] dds_data_O;
-   input [(U_DDS_DATA_WIDTH-1):0] dds_data_I;
-   output dds_data_T;
-
-   output [(U_DDS_DATA_WIDTH-1):0] dds_data2_O;
-   input [(U_DDS_DATA_WIDTH-1):0] dds_data2_I;
-   output dds_data2_T;
-
-   output [(U_DDS_CTRL_WIDTH-1):0] dds_control;
-   output [(U_DDS_CTRL_WIDTH-1):0] dds_control2;
-
-   output [1:0] dds_FUD;
-   output [(N_DDS-1):0] dds_cs;
-   input dds_syncI;
-   output dds_syncO;
-
-   input [(N_COUNTER-1):0] counter_in;
-
-   input sync_in;
-   input correlation_reset;
-   output [(N_CORR_BINS * N_CORR_BITS - 1):0] correlation_data_out;
-   output correlation_data_ready;
-
-   output [(TTL_WIDTH - 1):0] ttl_out;
-   output reg underflow;
-   output reg pulses_finished;
-
-   output clock_out;
    reg [7:0] clock_out_div;
 
    reg [(TTL_WIDTH - 1):0] ttl_out_reg;
+   wire [1:0] debug;
+   assign ttl_out = {ttl_out_reg[31:2], ttl_out_reg[1:0] ^ debug[1:0]};
+
    reg [(TIMER_WIDTH - 1):0] timer;
    reg [(TIMER_WIDTH - 1):0] iFIFO_timer;
 
    reg [2:0] state;
-
    reg timing_check;
-
    reg data_valid;
 
    wire reset;
@@ -180,13 +150,10 @@ module timing_controller(clock, resetn,
                                        .out(clock_out),
                                        .div(clock_out_div));
 
-   wire [1:0]debug;
-   assign ttl_out = {ttl_out_reg[31:2], ttl_out_reg[1:0] ^ debug[1:0]};
-
    reg dds_we;
 
-   reg [(DDS_OPCODE_WIDTH-1):0]  dds_opcode;
-   reg [(DDS_OPERAND_WIDTH-1):0] dds_operand;
+   reg [(DDS_OPCODE_WIDTH - 1):0] dds_opcode;
+   reg [(DDS_OPERAND_WIDTH - 1):0] dds_operand;
 
    wire dds_WrReq;
    wire [0:31] dds_result;
@@ -260,8 +227,6 @@ module timing_controller(clock, resetn,
    assign extended_bus_data[63:32] = bus_data[31:0];
 
    // FIFO data
-   parameter FIFO_DEPTH = 256;
-   parameter FIFO_ADDR_BTS = 8;
    reg [63:0] fifo [0:(FIFO_DEPTH - 1)];
    reg [31:0] fifo_low_word;
    reg [(FIFO_ADDR_BTS - 1):0] fifo_write_addr;
@@ -287,7 +252,7 @@ module timing_controller(clock, resetn,
    wire pulses_hold;
    assign pulses_hold = pulse_controller_hold & ~force_release;
 
-   always @(posedge clock or posedge reset) begin
+   always @(posedge clock, posedge reset) begin
       if (reset | init) begin
          if (reset) begin
             ttl_out_reg <= 0;
