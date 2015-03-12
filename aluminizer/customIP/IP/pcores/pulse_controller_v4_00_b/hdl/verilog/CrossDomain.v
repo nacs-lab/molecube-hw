@@ -8,10 +8,7 @@
 
  */
 
-module CrossDomain(input InA,
-                   input clkB,
-                   output OutB);
-
+module CrossDomain(input InA, input clkB, output OutB);
    // this changes level on rising edges of InA
    reg Toggle;
    always @(posedge InA) Toggle <= Toggle ^ InA;

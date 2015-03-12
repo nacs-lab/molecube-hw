@@ -120,13 +120,12 @@ module dds_controller(clock, reset, write_enable, opcode, operand,
    input dds_syncI;
    output dds_syncO;
 
-
    // delay dds_addr by 1 cycle (10 ns)
    // to meet timing for AD9914 (tASU)
-   reg [(U_DDS_ADDR_WIDTH-1):0] dds_addr_reg;
-   reg [(U_DDS_ADDR_WIDTH-1):0] dds_addr_reg_next;
+   reg [(U_DDS_ADDR_WIDTH - 1):0] dds_addr_reg;
+   reg [(U_DDS_ADDR_WIDTH - 1):0] dds_addr_reg_next;
 
-   reg [(U_DDS_DATA_WIDTH-1):0] dds_data_reg;
+   reg [(U_DDS_DATA_WIDTH - 1):0] dds_data_reg;
    reg dds_data_T_reg;
 
    reg dds_w_strobe_n;
@@ -144,8 +143,12 @@ module dds_controller(clock, reset, write_enable, opcode, operand,
    assign dds_data2_O = active_dds_bank[1] ? dds_data_reg : 1'b0;
    assign dds_data2_T = active_dds_bank[1] ? dds_data_T_reg : 1'b0;
 
-   assign dds_control = active_dds_bank[0] ? {dds_reset, dds_r_strobe_n, dds_w_strobe_n} : {1'b0, 1'b1, 1'b1};
-   assign dds_control2 = active_dds_bank[1] ? {dds_reset, dds_r_strobe_n, dds_w_strobe_n} : {1'b0, 1'b1, 1'b1};
+   assign dds_control = (active_dds_bank[0] ?
+                         {dds_reset, dds_r_strobe_n, dds_w_strobe_n} :
+                         {1'b0, 1'b1, 1'b1});
+   assign dds_control2 = (active_dds_bank[1] ?
+                          {dds_reset, dds_r_strobe_n, dds_w_strobe_n} :
+                          {1'b0, 1'b1, 1'b1});
 
    output reg [(RESULT_WIDTH - 1):0] result_data;
    output reg result_WrReq;
@@ -168,8 +171,8 @@ module dds_controller(clock, reset, write_enable, opcode, operand,
    generate
       if (FUD_DDR_MODE==0) begin
          // FUD idles low.  transition to high transfers registers into DDS core
-         assign dds_FUD[0] =  active_dds_bank[0] ? dds_FUDx : 1'b0;
-         assign dds_FUD[1] =  active_dds_bank[1] ? dds_FUDx : 1'b0;
+         assign dds_FUD[0] = active_dds_bank[0] ? dds_FUDx : 1'b0;
+         assign dds_FUD[1] = active_dds_bank[1] ? dds_FUDx : 1'b0;
       end else begin
          // Setup dds_FUD as DDR signal (goes high for only a half-period of
          // clock)
@@ -205,13 +208,13 @@ module dds_controller(clock, reset, write_enable, opcode, operand,
    endgenerate
 
    /*
-    Create dds_syncO signal (clock/16) with software-adjustable phase for
-    dynamic alignment of DDS SYNC_CLK with dds_FUD.
-    Adjustment steps are 1/56 of VCO period (but 4 steps will occur per update).
-
-    Use MMCME2_ADV which contains a PLL.
-    VCO has a range of 600 - 1200 MHz.  Operate at 800 MHz.
-    See UG472.
+    * Create dds_syncO signal (clock/16) with software-adjustable phase for
+    * dynamic alignment of DDS SYNC_CLK with dds_FUD.
+    * Adjustment steps are 1/56 of VCO period (but 4 steps will occur per update).
+    *
+    * Use MMCME2_ADV which contains a PLL.
+    * VCO has a range of 600 - 1200 MHz.  Operate at 800 MHz.
+    * See UG472.
     */
 
    // MMCME2_ADV: Advanced Mixed Mode Clock Manager

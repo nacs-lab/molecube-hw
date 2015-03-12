@@ -1,8 +1,9 @@
 `timescale 1ns / 1ps
 
-//PMT counter.  Effort is made to get valid results despite the input pulses having undefined timing.
-//The counter counts while count_enable is high.
-//The result is transferred to the output register by pulsing get_result high.
+// PMT counter.  Effort is made to get valid results despite the input pulses
+// having undefined timing.
+// The counter counts while count_enable is high.
+// The result is transferred to the output register by pulsing get_result high.
 
 module PMT_counter(clock, reset, counter_in, count_enable, get_result,
                    result_data, result_WrReq);
@@ -34,41 +35,40 @@ module PMT_counter(clock, reset, counter_in, count_enable, get_result,
    assign gated_counter_in = counter_in & counter_gate;
 
    //only count while data is not being pushed onto FIFO
-   always @(posedge gated_counter_in)
-     begin
-        counter = counter + 1;
-     end
+   always @(posedge gated_counter_in) begin
+      counter = counter + 1;
+   end
 
-   always @(posedge clock or posedge reset)
-     begin
-        if(reset) begin
-           result_WrReq_reg <= 0;
-           fifo_write_state <= 0;
-           counter_out_reg <=0;
-        end else begin
-           case(fifo_write_state)
-             0: begin
-                counter_out_reg <= 0;
+   always @(posedge clock or posedge reset) begin
+      if (reset) begin
+         result_WrReq_reg <= 0;
+         fifo_write_state <= 0;
+         counter_out_reg <=0;
+      end else begin
+         case(fifo_write_state)
+           0: begin
+              counter_out_reg <= 0;
 
-                if(get_result == 1) begin //clock data into result FIFO on rising edges of get_result
-                   fifo_write_state <= 1;
-                end
-             end
+              if (get_result == 1) begin
+                 //clock data into result FIFO on rising edges of get_result
+                 fifo_write_state <= 1;
+              end
+           end
 
-             //add single cycle delay, to allow counter to settle down
-             1: begin
-                result_WrReq_reg <= 1;
-                fifo_write_state <= 2;
-                counter_out_reg <= counter;
-             end
+           //add single cycle delay, to allow counter to settle down
+           1: begin
+              result_WrReq_reg <= 1;
+              fifo_write_state <= 2;
+              counter_out_reg <= counter;
+           end
 
-             2: begin
-                result_WrReq_reg <= 0;
-                if(get_result == 0) begin //wait for get_result to go low
-                   fifo_write_state <= 0;
-                end
-             end
-           endcase
-        end
-     end
+           2: begin
+              result_WrReq_reg <= 0;
+              if(get_result == 0) begin //wait for get_result to go low
+                 fifo_write_state <= 0;
+              end
+           end
+         endcase
+      end
+   end
 endmodule
