@@ -81,7 +81,6 @@ module timing_controller
   #(parameter N_CORR_BINS = 16,
     parameter N_CORR_BITS = 8,
 
-    parameter MAX_VAL = 24'hFFFFFF,
     parameter BUS_DATA_WIDTH = 32,
     parameter RESULT_WIDTH = 32,
     parameter TTL_WIDTH = 32,
@@ -366,7 +365,7 @@ module timing_controller
               if (timer == 3) begin
                  state <= 0;  // minimum pulse time is 3 cycles
               end else begin
-                 timer <= timer + MAX_VAL; // decrement timer
+                 timer <= timer + 24'hFFFFFF; // decrement timer
               end
            end
          endcase
