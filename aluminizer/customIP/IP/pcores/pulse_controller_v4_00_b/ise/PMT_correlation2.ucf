@@ -1,4 +1,0 @@
-#check timing
-
-NET "CLK" TNM_NET = "CLK";
-TIMESPEC "TS_CLK" = PERIOD "CLK" 2.5 ns HIGH 50%;
