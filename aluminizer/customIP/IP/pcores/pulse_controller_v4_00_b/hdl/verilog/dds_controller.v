@@ -60,66 +60,42 @@ module dds_controller
     parameter U_DDS_ADDR_WIDTH = 7,
     parameter U_DDS_CTRL_WIDTH = 3,
     parameter DDS_OPCODE_WIDTH = 16,
-    parameter DDS_OPERAND_WIDTH = 32)
-   (clock, reset, write_enable, opcode, operand,
-    dds_addr, dds_data_I, dds_data_O, dds_data_T, dds_control,
-    dds_addr2, dds_data2_I, dds_data2_O, dds_data2_T,
-    dds_control2, dds_cs, dds_FUD, dds_syncO, dds_syncI,
-    result_data, result_WrReq);
+    parameter DDS_OPERAND_WIDTH = 32,
+
+    localparam RESULT_WIDTH = 32)
+   (input clock,
+    input reset,
+    input write_enable,
+    input [(DDS_OPCODE_WIDTH - 1):0] opcode,
+    input [(DDS_OPERAND_WIDTH - 1):0] operand,
+    // external signals for DDS bank
+    output [(U_DDS_ADDR_WIDTH - 1):0] dds_addr,
+    // tri-state for dds_data to allow read & write
+    input [(U_DDS_DATA_WIDTH - 1):0] dds_data_I,
+    output [(U_DDS_DATA_WIDTH - 1):0] dds_data_O,
+    // dds_data_T = 0 means output, dds_data_T = 1 means high-Z
+    output dds_data_T,
+    output [(U_DDS_CTRL_WIDTH - 1):0] dds_control,
+    // external signals for 2nd DDS bank
+    output [(U_DDS_ADDR_WIDTH - 1):0] dds_addr2,
+    // tri-state for dds_data to allow read & write
+    input [(U_DDS_DATA_WIDTH - 1):0] dds_data2_I,
+    output [(U_DDS_DATA_WIDTH - 1):0] dds_data2_O,
+    // dds_data_T = 0 means output, dds_data_T = 1 means high-Z
+    output dds_data2_T,
+    output [(U_DDS_CTRL_WIDTH - 1):0] dds_control2,
+    output reg [(N_DDS - 1):0] dds_cs,
+    // FUD = IO_UPDATE on DDS boards can be lowered on posedge of clock.
+    // It will return to 1 on negedge of clock.
+    // This short pulse (5 ns or so) allows alignment of DDS SYNC_CLK
+    // and SYNC_IN/OUT with FUD. The signal idles high.
+    output [1:0] dds_FUD,
+    output dds_syncO,
+    input dds_syncI,
+    output reg [(RESULT_WIDTH - 1):0] result_data,
+    output reg result_WrReq);
 
    // synthesis attribute iostandard of dds_bus is LVCMOS33;
-   localparam RESULT_WIDTH = 32;
-
-   localparam DDS_BANK_SIZE = 11;
-
-   localparam MAX_CYCLES = 7;
-   localparam CLK_DIV = 3;
-
-   // first and last bit of DDS id in opcode
-   localparam DDS_ID_A = 4;
-   localparam DDS_ID_B = DDS_ID_A + 5 - 1;
-
-   // first and last bit of DDS memory register in opcode
-   localparam DDS_REG_A = DDS_ID_B + 1;
-   localparam DDS_REG_B = DDS_REG_A + U_DDS_ADDR_WIDTH - 1;
-
-   input clock;
-   input reset;
-   input write_enable;
-   input [(DDS_OPCODE_WIDTH - 1):0]  opcode;
-   input [(DDS_OPERAND_WIDTH - 1):0] operand;
-
-   // external signals for DDS bank
-   output [(U_DDS_ADDR_WIDTH - 1):0] dds_addr;
-
-   // tri-state for dds_data to allow read & write
-   output [(U_DDS_DATA_WIDTH - 1):0] dds_data_O;
-   input  [(U_DDS_DATA_WIDTH - 1):0] dds_data_I;
-   output dds_data_T; // dds_data_T = 0 means output, dds_data_T = 1 means high-Z
-
-   output [(U_DDS_CTRL_WIDTH - 1):0] dds_control;
-
-   // external signals for 2nd DDS bank
-   output [(U_DDS_ADDR_WIDTH - 1):0] dds_addr2;
-
-   // tri-state for dds_data to allow read & write
-   output [(U_DDS_DATA_WIDTH - 1):0] dds_data2_O;
-   input  [(U_DDS_DATA_WIDTH - 1):0] dds_data2_I;
-   // dds_data_T = 0 means output, dds_data_T = 1 means high-Z
-   output dds_data2_T;
-
-   output [(U_DDS_CTRL_WIDTH - 1):0] dds_control2;
-
-   output reg [(N_DDS - 1):0] dds_cs;
-
-   // FUD = IO_UPDATE on DDS boards can be lowered on posedge of clock.
-   // It will return to 1 on negedge of clock.
-   // This short pulse (5 ns or so) allows alignment of DDS SYNC_CLK
-   // and SYNC_IN/OUT with FUD. The signal idles high.
-   output [1:0] dds_FUD;
-
-   input dds_syncI;
-   output dds_syncO;
 
    // delay dds_addr by 1 cycle (10 ns)
    // to meet timing for AD9914 (tASU)
@@ -150,9 +126,6 @@ module dds_controller
    assign dds_control2 = (active_dds_bank[1] ?
                           {dds_reset, dds_r_strobe_n, dds_w_strobe_n} :
                           {1'b0, 1'b1, 1'b1});
-
-   output reg [(RESULT_WIDTH - 1):0] result_data;
-   output reg result_WrReq;
 
    reg [(DDS_OPERAND_WIDTH - 1):0] operand_reg;
    reg [(DDS_OPCODE_WIDTH - 1):0] opcode_reg;
@@ -266,6 +239,17 @@ module dds_controller
 end
     */
 
+   localparam DDS_BANK_SIZE = 11;
+   localparam MAX_CYCLES = 7;
+   localparam CLK_DIV = 3;
+
+   // first and last bit of DDS id in opcode
+   localparam DDS_ID_A = 4;
+   localparam DDS_ID_B = DDS_ID_A + 5 - 1;
+
+   // first and last bit of DDS memory register in opcode
+   localparam DDS_REG_A = DDS_ID_B + 1;
+   localparam DDS_REG_B = DDS_REG_A + U_DDS_ADDR_WIDTH - 1;
    always @(posedge clock) begin
       if (reset) begin
          cycle <= 0;
@@ -290,22 +274,21 @@ end
          ddr_reset <= 1;
 
          /* remove DDS sync until finished
-          PSEN <= 0;
-          PSINCDEC <= 0;
-          syncI_counter <= 0;
+          * PSEN <= 0;
+          * PSINCDEC <= 0;
+          * syncI_counter <= 0;
           */
-
       end else begin
          ddr_reset <= 0;
-         dds_addr_reg  <= dds_addr_reg_next;
+         dds_addr_reg <= dds_addr_reg_next;
 
-         if(cycle == 0) begin
-            dds_w_strobe_n  <= 1;
-            dds_r_strobe_n  <= 1;
+         if (cycle == 0) begin
+            dds_w_strobe_n <= 1;
+            dds_r_strobe_n <= 1;
             dds_reset <= 0;
 
             dds_addr_reg_next <= 0;
-            dds_data_reg  <= 0;
+            dds_data_reg <= 0;
             dds_data_T_reg <= 0;
 
             result_WrReq <= 0;
