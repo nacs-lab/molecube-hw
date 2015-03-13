@@ -204,7 +204,7 @@ module counter(count_o, clk_i, reset_i, photon_i, sync_i);
      //   (sync_f & photon_f) count_o <= count_o + 1'b1;
      if (reset_i) begin
        count_o <= {(N_BITS){1'b0}};
-     end else if begin
-        (photon_f) count_o <= count_o + 1'b1;
+     end else if (photon_f) begin
+        count_o <= count_o + 1'b1;
      end
 endmodule
