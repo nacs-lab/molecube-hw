@@ -45,7 +45,6 @@
  PORT dds_FUD_pin = dds_FUD, DIR = O, VEC = [1:0]
  PORT dds_syncI_pin = dds_syncI, DIR = I
  PORT dds_syncO_pin = dds_syncO, DIR = O
-# PORT clock_out = clock_out, DIR = O
  PORT clock_in_pin = clock_in, DIR = I, SIGIS = CLK, CLK_FREQ = 100000000
  PORT clock_out1_pin = clock_out, DIR = O, SIGIS = CLK, CLK_FREQ = 100000000
 
@@ -58,23 +57,6 @@
  PORT axi_spi_1_MOSI_pin = axi_spi_1_MOSI, DIR = O
  PORT axi_spi_1_SS_pin = axi_spi_1_SS, DIR = O
 
-
-# PORT axi_spi_2_SCK_pin = axi_spi_2_SCK, DIR = O
-# PORT axi_spi_2_MISO_pin = axi_spi_2_MISO, DIR = I
-# PORT axi_spi_2_MOSI_pin = axi_spi_2_MOSI, DIR = O
-# PORT axi_spi_2_SS_pin = axi_spi_2_SS, DIR = O
-# PORT axi_spi_3_SCK_pin = axi_spi_3_SCK, DIR = O
-# PORT axi_spi_3_MISO_pin = axi_spi_3_MISO, DIR = I
-# PORT axi_spi_3_MOSI_pin = axi_spi_3_MOSI, DIR = O
-# PORT axi_spi_3_SS_pin = axi_spi_3_SS, DIR = O
-# PORT axi_spi_4_SCK_pin = axi_spi_4_SCK, DIR = O
-# PORT axi_spi_4_MISO_pin = axi_spi_4_MISO, DIR = I
-# PORT axi_spi_4_MOSI_pin = axi_spi_4_MOSI, DIR = O
-# PORT axi_spi_4_SS_pin = axi_spi_4_SS, DIR = O
-# PORT axi_spi_5_SCK_pin = axi_spi_5_SCK, DIR = O
-# PORT axi_spi_5_MISO_pin = axi_spi_5_MISO, DIR = I
-# PORT axi_spi_5_MOSI_pin = axi_spi_5_MOSI, DIR = O
-# PORT axi_spi_5_SS_pin = axi_spi_5_SS, DIR = O
 BEGIN processing_system7
  PARAMETER INSTANCE = processing_system7_0
  PARAMETER HW_VER = 4.03.a
@@ -139,7 +121,6 @@ BEGIN processing_system7
  PORT MIO = processing_system7_0_MIO
  PORT PS_SRSTB = processing_system7_0_PS_SRSTB
  PORT PS_CLK = processing_system7_0_PS_CLK
- #PORT PS_CLK = clock_out0
  PORT PS_PORB = processing_system7_0_PS_PORB
  PORT DDR_Clk = processing_system7_0_DDR_Clk
  PORT DDR_Clk_n = processing_system7_0_DDR_Clk_n
@@ -189,7 +170,6 @@ BEGIN pulse_controller
  PORT sync_in = sync_counter0_in
 END
 
-# PORT clock_out = clock_out
 BEGIN util_ds_buf
  PARAMETER INSTANCE = util_ds_buf_0
  PARAMETER HW_VER = 1.01.a
@@ -243,70 +223,7 @@ BEGIN clock_generator
  PARAMETER INSTANCE = clock_generator_0
  PARAMETER HW_VER = 4.03.a
  PARAMETER C_CLKIN_FREQ = 100000000
- #PARAMETER C_CLKOUT0_FREQ = 33333333
  PARAMETER C_CLKOUT1_FREQ = 100000000
  PORT CLKIN = clock_in
- #PORT CLKOUT0 = clock_out0
  PORT CLKOUT1 = clock_out1
 END
-
-# BEGIN axi_spi
-# PARAMETER INSTANCE = axi_spi_2
-# PARAMETER HW_VER = 1.02.a
-# PARAMETER C_BASEADDR = 0x42080000
-# PARAMETER C_HIGHADDR = 0x4208ffff
-# PARAMETER C_SCK_RATIO = 8
-# PARAMETER C_FIFO_EXIST = 0
-# BUS_INTERFACE S_AXI = axi_interconnect_1
-# PORT S_AXI_ACLK = processing_system7_0_FCLK_CLK0
-# PORT SCK_O = axi_spi_2_SCK
-# PORT MISO_I = axi_spi_2_MISO
-# PORT MOSI_O = axi_spi_2_MOSI
-# PORT SS_O = axi_spi_2_SS
-# PORT IP2INTC_Irpt = axi_spi_2_IP2INTC_Irpt
-# END
-# BEGIN axi_spi
-# PARAMETER INSTANCE = axi_spi_3
-# PARAMETER HW_VER = 1.02.a
-# PARAMETER C_BASEADDR = 0x42C00000
-# PARAMETER C_HIGHADDR = 0x42C0ffff
-# PARAMETER C_SCK_RATIO = 8
-# PARAMETER C_FIFO_EXIST = 0
-# BUS_INTERFACE S_AXI = axi_interconnect_1
-# PORT S_AXI_ACLK = processing_system7_0_FCLK_CLK0
-# PORT SCK_O = axi_spi_3_SCK
-# PORT MISO_I = axi_spi_3_MISO
-# PORT MOSI_O = axi_spi_3_MOSI
-# PORT SS_O = axi_spi_3_SS
-# PORT IP2INTC_Irpt = axi_spi_3_IP2INTC_Irpt
-# END
-# BEGIN axi_spi
-# PARAMETER INSTANCE = axi_spi_4
-# PARAMETER HW_VER = 1.02.a
-# PARAMETER C_BASEADDR = 0x43000000
-# PARAMETER C_HIGHADDR = 0x4300ffff
-# PARAMETER C_SCK_RATIO = 8
-# PARAMETER C_FIFO_EXIST = 0
-# BUS_INTERFACE S_AXI = axi_interconnect_1
-# PORT S_AXI_ACLK = processing_system7_0_FCLK_CLK0
-# PORT SCK_O = axi_spi_4_SCK
-# PORT MISO_I = axi_spi_4_MISO
-# PORT MOSI_O = axi_spi_4_MOSI
-# PORT SS_O = axi_spi_4_SS
-# PORT IP2INTC_Irpt = axi_spi_4_IP2INTC_Irpt
-# END
-# BEGIN axi_spi
-# PARAMETER INSTANCE = axi_spi_5
-# PARAMETER HW_VER = 1.02.a
-# PARAMETER C_BASEADDR = 0x43040000
-# PARAMETER C_HIGHADDR = 0x4304ffff
-# PARAMETER C_SCK_RATIO = 8
-# PARAMETER C_FIFO_EXIST = 0
-# BUS_INTERFACE S_AXI = axi_interconnect_1
-# PORT S_AXI_ACLK = processing_system7_0_FCLK_CLK0
-# PORT SCK_O = axi_spi_5_SCK
-# PORT MISO_I = axi_spi_5_MISO
-# PORT MOSI_O = axi_spi_5_MOSI
-# PORT SS_O = axi_spi_5_SS
-# PORT IP2INTC_Irpt = axi_spi_5_IP2INTC_Irpt
-# END
