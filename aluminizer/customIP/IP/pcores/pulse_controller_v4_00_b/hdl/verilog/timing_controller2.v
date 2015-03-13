@@ -191,9 +191,6 @@ module timing_controller
    wire PMT_WrReq;
    wire [31:0] PMT_result;
 
-   wire sync2;
-   assign sync2 = sync_in ^ PMT_invert_sync;
-
    PMT_counter#(.N_COUNTER(N_COUNTER))
    PMT_counter_inst(.clock(clock),
                     .reset(reset),
@@ -210,7 +207,7 @@ module timing_controller
                         .data_out(correlation_data_out),
                         .dataready_out(correlation_data_ready),
                         .pulse_in(counter_in & PMT_enable),
-                        .sync_in(sync2),
+                        .sync_in(sync_in ^ PMT_invert_sync),
                         .debug(debug));
 
    reg [31:0] loopback_data;
