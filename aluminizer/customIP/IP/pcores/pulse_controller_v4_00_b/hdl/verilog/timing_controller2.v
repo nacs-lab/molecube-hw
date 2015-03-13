@@ -126,38 +126,25 @@ module timing_controller
     input init,
     output clock_out);
 
-   reg [7:0] clock_out_div;
-
    reg [(TTL_WIDTH - 1):0] ttl_out_reg;
    wire [1:0] debug;
    assign ttl_out = {ttl_out_reg[31:2], ttl_out_reg[1:0] ^ debug[1:0]};
 
-   localparam TIMER_WIDTH = 24;
-   reg [(TIMER_WIDTH - 1):0] timer;
-   reg [(TIMER_WIDTH - 1):0] iFIFO_timer;
+   wire reset = ~resetn;
 
-   reg [2:0] state;
-   reg timing_check;
-   reg data_valid;
-
-   wire reset;
-   assign reset = ~resetn;
-
+   reg [7:0] clock_out_div;
    clock_out_controller clock_out_ctrl(.clock(clock),
                                        .reset(reset),
                                        .out(clock_out),
                                        .div(clock_out_div));
 
-   reg dds_we;
-
    localparam DDS_OPCODE_WIDTH = 16;
    localparam DDS_OPERAND_WIDTH = 32;
+   reg dds_we;
    reg [(DDS_OPCODE_WIDTH - 1):0] dds_opcode;
    reg [(DDS_OPERAND_WIDTH - 1):0] dds_operand;
-
    wire dds_WrReq;
    wire [0:31] dds_result;
-
    dds_controller#(.N_DDS(N_DDS),
                    .DDS_OPCODE_WIDTH(DDS_OPCODE_WIDTH),
                    .DDS_OPERAND_WIDTH(DDS_OPERAND_WIDTH),
@@ -212,12 +199,9 @@ module timing_controller
 
    reg [31:0] loopback_data;
    reg loopback_WrReq;
-
    // allow PMT_counter or DDS_controller or loop back to write into the rFIFO
    assign rFIFO_WrReq = dds_WrReq | PMT_WrReq | loopback_WrReq;
    assign rFIFO_data = dds_result | PMT_result | loopback_data;
-
-   reg [63:0] instruction;
 
    wire [63:0] extended_bus_data;
    assign extended_bus_data[31:0] = 32'h00000000;
@@ -232,24 +216,12 @@ module timing_controller
    reg [(FIFO_ADDR_BTS - 1):0] fifo_read_addr;
    reg [(FIFO_ADDR_BTS - 1):0] fifo_prev_read_addr;
 
-
    // Control reading of 32 bit words into 64 bit wide FIFO
    reg fifo_next_word_dest;
 
    // acknowledge if FIFO has space
    assign bus_data_ack = ((fifo_write_addr !== fifo_prev_read_addr) &&
                           bus_data_ready);
-
-   wire fifo_full;
-   assign fifo_full = (fifo_write_addr == fifo_prev_read_addr);
-
-   // goes high when fifo_full is true.  also goes low at last pulse;
-   reg force_release;
-
-   // pulses_hold will be released if FIFO is full or pulse_controller_hold is
-   // low once released, the controller runs until it is done
-   wire pulses_hold;
-   assign pulses_hold = pulse_controller_hold & ~force_release;
 
    localparam INSTRUCTION_BITA = 63;
    localparam INSTRUCTION_BITB = 60;
@@ -260,6 +232,18 @@ module timing_controller
    localparam TIMER_BITB = TIMER_BITA - TIMER_WIDTH + 1;
    localparam TTL_BITA = 31;
    localparam TTL_BITB = 0;
+   localparam TIMER_WIDTH = 24;
+
+   reg [(TIMER_WIDTH - 1):0] timer;
+   reg [2:0] state;
+   reg timing_check;
+   reg [63:0] instruction;
+   wire fifo_full = (fifo_write_addr == fifo_prev_read_addr);
+   // goes high when fifo_full is true.  also goes low at last pulse;
+   reg force_release;
+   // pulses_hold will be released if FIFO is full or pulse_controller_hold is
+   // low once released, the controller runs until it is done
+   wire pulses_hold = pulse_controller_hold & ~force_release;
    always @(posedge clock, posedge reset) begin
       if (reset | init) begin
          if (reset) begin
