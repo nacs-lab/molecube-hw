@@ -12,7 +12,7 @@
  * The DDS chips are AD9914, and the data sheet contains many details about
  * device operation and programming.
  *
- * All DDS commands require (MAX_CYCLES+1)*(CLK_DIV+1)+1 cycles.
+ * All DDS commands require (MAX_CYCLES + 1)*(CLK_DIV + 1) + 1 cycles.
  *
  * The signals clock, reset, write_enable, opcode, operand come from the timing
  * controller. A new opcode & operand are loaded upon write_enable going high.
@@ -54,60 +54,61 @@
  * Work in progress: align DDS SYNC_CLK with FPGA clock
  */
 
-module dds_controller(clock, reset, write_enable, opcode, operand,
-                      dds_addr, dds_data_I, dds_data_O, dds_data_T, dds_control,
-                      dds_addr2, dds_data2_I, dds_data2_O, dds_data2_T,
-                      dds_control2, dds_cs, dds_FUD, dds_syncO, dds_syncI,
-                      result_data, result_WrReq);
+module dds_controller
+  #(parameter N_DDS = 22,
+    parameter U_DDS_DATA_WIDTH = 16,
+    parameter U_DDS_ADDR_WIDTH = 7,
+    parameter U_DDS_CTRL_WIDTH = 3,
+    parameter DDS_OPCODE_WIDTH = 16,
+    parameter DDS_OPERAND_WIDTH = 32)
+   (clock, reset, write_enable, opcode, operand,
+    dds_addr, dds_data_I, dds_data_O, dds_data_T, dds_control,
+    dds_addr2, dds_data2_I, dds_data2_O, dds_data2_T,
+    dds_control2, dds_cs, dds_FUD, dds_syncO, dds_syncI,
+    result_data, result_WrReq);
 
    // synthesis attribute iostandard of dds_bus is LVCMOS33;
+   localparam RESULT_WIDTH = 32;
 
-   parameter N_DDS = 22;
-   parameter DDS_BANK_SIZE     = 11;
-   parameter U_DDS_DATA_WIDTH  = 16;
-   parameter U_DDS_ADDR_WIDTH  = 7;
-   parameter U_DDS_CTRL_WIDTH  = 3;
-   parameter DDS_OPCODE_WIDTH  = 16;
-   parameter DDS_OPERAND_WIDTH = 32;
-   parameter RESULT_WIDTH      = 32;
+   localparam DDS_BANK_SIZE = 11;
 
-   parameter MAX_CYCLES = 7;
-   parameter CLK_DIV = 3;
+   localparam MAX_CYCLES = 7;
+   localparam CLK_DIV = 3;
 
    // first and last bit of DDS id in opcode
-   parameter DDS_ID_A = 4;
-   parameter DDS_ID_B = DDS_ID_A + 5 - 1;
+   localparam DDS_ID_A = 4;
+   localparam DDS_ID_B = DDS_ID_A + 5 - 1;
 
    // first and last bit of DDS memory register in opcode
-   parameter DDS_REG_A = DDS_ID_B+1;
-   parameter DDS_REG_B = DDS_REG_A + U_DDS_ADDR_WIDTH - 1;
+   localparam DDS_REG_A = DDS_ID_B + 1;
+   localparam DDS_REG_B = DDS_REG_A + U_DDS_ADDR_WIDTH - 1;
 
-   input  clock;
-   input  reset;
-   input  write_enable;
-   input  [(DDS_OPCODE_WIDTH-1):0]  opcode;
-   input  [(DDS_OPERAND_WIDTH-1):0] operand;
+   input clock;
+   input reset;
+   input write_enable;
+   input [(DDS_OPCODE_WIDTH - 1):0]  opcode;
+   input [(DDS_OPERAND_WIDTH - 1):0] operand;
 
    // external signals for DDS bank
-   output [(U_DDS_ADDR_WIDTH-1):0] dds_addr;
+   output [(U_DDS_ADDR_WIDTH - 1):0] dds_addr;
 
    // tri-state for dds_data to allow read & write
-   output [(U_DDS_DATA_WIDTH-1):0] dds_data_O;
-   input  [(U_DDS_DATA_WIDTH-1):0] dds_data_I;
-   output dds_data_T; //dds_data_T = 0 means output, dds_data_T = 1 means high-Z
+   output [(U_DDS_DATA_WIDTH - 1):0] dds_data_O;
+   input  [(U_DDS_DATA_WIDTH - 1):0] dds_data_I;
+   output dds_data_T; // dds_data_T = 0 means output, dds_data_T = 1 means high-Z
 
-   output [(U_DDS_CTRL_WIDTH-1):0] dds_control;
+   output [(U_DDS_CTRL_WIDTH - 1):0] dds_control;
 
    // external signals for 2nd DDS bank
-   output [(U_DDS_ADDR_WIDTH-1):0] dds_addr2;
+   output [(U_DDS_ADDR_WIDTH - 1):0] dds_addr2;
 
    // tri-state for dds_data to allow read & write
-   output [(U_DDS_DATA_WIDTH-1):0] dds_data2_O;
-   input  [(U_DDS_DATA_WIDTH-1):0] dds_data2_I;
+   output [(U_DDS_DATA_WIDTH - 1):0] dds_data2_O;
+   input  [(U_DDS_DATA_WIDTH - 1):0] dds_data2_I;
    // dds_data_T = 0 means output, dds_data_T = 1 means high-Z
    output dds_data2_T;
 
-   output [(U_DDS_CTRL_WIDTH-1):0] dds_control2;
+   output [(U_DDS_CTRL_WIDTH - 1):0] dds_control2;
 
    output reg [(N_DDS - 1):0] dds_cs;
 
@@ -167,10 +168,10 @@ module dds_controller(clock, reset, write_enable, opcode, operand,
 
    reg ddr_reset;
 
-   parameter FUD_DDR_MODE = 0;
+   localparam FUD_DDR_MODE = 0;
    generate
-      if (FUD_DDR_MODE==0) begin
-         // FUD idles low.  transition to high transfers registers into DDS core
+      if (FUD_DDR_MODE == 0) begin
+         // FUD idles low. transition to high transfers registers into DDS core
          assign dds_FUD[0] = active_dds_bank[0] ? dds_FUDx : 1'b0;
          assign dds_FUD[1] = active_dds_bank[1] ? dds_FUDx : 1'b0;
       end else begin
@@ -386,7 +387,7 @@ end
                  endcase
               end
 
-              2 : begin // set memory word (two bytes) from addr-1 to addr
+              2 : begin // set memory word (two bytes) from addr - 1 to addr
                  case (cycle)
                    1 : dds_addr_reg_next <= opcode_reg[DDS_REG_B:DDS_REG_A];
                    2 : begin
@@ -398,7 +399,7 @@ end
                  endcase
               end
 
-              3 : begin // get memory word (two bytes) from addr-1 to addr
+              3 : begin // get memory word (two bytes) from addr - 1 to addr
                  case(cycle)
                    1 : begin
                       dds_addr_reg_next <= opcode_reg[DDS_REG_B:DDS_REG_A];
@@ -422,7 +423,7 @@ end
 
               5 : begin // DDS reset (boards selected by operand)
                  case (cycle)
-                   1 : dds_cs <= operand_reg[(N_DDS-1):0];
+                   1 : dds_cs <= operand_reg[(N_DDS - 1):0];
                    6 : dds_reset <= 1;
                  endcase
               end
@@ -432,7 +433,7 @@ end
                  // Allows phase synchronization between chips.
                  // Don't forget to set dds_sel_mask = 0 when done.
                  case(cycle)
-                   1 : dds_sel_mask <= operand_reg[(N_DDS-1):0];
+                   1 : dds_sel_mask <= operand_reg[(N_DDS - 1):0];
                  endcase
               end
 
@@ -455,7 +456,7 @@ end
               // end
 
               14 : begin
-                 // get two memory words (four bytes) from addr-1 to addr+2
+                 // get two memory words (four bytes) from addr - 1 to addr + 2
                  case (cycle)
                    1 : begin
                       dds_addr_reg_next <= opcode_reg[DDS_REG_B:DDS_REG_A];
@@ -482,9 +483,9 @@ end
                  endcase
               end
 
-              15 : begin // set two memory words (four bytes) from addr-1 to addr+2
+              15 : begin // set two memory words (four bytes) from addr - 1 to addr + 2
                  case(cycle)
-                   1 : dds_addr_reg_next <= opcode_reg[DDS_REG_B:DDS_REG_A]+2'b10;
+                   1 : dds_addr_reg_next <= opcode_reg[DDS_REG_B:DDS_REG_A] + 2'b10;
                    2 : begin
                       dds_data_reg <= operand_reg[31:16];
                       dds_w_strobe_n <= 0;

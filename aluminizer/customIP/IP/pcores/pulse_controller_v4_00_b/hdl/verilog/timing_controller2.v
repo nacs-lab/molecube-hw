@@ -70,54 +70,47 @@ module clock_out_controller(input clock, input reset, input [7:0] div,
    end
 endmodule
 
-/**
- * @init: like reset, but hold the current TTL outputs
- *       toggle this at the start of the sequence.
- * @pulse_controller_hold: pulses wait until this goes low.
- * @bus_data_ack: acknowledge that we read the data.
- * @dds_data_*: tri-state for dds_data to allow read & write.
- */
 module timing_controller
   #(parameter N_CORR_BINS = 16,
     parameter N_CORR_BITS = 8,
 
-    parameter BUS_DATA_WIDTH = 32,
-    parameter RESULT_WIDTH = 32,
-    parameter TTL_WIDTH = 32,
-    parameter TIMER_WIDTH = 24,
     parameter N_DDS = 8,
     parameter U_DDS_DATA_WIDTH = 16,
     parameter U_DDS_ADDR_WIDTH = 7,
     parameter U_DDS_CTRL_WIDTH = 3,
     parameter N_COUNTER = 1,
-    parameter DDS_OPCODE_WIDTH = 16,
-    parameter DDS_OPERAND_WIDTH = 32,
 
-    parameter INSTRUCTION_BITA = 63,
-    parameter INSTRUCTION_BITB = 60,
-    parameter PMT_ENABLE_BIT = 63 - 5, // 0x04000000
-    parameter PMT_INVERT_SYNC_BIT = 63 - 6, // 0x02000000
-    parameter ENABLE_TIMING_CHECK_BIT = 63 - 4, // 0x08000000
-    parameter TIMER_BITA = 63 - 8,
-    parameter TIMER_BITB = TIMER_BITA - TIMER_WIDTH + 1,
-    parameter TTL_BITA = 31,
-    parameter TTL_BITB = 0,
-    parameter FIFO_DEPTH = 256,
-    parameter FIFO_ADDR_BTS = 8)
-   (input clock, input resetn,
+    parameter BUS_DATA_WIDTH = 32,
+    parameter RESULT_WIDTH = 32,
+
+    localparam TTL_WIDTH = 32)
+   (input clock,
+    input resetn,
     input [(BUS_DATA_WIDTH - 1):0] bus_data,
-    input bus_data_ready, output bus_data_ack,
-    output [(RESULT_WIDTH - 1):0] rFIFO_data, output rFIFO_WrReq,
+    input bus_data_ready,
+    // acknowledge that we read the data.
+    output bus_data_ack,
+
+    output [(RESULT_WIDTH - 1):0] rFIFO_data,
+    output rFIFO_WrReq,
+
+    // dds_data*: tri-state for dds_data to allow read & write.
     output [(U_DDS_ADDR_WIDTH - 1):0] dds_addr,
     input [(U_DDS_DATA_WIDTH - 1):0] dds_data_I,
     output [(U_DDS_DATA_WIDTH - 1):0] dds_data_O,
-    output dds_data_T, output [(U_DDS_CTRL_WIDTH - 1):0] dds_control,
+    output dds_data_T,
+    output [(U_DDS_CTRL_WIDTH - 1):0] dds_control,
     output [(U_DDS_ADDR_WIDTH - 1):0] dds_addr2,
     input [(U_DDS_DATA_WIDTH - 1):0] dds_data2_I,
     output [(U_DDS_DATA_WIDTH - 1):0] dds_data2_O,
-    output dds_data2_T, output [(U_DDS_CTRL_WIDTH - 1):0] dds_control2,
+    output dds_data2_T,
+    output [(U_DDS_CTRL_WIDTH - 1):0] dds_control2,
+
     output [(N_DDS - 1):0] dds_cs,
-    output [1:0] dds_FUD, output dds_syncO, input dds_syncI,
+    output [1:0] dds_FUD,
+    output dds_syncO,
+    input dds_syncI,
+
     output [(TTL_WIDTH - 1):0] ttl_out,
     output reg underflow,
     input [(N_COUNTER - 1):0] counter_in,
@@ -125,8 +118,13 @@ module timing_controller
     input correlation_reset,
     output [(N_CORR_BINS * N_CORR_BITS - 1):0] correlation_data_out,
     output correlation_data_ready,
-    output reg pulses_finished, input pulse_controller_hold,
-    input init, output clock_out);
+    output reg pulses_finished,
+    // pulses wait until this goes low
+    input pulse_controller_hold,
+    // init is like reset, but hold the current TTL outputs toggle this at
+    // the start of the sequence.
+    input init,
+    output clock_out);
 
    reg [7:0] clock_out_div;
 
@@ -134,6 +132,7 @@ module timing_controller
    wire [1:0] debug;
    assign ttl_out = {ttl_out_reg[31:2], ttl_out_reg[1:0] ^ debug[1:0]};
 
+   localparam TIMER_WIDTH = 24;
    reg [(TIMER_WIDTH - 1):0] timer;
    reg [(TIMER_WIDTH - 1):0] iFIFO_timer;
 
@@ -151,6 +150,8 @@ module timing_controller
 
    reg dds_we;
 
+   localparam DDS_OPCODE_WIDTH = 16;
+   localparam DDS_OPERAND_WIDTH = 32;
    reg [(DDS_OPCODE_WIDTH - 1):0] dds_opcode;
    reg [(DDS_OPERAND_WIDTH - 1):0] dds_operand;
 
@@ -226,6 +227,8 @@ module timing_controller
    assign extended_bus_data[63:32] = bus_data[31:0];
 
    // FIFO data
+   localparam FIFO_ADDR_BTS = 8;
+   localparam FIFO_DEPTH = 256;
    reg [63:0] fifo [0:(FIFO_DEPTH - 1)];
    reg [31:0] fifo_low_word;
    reg [(FIFO_ADDR_BTS - 1):0] fifo_write_addr;
@@ -251,6 +254,15 @@ module timing_controller
    wire pulses_hold;
    assign pulses_hold = pulse_controller_hold & ~force_release;
 
+   localparam INSTRUCTION_BITA = 63;
+   localparam INSTRUCTION_BITB = 60;
+   localparam PMT_ENABLE_BIT = 63 - 5; // 0x04000000
+   localparam PMT_INVERT_SYNC_BIT = 63 - 6; // 0x02000000
+   localparam ENABLE_TIMING_CHECK_BIT = 63 - 4; // 0x08000000
+   localparam TIMER_BITA = 63 - 8;
+   localparam TIMER_BITB = TIMER_BITA - TIMER_WIDTH + 1;
+   localparam TTL_BITA = 31;
+   localparam TTL_BITB = 0;
    always @(posedge clock, posedge reset) begin
       if (reset | init) begin
          if (reset) begin
