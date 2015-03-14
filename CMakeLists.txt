@@ -38,3 +38,7 @@ add_custom_target(planahead-promgen ALL
   "${PROJECT_BINARY_DIR}/system.bit"
   COMMAND xilinx run promgen -w -p bin -data_width 32 -b -u 0x0
   "${PROJECT_BINARY_DIR}/system.bit")
+
+install(FILES "${PROJECT_BINARY_DIR}/system.bit"
+  DESTINATION "/boot/"
+  RENAME system.bit.bin)
