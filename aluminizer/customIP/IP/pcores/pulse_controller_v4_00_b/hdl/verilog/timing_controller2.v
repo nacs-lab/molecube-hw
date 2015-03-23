@@ -71,10 +71,7 @@ module clock_out_controller(input clock, input reset, input [7:0] div,
 endmodule
 
 module timing_controller
-  #(parameter N_CORR_BINS = 16,
-    parameter N_CORR_BITS = 8,
-
-    parameter N_DDS = 8,
+  #(parameter N_DDS = 8,
     parameter U_DDS_DATA_WIDTH = 16,
     parameter U_DDS_ADDR_WIDTH = 7,
     parameter U_DDS_CTRL_WIDTH = 3,
@@ -114,9 +111,6 @@ module timing_controller
     output reg [(TTL_WIDTH - 1):0] ttl_out,
     output reg underflow,
     input [(N_COUNTER - 1):0] counter_in,
-    input correlation_reset,
-    output [(N_CORR_BINS * N_CORR_BITS - 1):0] correlation_data_out,
-    output correlation_data_ready,
     output reg pulses_finished,
     // pulses wait until this goes low
     input pulse_controller_hold,
@@ -180,11 +174,6 @@ module timing_controller
                     .get_result(PMT_RdReq),
                     .result_data(PMT_result),
                     .result_WrReq(PMT_WrReq));
-
-   // PMT_correlation2
-   // PMT_correlation_inst(.reset(correlation_reset),
-   //                      .data_out(correlation_data_out),
-   //                      .dataready_out(correlation_data_ready));
 
    reg [31:0] loopback_data;
    reg loopback_WrReq;

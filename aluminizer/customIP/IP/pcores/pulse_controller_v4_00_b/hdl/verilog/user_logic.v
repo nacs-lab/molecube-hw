@@ -67,8 +67,6 @@ module user_logic
    parameter U_DDS_CTRL_WIDTH  = 3;
    parameter N_DDS = 8;
    parameter N_COUNTER = 1;
-   parameter N_CORR_BINS = 16;
-   parameter N_CORR_BITS = 8;
    // -- ADD USER PARAMETERS ABOVE THIS LINE ------------
 
    // -- DO NOT EDIT BELOW THIS LINE --------------------
@@ -133,9 +131,7 @@ module user_logic
    // --USER nets declarations added here, as needed for user logic
    wire [0:(C_SLV_DWIDTH-1)] result;
    wire underflow;
-   wire correlation_data_ready;
    wire pulses_finished;
-   wire [(N_CORR_BINS*N_CORR_BITS-1):0] correlation_data_out;
 
    // Nets for user logic slave model s/w accessible register example
    reg        [C_SLV_DWIDTH-1 : 0]           slv_reg0;
@@ -287,14 +283,8 @@ module user_logic
            endcase
 
            slv_reg2[0] <= underflow;
-           slv_reg2[1] <= correlation_data_ready;
            slv_reg2[2] <= pulses_finished;
            slv_reg2[(rFIFO_ADDR_BITS+3):4] <= rFIFO_fill;
-
-           slv_reg4 <= correlation_data_out[31:0];
-           slv_reg5 <= correlation_data_out[63:32];
-           slv_reg6 <= correlation_data_out[95:64];
-           slv_reg7 <= correlation_data_out[127:96];
         end
    end // SLAVE_REG_WRITE_PROC
 
@@ -371,19 +361,12 @@ module user_logic
    //
    // slv_reg2 -- status (read)
    //   slv_reg2[0] <= underflow;
-   //   slv_reg2[1] <= correlation_data_ready;
    //   slv_reg2[2] <= pulses_finished;
    //   slv_reg2[(rFIFO_ADDR_BITS+3):4] <= rFIFO_fill;
    //
    // slv_reg3 -- control (write)
-   //   slv_reg3[0] => correlation_reset
    //   slv_reg3[7] => pulse_controller_hold.  nothing happens when this is high
    //   slv_reg3[8] => init.  toggle at start of sequence for reset
-
-   // slv_reg4 <= correlation_data_out[31:0];
-   // slv_reg5 <= correlation_data_out[63:32];
-   // slv_reg6 <= correlation_data_out[95:64];
-   // slv_reg7 <= correlation_data_out[127:96];
    //
    // slv_reg31 -- output of result FIFO (read)
 
@@ -440,26 +423,23 @@ module user_logic
    wire tc_write_ack;
    wire [(U_PULSE_WIDTH - 1):0] ttl_out;
 
-   //assume slave register width == pulse width
+   // assume slave register width == pulse width
    assign pulse_io = (ttl_out | slv_reg0) & (~slv_reg1);
 
-   //Writing to register 31 sends data to timing controller
+   // Writing to register 31 sends data to timing controller
    wire tc_instruction_ready = (slv_reg_write_sel ==  32'b00000000000000000000000000000001 );
 
    wire resetp = ~Bus2IP_Resetn;
 
    timing_controller
-     #(.N_CORR_BINS(N_CORR_BINS),
-       .N_CORR_BITS(N_CORR_BITS),
-       .N_DDS(N_DDS),
+     #(.N_DDS(N_DDS),
        .U_DDS_DATA_WIDTH(U_DDS_DATA_WIDTH),
        .U_DDS_ADDR_WIDTH(U_DDS_ADDR_WIDTH),
        .U_DDS_CTRL_WIDTH(U_DDS_CTRL_WIDTH),
        .N_COUNTER(N_COUNTER),
        .BUS_DATA_WIDTH(C_SLV_DWIDTH),
        .RESULT_WIDTH(C_SLV_DWIDTH))
-   tc(
-      .clock(Bus2IP_Clk),
+   tc(.clock(Bus2IP_Clk),
       .resetn(Bus2IP_Resetn),
       .bus_data(Bus2IP_Data),
       .bus_data_ready(tc_instruction_ready),
@@ -483,9 +463,6 @@ module user_logic
       .ttl_out(ttl_out),
       .underflow(underflow),
       .counter_in(counter_in),
-      .correlation_reset(slv_reg3[0]),
-      .correlation_data_out(correlation_data_out),
-      .correlation_data_ready(correlation_data_ready),
       .pulses_finished(pulses_finished),
       .pulse_controller_hold(slv_reg3[7]),
       .init(slv_reg3[8]),
