@@ -50,9 +50,9 @@ Net dds_cs_pin<8> LOC = D21 | IOSTANDARD = LVCMOS33 | DRIVE = 4;
 
 # FMC1, column G
 # CLK1_M2C_P / FMC1_G02
-Net sync_counter0_p_pin LOC = M19 | IOSTANDARD = LVDS_25;
+# Net <pin_name> LOC = M19 | IOSTANDARD = LVDS_25; # Removed
 # CLK1_M2C_N / FMC1_G03
-Net sync_counter0_n_pin LOC = M20 | IOSTANDARD = LVDS_25;
+# Net <pin_name> LOC = M20 | IOSTANDARD = LVDS_25; # Removed
 # LA00_P_CC / FMC1_G06
 # Net axi_spi_5_SS_pin LOC = K19 | IOSTANDARD = LVCMOS33 | DRIVE = 8;
 Net pulse_io_pin<04> LOC = K19 | IOSTANDARD = LVCMOS33 | DRIVE = 4; # Dummy

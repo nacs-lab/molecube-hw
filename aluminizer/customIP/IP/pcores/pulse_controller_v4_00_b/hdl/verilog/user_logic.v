@@ -38,7 +38,7 @@ module user_logic
    dds_addr, dds_data_I, dds_data_O, dds_data_T, dds_control, dds_cs,
    dds_addr2, dds_data2_I, dds_data2_O, dds_data2_T, dds_control2, dds_FUD,
    dds_syncI, dds_syncO,
-   counter_in, sync_in, clock_out,
+   counter_in, clock_out,
    // -- ADD USER PORTS ABOVE THIS LINE ---------------
 
    // -- DO NOT EDIT BELOW THIS LINE ------------------
@@ -103,7 +103,6 @@ module user_logic
    output dds_syncO;
 
    input [0:(N_COUNTER-1)] counter_in;
-   input sync_in;
 
    output clock_out;
 
@@ -484,7 +483,6 @@ module user_logic
       .ttl_out(ttl_out),
       .underflow(underflow),
       .counter_in(counter_in),
-      .sync_in(sync_in),
       .correlation_reset(slv_reg3[0]),
       .correlation_data_out(correlation_data_out),
       .correlation_data_ready(correlation_data_ready),

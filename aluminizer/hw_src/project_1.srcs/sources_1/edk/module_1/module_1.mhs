@@ -33,8 +33,6 @@
  PORT processing_system7_0_DDR_VRP = processing_system7_0_DDR_VRP, DIR = IO
  PORT pulse_io_pin = pulse_io, DIR = O, VEC = [31:0]
  PORT counter0_in_pin = counter0_in, DIR = I, VEC = [0:0]
- PORT sync_counter0_p_pin = sync_counter0_p, DIR = I
- PORT sync_counter0_n_pin = sync_counter0_n, DIR = I
  PORT dds_addr_pin = dds_addr, DIR = O, VEC = [6:0]
  PORT dds_data_pin = dds_data, DIR = IO, VEC = [15:0]
  PORT dds_control_pin = dds_control, DIR = O, VEC = [2:0]
@@ -167,16 +165,6 @@ BEGIN pulse_controller
  PORT dds_syncI = dds_syncI
  PORT dds_syncO = dds_syncO
  PORT counter_in = counter0_in
- PORT sync_in = sync_counter0_in
-END
-
-BEGIN util_ds_buf
- PARAMETER INSTANCE = util_ds_buf_0
- PARAMETER HW_VER = 1.01.a
- PARAMETER C_BUF_TYPE = IBUFDS
- PORT IBUF_OUT = sync_counter0_in
- PORT IBUF_DS_P = sync_counter0_p
- PORT IBUF_DS_N = sync_counter0_n
 END
 
 BEGIN axi_interconnect

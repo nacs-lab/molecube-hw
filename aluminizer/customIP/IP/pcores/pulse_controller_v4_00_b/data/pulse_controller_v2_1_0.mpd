@@ -75,6 +75,5 @@ PORT dds_FUD = dds_FUD, DIR = O, VEC = [1:0]
 PORT dds_syncI = dds_syncI, DIR = I
 PORT dds_syncO = dds_syncO, DIR = O
 PORT counter_in = counter_in, DIR = I, VEC = [(N_COUNTER-1):0]
-PORT sync_in = sync_in, DIR = I
 PORT clock_out = clock_out, DIR = O
 END

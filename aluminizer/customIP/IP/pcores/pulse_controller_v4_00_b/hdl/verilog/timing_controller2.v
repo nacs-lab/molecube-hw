@@ -111,10 +111,9 @@ module timing_controller
     output dds_syncO,
     input dds_syncI,
 
-    output [(TTL_WIDTH - 1):0] ttl_out,
+    output reg [(TTL_WIDTH - 1):0] ttl_out,
     output reg underflow,
     input [(N_COUNTER - 1):0] counter_in,
-    input sync_in,
     input correlation_reset,
     output [(N_CORR_BINS * N_CORR_BITS - 1):0] correlation_data_out,
     output correlation_data_ready,
@@ -125,10 +124,6 @@ module timing_controller
     // the start of the sequence.
     input init,
     output clock_out);
-
-   reg [(TTL_WIDTH - 1):0] ttl_out_reg;
-   wire [1:0] debug;
-   assign ttl_out = {ttl_out_reg[31:2], ttl_out_reg[1:0] ^ debug[1:0]};
 
    wire reset = ~resetn;
 
@@ -172,7 +167,6 @@ module timing_controller
                        .result_WrReq(dds_WrReq));
 
    reg PMT_enable; // enable counting on PMT
-   reg PMT_invert_sync; // invert sync_in of PMT_correlation
    reg PMT_RdReq; // raise high to put result into FIFO
 
    wire PMT_WrReq;
@@ -187,15 +181,10 @@ module timing_controller
                     .result_data(PMT_result),
                     .result_WrReq(PMT_WrReq));
 
-   PMT_correlation2#(.N_BIN(N_CORR_BINS),
-                     .N_BIT(N_CORR_BITS))
-   PMT_correlation_inst(.clk(clock),
-                        .reset(reset | correlation_reset),
-                        .data_out(correlation_data_out),
-                        .dataready_out(correlation_data_ready),
-                        .pulse_in(counter_in & PMT_enable),
-                        .sync_in(sync_in ^ PMT_invert_sync),
-                        .debug(debug));
+   // PMT_correlation2
+   // PMT_correlation_inst(.reset(correlation_reset),
+   //                      .data_out(correlation_data_out),
+   //                      .dataready_out(correlation_data_ready));
 
    reg [31:0] loopback_data;
    reg loopback_WrReq;
@@ -226,7 +215,6 @@ module timing_controller
    localparam INSTRUCTION_BITA = 63;
    localparam INSTRUCTION_BITB = 60;
    localparam PMT_ENABLE_BIT = 63 - 5; // 0x04000000
-   localparam PMT_INVERT_SYNC_BIT = 63 - 6; // 0x02000000
    localparam ENABLE_TIMING_CHECK_BIT = 63 - 4; // 0x08000000
    localparam TIMER_BITA = 63 - 8;
    localparam TIMER_BITB = TIMER_BITA - TIMER_WIDTH + 1;
@@ -247,7 +235,7 @@ module timing_controller
    always @(posedge clock, posedge reset) begin
       if (reset | init) begin
          if (reset) begin
-            ttl_out_reg <= 0;
+            ttl_out <= 0;
          end
 
          state <= 0;
@@ -257,7 +245,6 @@ module timing_controller
          underflow <= 0;
          pulses_finished <= 1;
          PMT_enable <= 0;
-         PMT_invert_sync <= 0;
          PMT_RdReq <= 0;
          loopback_data <= 0;
          loopback_WrReq <= 0;
@@ -311,12 +298,11 @@ module timing_controller
               state <= 2;
               timing_check <= instruction[ENABLE_TIMING_CHECK_BIT];
               PMT_enable <= instruction[PMT_ENABLE_BIT];
-              PMT_invert_sync <= instruction[PMT_INVERT_SYNC_BIT];
 
               case (instruction[INSTRUCTION_BITA:INSTRUCTION_BITB])
                 0 : begin // set digital output for given duration
                    timer <= instruction[TIMER_BITA:TIMER_BITB];
-                   ttl_out_reg <= instruction[TTL_BITA:TTL_BITB];
+                   ttl_out <= instruction[TTL_BITA:TTL_BITB];
                 end
 
                 1 : begin // DDS instruction

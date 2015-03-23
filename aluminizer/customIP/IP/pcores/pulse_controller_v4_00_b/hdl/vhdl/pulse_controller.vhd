@@ -146,7 +146,6 @@ entity pulse_controller is
       dds_syncI    : in std_logic;
       dds_syncO    : out std_logic;
       counter_in   : in std_logic_vector := (0 to N_COUNTER-1 => '0');
-      sync_in      : in std_logic := '0';
       clock_out    : out std_logic;
       -- ADD USER PORTS ABOVE THIS LINE ------------------
 
@@ -306,7 +305,6 @@ architecture IMP of pulse_controller is
         dds_syncI     : in std_logic;
         dds_syncO     : out std_logic;
         counter_in    : in  std_logic_vector(0 to N_COUNTER-1);
-        sync_in       : in  std_logic;
         clock_out     : out std_logic;
         -- ADD USER PORTS ABOVE THIS LINE ------------------
 
@@ -446,7 +444,6 @@ begin
       dds_syncO  => dds_syncO,
 
       counter_in  => counter_in,
-      sync_in   => sync_in,
       clock_out => clock_out,
       -- MAP USER PORTS ABOVE THIS LINE ------------------
 
