@@ -39,7 +39,6 @@ PARAMETER N_DDS = 22, DT = INTEGER
 PARAMETER U_DDS_DATA_WIDTH = 16, DT = INTEGER
 PARAMETER U_DDS_ADDR_WIDTH = 7, DT = INTEGER
 PARAMETER U_DDS_CTRL_WIDTH = 3, DT = INTEGER
-PARAMETER N_COUNTER = 1, DT = INTEGER
 
 ## Ports
 PORT S_AXI_ACLK = "", DIR = I, SIGIS = CLK, BUS = S_AXI
@@ -74,6 +73,5 @@ PORT dds_cs = dds_cs, DIR = O, VEC = [(N_DDS-1):0]
 PORT dds_FUD = dds_FUD, DIR = O, VEC = [1:0]
 PORT dds_syncI = dds_syncI, DIR = I
 PORT dds_syncO = dds_syncO, DIR = O
-PORT counter_in = counter_in, DIR = I, VEC = [(N_COUNTER-1):0]
 PORT clock_out = clock_out, DIR = O
 END

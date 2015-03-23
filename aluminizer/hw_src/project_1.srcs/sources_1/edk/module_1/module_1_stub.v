@@ -26,7 +26,6 @@ module module_1_stub
     processing_system7_0_DDR_VRN,
     processing_system7_0_DDR_VRP,
     pulse_io_pin,
-    counter0_in_pin,
     dds_addr_pin,
     dds_data_pin,
     dds_control_pin,
@@ -70,7 +69,6 @@ module module_1_stub
   inout processing_system7_0_DDR_VRN;
   inout processing_system7_0_DDR_VRP;
   output [31:0] pulse_io_pin;
-  input [0:0] counter0_in_pin;
   output [6:0] dds_addr_pin;
   inout [15:0] dds_data_pin;
   output [2:0] dds_control_pin;
@@ -117,7 +115,6 @@ module module_1_stub
       .processing_system7_0_DDR_VRN ( processing_system7_0_DDR_VRN ),
       .processing_system7_0_DDR_VRP ( processing_system7_0_DDR_VRP ),
       .pulse_io_pin ( pulse_io_pin ),
-      .counter0_in_pin ( counter0_in_pin[0:0] ),
       .dds_addr_pin ( dds_addr_pin ),
       .dds_data_pin ( dds_data_pin ),
       .dds_control_pin ( dds_control_pin ),

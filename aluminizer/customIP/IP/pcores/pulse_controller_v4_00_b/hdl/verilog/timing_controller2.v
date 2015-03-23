@@ -16,7 +16,7 @@
  * Underflow of the write FIFO (timing failure) can be detected.
  *
  * This is implemented as a finite state machine (FSM) with attached
- * DDS control and PMT modules.
+ * DDS control
  *
  * bits 63...60, instruction
  *
@@ -31,8 +31,6 @@
  *   bits 47...32 = DDS opcode (read and write freq/phase/amplitude/registers)
  *   bits 31...0  = DDS operand (phase/frequency/amplitude/register value)
  *
- * 2 PMT_READ (read PMT data into rFIFO, 10 cycles)
- *
  * 3 CLEAR_UNDERFLOW (5 cycles)
  *
  * 4 PUSH_DATA (variable # cycles)
@@ -43,8 +41,6 @@
  *   period - 1 = bits 7...0. disabled when bits 7...0 = 255
  *
  * bit 59, disable underflow flag.  Prevents underflow from going high.
- *
- * bit 58, count pulses flag.  Enables the PMT counter during this pulse.
  *
  * Post-PAR timing for Zynq ZC702 speed -1:
  * Minimum period:   4.916ns{1}   (Maximum frequency: 203.417MHz)
@@ -75,7 +71,6 @@ module timing_controller
     parameter U_DDS_DATA_WIDTH = 16,
     parameter U_DDS_ADDR_WIDTH = 7,
     parameter U_DDS_CTRL_WIDTH = 3,
-    parameter N_COUNTER = 1,
 
     parameter BUS_DATA_WIDTH = 32,
     parameter RESULT_WIDTH = 32,
@@ -110,7 +105,6 @@ module timing_controller
 
     output reg [(TTL_WIDTH - 1):0] ttl_out,
     output reg underflow,
-    input [(N_COUNTER - 1):0] counter_in,
     output reg pulses_finished,
     // pulses wait until this goes low
     input pulse_controller_hold,
@@ -160,26 +154,11 @@ module timing_controller
                        .result_data(dds_result),
                        .result_WrReq(dds_WrReq));
 
-   reg PMT_enable; // enable counting on PMT
-   reg PMT_RdReq; // raise high to put result into FIFO
-
-   wire PMT_WrReq;
-   wire [31:0] PMT_result;
-
-   PMT_counter#(.N_COUNTER(N_COUNTER))
-   PMT_counter_inst(.clock(clock),
-                    .reset(reset),
-                    .counter_in(counter_in),
-                    .count_enable(PMT_enable),
-                    .get_result(PMT_RdReq),
-                    .result_data(PMT_result),
-                    .result_WrReq(PMT_WrReq));
-
    reg [31:0] loopback_data;
    reg loopback_WrReq;
-   // allow PMT_counter or DDS_controller or loop back to write into the rFIFO
-   assign rFIFO_WrReq = dds_WrReq | PMT_WrReq | loopback_WrReq;
-   assign rFIFO_data = dds_result | PMT_result | loopback_data;
+   // allow DDS_controller or loop back to write into the rFIFO
+   assign rFIFO_WrReq = dds_WrReq | loopback_WrReq;
+   assign rFIFO_data = dds_result | loopback_data;
 
    wire [63:0] extended_bus_data;
    assign extended_bus_data[31:0] = 32'h00000000;
@@ -203,7 +182,6 @@ module timing_controller
 
    localparam INSTRUCTION_BITA = 63;
    localparam INSTRUCTION_BITB = 60;
-   localparam PMT_ENABLE_BIT = 63 - 5; // 0x04000000
    localparam ENABLE_TIMING_CHECK_BIT = 63 - 4; // 0x08000000
    localparam TIMER_BITA = 63 - 8;
    localparam TIMER_BITB = TIMER_BITA - TIMER_WIDTH + 1;
@@ -233,8 +211,6 @@ module timing_controller
          timing_check <= 0;
          underflow <= 0;
          pulses_finished <= 1;
-         PMT_enable <= 0;
-         PMT_RdReq <= 0;
          loopback_data <= 0;
          loopback_WrReq <= 0;
          fifo_next_word_dest <= 0;
@@ -269,13 +245,11 @@ module timing_controller
               // here read_addr == write_addr means FIFO is empty
               if ((fifo_read_addr !== fifo_write_addr) & ~pulses_hold) begin
                  state <= 1;
-                 PMT_RdReq <= 0;
                  pulses_finished <= 0;
                  instruction <= fifo[fifo_read_addr];
                  fifo_prev_read_addr <= fifo_read_addr;
                  fifo_read_addr <= fifo_read_addr+1;
               end else begin
-                 PMT_RdReq <= 0;
                  pulses_finished <= 1;
                  // underflow bit is sticky
                  underflow <= (underflow || timing_check);
@@ -286,7 +260,6 @@ module timing_controller
            1: begin
               state <= 2;
               timing_check <= instruction[ENABLE_TIMING_CHECK_BIT];
-              PMT_enable <= instruction[PMT_ENABLE_BIT];
 
               case (instruction[INSTRUCTION_BITA:INSTRUCTION_BITB])
                 0 : begin // set digital output for given duration
@@ -299,11 +272,6 @@ module timing_controller
                    dds_operand <= instruction[31:0];
                    dds_we <= 1; // write to DDS
                    timer <= 50; // instruction takes 320 ns.  Allocate 500 ns.
-                end
-
-                2 : begin // read PMT
-                   PMT_RdReq <= 1;
-                   timer <= 10;
                 end
 
                 3 : begin // clear underflow
@@ -328,7 +296,6 @@ module timing_controller
 
            2 : begin // decrement timer until it equals the minimum pulse time
               dds_we <= 0;
-              PMT_RdReq <= 0;
 
               if (timer == 3) begin
                  state <= 0;  // minimum pulse time is 3 cycles

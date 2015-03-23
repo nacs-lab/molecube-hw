@@ -32,7 +32,6 @@
  PORT processing_system7_0_DDR_VRN = processing_system7_0_DDR_VRN, DIR = IO
  PORT processing_system7_0_DDR_VRP = processing_system7_0_DDR_VRP, DIR = IO
  PORT pulse_io_pin = pulse_io, DIR = O, VEC = [31:0]
- PORT counter0_in_pin = counter0_in, DIR = I, VEC = [0:0]
  PORT dds_addr_pin = dds_addr, DIR = O, VEC = [6:0]
  PORT dds_data_pin = dds_data, DIR = IO, VEC = [15:0]
  PORT dds_control_pin = dds_control, DIR = O, VEC = [2:0]
@@ -148,7 +147,6 @@ BEGIN pulse_controller
  PARAMETER INSTANCE = pulse_controller_0
  PARAMETER HW_VER = 4.00.b
  PARAMETER C_DPHASE_TIMEOUT = 0
- PARAMETER N_COUNTER = 1
  PARAMETER C_BASEADDR = 0x73000000
  PARAMETER C_HIGHADDR = 0x7300ffff
  BUS_INTERFACE S_AXI = axi_interconnect_1
@@ -164,7 +162,6 @@ BEGIN pulse_controller
  PORT dds_FUD = dds_FUD
  PORT dds_syncI = dds_syncI
  PORT dds_syncO = dds_syncO
- PORT counter_in = counter0_in
 END
 
 BEGIN axi_interconnect

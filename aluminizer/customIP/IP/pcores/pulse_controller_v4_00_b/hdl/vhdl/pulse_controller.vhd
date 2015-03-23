@@ -107,7 +107,6 @@ entity pulse_controller is
       U_DDS_DATA_WIDTH : integer := 16;
       U_DDS_ADDR_WIDTH : integer := 7;
       U_DDS_CTRL_WIDTH : integer := 3;
-      N_COUNTER : integer := 1;
       -- ADD USER GENERICS ABOVE THIS LINE ---------------
 
       -- DO NOT EDIT BELOW THIS LINE ---------------------
@@ -145,7 +144,6 @@ entity pulse_controller is
       dds_FUD      : out std_logic_vector(0 to 1); -- DDR --
       dds_syncI    : in std_logic;
       dds_syncO    : out std_logic;
-      counter_in   : in std_logic_vector := (0 to N_COUNTER-1 => '0');
       clock_out    : out std_logic;
       -- ADD USER PORTS ABOVE THIS LINE ------------------
 
@@ -274,7 +272,6 @@ architecture IMP of pulse_controller is
         U_DDS_DATA_WIDTH : integer := 16;
         U_DDS_ADDR_WIDTH : integer := 7;
         U_DDS_CTRL_WIDTH : integer := 4;
-        N_COUNTER : integer := 1;
         -- ADD USER GENERICS ABOVE THIS LINE ---------------
 
         -- DO NOT EDIT BELOW THIS LINE ---------------------
@@ -304,7 +301,6 @@ architecture IMP of pulse_controller is
         dds_FUD       : out std_logic_vector(0 to 1); -- DDR --
         dds_syncI     : in std_logic;
         dds_syncO     : out std_logic;
-        counter_in    : in  std_logic_vector(0 to N_COUNTER-1);
         clock_out     : out std_logic;
         -- ADD USER PORTS ABOVE THIS LINE ------------------
 
@@ -415,7 +411,6 @@ begin
       U_DDS_DATA_WIDTH => U_DDS_DATA_WIDTH,
       U_DDS_ADDR_WIDTH => U_DDS_ADDR_WIDTH,
       U_DDS_CTRL_WIDTH => U_DDS_CTRL_WIDTH,
-      N_COUNTER => N_COUNTER,
       -- MAP USER GENERICS ABOVE THIS LINE ---------------
 
       C_NUM_REG                => USER_NUM_REG,
@@ -443,7 +438,6 @@ begin
       dds_syncI  => dds_syncI,
       dds_syncO  => dds_syncO,
 
-      counter_in  => counter_in,
       clock_out => clock_out,
       -- MAP USER PORTS ABOVE THIS LINE ------------------
 

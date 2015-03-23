@@ -8,7 +8,6 @@ lib proc_common_v3_00_a  all
 lib axi_lite_ipif_v1_01_a  all
 lib pulse_controller_v4_00_b CrossDomain verilog
 lib pulse_controller_v4_00_b dds_controller verilog
-lib pulse_controller_v4_00_b PMT_counter verilog
 lib pulse_controller_v4_00_b timing_controller2 verilog
 lib pulse_controller_v4_00_b user_logic verilog
 lib pulse_controller_v4_00_b pulse_controller vhdl

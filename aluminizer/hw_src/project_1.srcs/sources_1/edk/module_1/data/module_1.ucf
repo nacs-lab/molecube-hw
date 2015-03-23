@@ -7,7 +7,7 @@ Net pulse_io_pin<00> LOC = L18 | IOSTANDARD = LVCMOS33 | DRIVE = 4;
 # Net dds_syncI_pin LOC = L19 | IOSTANDARD = LVCMOS33;
 # LA02_P / FMC1_H07
 # Net axi_spi_5_MOSI_pin LOC = L21 | IOSTANDARD = LVCMOS33 | DRIVE = 8;
-Net counter0_in_pin<0> LOC = L21 | IOSTANDARD = LVCMOS33;
+# Net <pin_name> LOC = L21 | IOSTANDARD = LVCMOS33; # Removed
 # LA02_N / FMC1_H08
 # Net axi_spi_5_SCK_pin LOC = L22 | IOSTANDARD = LVCMOS33 | DRIVE = 8;
 Net pulse_io_pin<12> LOC = L22 | IOSTANDARD = LVCMOS33 | DRIVE = 4; # Dummy
@@ -305,15 +305,3 @@ Net pulse_io_pin<05> LOC = AA8 | IOSTANDARD = LVCMOS33 | DRIVE = 4;
 # input: Net pulse_io_pin<00> LOC = AB2 | IOSTANDARD = LVCMOS33 | DRIVE = 4;
 # LA27_N / FMC2_C27
 Net pulse_io_pin<02> LOC = AB1 | IOSTANDARD = LVCMOS33 | DRIVE = 4;
-
-
-### DDS pins
-
-## data bits [0:7]
-
-## address bits [0:5]
-
-
-## control bits
-
-# board select

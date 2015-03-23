@@ -38,7 +38,7 @@ module user_logic
    dds_addr, dds_data_I, dds_data_O, dds_data_T, dds_control, dds_cs,
    dds_addr2, dds_data2_I, dds_data2_O, dds_data2_T, dds_control2, dds_FUD,
    dds_syncI, dds_syncO,
-   counter_in, clock_out,
+   clock_out,
    // -- ADD USER PORTS ABOVE THIS LINE ---------------
 
    // -- DO NOT EDIT BELOW THIS LINE ------------------
@@ -66,7 +66,6 @@ module user_logic
    parameter U_DDS_ADDR_WIDTH  = 7;
    parameter U_DDS_CTRL_WIDTH  = 3;
    parameter N_DDS = 8;
-   parameter N_COUNTER = 1;
    // -- ADD USER PARAMETERS ABOVE THIS LINE ------------
 
    // -- DO NOT EDIT BELOW THIS LINE --------------------
@@ -99,8 +98,6 @@ module user_logic
    output [0:(N_DDS-1)] dds_cs;
    input  dds_syncI;
    output dds_syncO;
-
-   input [0:(N_COUNTER-1)] counter_in;
 
    output clock_out;
 
@@ -436,7 +433,6 @@ module user_logic
        .U_DDS_DATA_WIDTH(U_DDS_DATA_WIDTH),
        .U_DDS_ADDR_WIDTH(U_DDS_ADDR_WIDTH),
        .U_DDS_CTRL_WIDTH(U_DDS_CTRL_WIDTH),
-       .N_COUNTER(N_COUNTER),
        .BUS_DATA_WIDTH(C_SLV_DWIDTH),
        .RESULT_WIDTH(C_SLV_DWIDTH))
    tc(.clock(Bus2IP_Clk),
@@ -462,7 +458,6 @@ module user_logic
       .dds_syncO(dds_syncO),
       .ttl_out(ttl_out),
       .underflow(underflow),
-      .counter_in(counter_in),
       .pulses_finished(pulses_finished),
       .pulse_controller_hold(slv_reg3[7]),
       .init(slv_reg3[8]),
