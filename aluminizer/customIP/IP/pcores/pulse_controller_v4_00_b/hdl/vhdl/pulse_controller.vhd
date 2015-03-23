@@ -142,8 +142,6 @@ entity pulse_controller is
       dds_control2 : out std_logic_vector(0 to U_DDS_CTRL_WIDTH-1);
       dds_cs       : out std_logic_vector(0 to N_DDS-1);
       dds_FUD      : out std_logic_vector(0 to 1); -- DDR --
-      dds_syncI    : in std_logic;
-      dds_syncO    : out std_logic;
       clock_out    : out std_logic;
       -- ADD USER PORTS ABOVE THIS LINE ------------------
 
@@ -299,8 +297,6 @@ architecture IMP of pulse_controller is
         dds_control2  : out std_logic_vector(0 to U_DDS_CTRL_WIDTH-1);
         dds_cs        : out std_logic_vector(0 to N_DDS-1);
         dds_FUD       : out std_logic_vector(0 to 1); -- DDR --
-        dds_syncI     : in std_logic;
-        dds_syncO     : out std_logic;
         clock_out     : out std_logic;
         -- ADD USER PORTS ABOVE THIS LINE ------------------
 
@@ -435,8 +431,6 @@ begin
       dds_control2  => dds_control2,
       dds_cs    => dds_cs,
       dds_FUD   => dds_FUD,
-      dds_syncI  => dds_syncI,
-      dds_syncO  => dds_syncO,
 
       clock_out => clock_out,
       -- MAP USER PORTS ABOVE THIS LINE ------------------

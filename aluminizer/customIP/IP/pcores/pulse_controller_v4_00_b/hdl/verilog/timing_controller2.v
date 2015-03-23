@@ -100,8 +100,6 @@ module timing_controller
 
     output [(N_DDS - 1):0] dds_cs,
     output [1:0] dds_FUD,
-    output dds_syncO,
-    input dds_syncI,
 
     output reg [(TTL_WIDTH - 1):0] ttl_out,
     output reg underflow,

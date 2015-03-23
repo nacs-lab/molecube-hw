@@ -4,7 +4,7 @@
 # CLK0_M2C_P / FMC1_H04
 Net pulse_io_pin<00> LOC = L18 | IOSTANDARD = LVCMOS33 | DRIVE = 4;
 # CLK0_M2C_N / FMC1_H05
-# Net dds_syncI_pin LOC = L19 | IOSTANDARD = LVCMOS33;
+# Net <pin_name> LOC = L19 | IOSTANDARD = LVCMOS33; # Removed
 # LA02_P / FMC1_H07
 # Net axi_spi_5_MOSI_pin LOC = L21 | IOSTANDARD = LVCMOS33 | DRIVE = 8;
 # Net <pin_name> LOC = L21 | IOSTANDARD = LVCMOS33; # Removed
@@ -202,9 +202,8 @@ Net dds_cs_pin<19> LOC = AB6 | IOSTANDARD = LVCMOS33 | DRIVE = 4;
 # FMC2, column G
 # CLK1_M2C_P / FMC2_G02
 Net clock_in_pin LOC = Y6 | IOSTANDARD = LVCMOS33;
-Net dds_syncO_pin LOC = Y6 | IOSTANDARD = LVCMOS33 | DRIVE = 8;
 # CLK1_M2C_N / FMC2_G03
-Net dds_syncI_pin LOC = Y5 | IOSTANDARD = LVCMOS33;
+# Net <pin_name> LOC = Y5 | IOSTANDARD = LVCMOS33;
 # LA00_P_CC / FMC2_G06
 Net pulse_io_pin<27> LOC = Y19 | IOSTANDARD = LVCMOS33 | DRIVE = 4;
 # LA00_N_CC / FMC2_G07

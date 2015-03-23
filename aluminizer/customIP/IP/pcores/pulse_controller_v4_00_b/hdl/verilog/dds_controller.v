@@ -22,7 +22,7 @@
  * External signals connecting to the DDS boards:
  * dds_addr, dds_data_I, dds_data_O, dds_data_T, dds_control,
  * dds_addr2, dds_data2_I, dds_data2_O, dds_data2_T, dds_control2,
- * dds_cs, dds_FUD, dds_syncO, dds_syncI
+ * dds_cs, dds_FUD
  *
  * opcode[3:0] DDS command
  *
@@ -36,8 +36,6 @@
  *  6 = Select several DDS boards (via dds_cs) until they are deselected.
  *      Allows synchronous programming of frequencies.  Overrides DDS number.
  *      Selected DDS are the high bits of operand
- *  7 = increment/decrement phase of dds_syncO
- *  8 = count high-time of dds_syncI
  *  14 = get two words (4 bytes)
  *  15 = set two words (4 bytes) operand[31:0]
  *
@@ -90,8 +88,6 @@ module dds_controller
     // This short pulse (5 ns or so) allows alignment of DDS SYNC_CLK
     // and SYNC_IN/OUT with FUD. The signal idles high.
     output [1:0] dds_FUD,
-    output dds_syncO,
-    input dds_syncI,
     output reg [(RESULT_WIDTH - 1):0] result_data,
     output reg result_WrReq);
 
@@ -419,24 +415,6 @@ end
                    1 : dds_sel_mask <= operand_reg[(N_DDS - 1):0];
                  endcase
               end
-
-              // 7 : begin //increment / decrement phase of dds_syncO via MMCM
-              //    case (cycle)
-              //      1 : PSINCDEC <= operand_reg[0];
-              //      2 : PSEN <= 1;
-              //      3 : PSEN <= 0;
-              //    endcase
-              // end
-
-              // 8 : begin //count high-time of dds_syncI
-              //    if (cycle != 6) begin
-              //       if (dds_syncI)
-              //         syncI_counter <= syncI_counter + 1'b1;
-              //    end else begin
-              //       result_data <= syncI_counter;
-              //       result_WrReq <= 1; //write request to result buffer
-              //    end
-              // end
 
               14 : begin
                  // get two memory words (four bytes) from addr - 1 to addr + 2
