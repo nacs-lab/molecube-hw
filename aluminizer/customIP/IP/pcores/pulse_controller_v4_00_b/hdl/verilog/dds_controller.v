@@ -177,64 +177,6 @@ module dds_controller
       end
    endgenerate
 
-   /*
-    * Create dds_syncO signal (clock/16) with software-adjustable phase for
-    * dynamic alignment of DDS SYNC_CLK with dds_FUD.
-    * Adjustment steps are 1/56 of VCO period (but 4 steps will occur per update).
-    *
-    * Use MMCME2_ADV which contains a PLL.
-    * VCO has a range of 600 - 1200 MHz.  Operate at 800 MHz.
-    * See UG472.
-    */
-
-   // MMCME2_ADV: Advanced Mixed Mode Clock Manager
-   //             Virtex-7
-   // Xilinx HDL Language Template, version 14.7
-
-   // Leave out DDS sync features.
-   // This was never finished.
-
-   /*
-
-    // count cycles where dds_syncI was high
-    reg [7:0] syncI_counter; // only 4 bits needed?
-    wire CLOCK_FB;
-    reg PSINCDEC, PSEN;
-
-    MMCME2_ADV #(
-    .BANDWIDTH("OPTIMIZED"),        // Jitter programming (OPTIMIZED, HIGH, LOW)
-    .CLKFBOUT_MULT_F(2.0),          // Multiply value for all CLKOUT (2.000-64.000).
-    // CLKIN_PERIOD: Input clock period in ns to ps resolution (i.e. 33.333 is 30 MHz).
-    .CLKIN1_PERIOD(10.0),
-    // CLKOUT0_DIVIDE - CLKOUT6_DIVIDE: Divide amount for CLKOUT (1-128)
-    .CLKOUT1_DIVIDE(32),
-    .CLKOUT4_CASCADE("FALSE"),      // Cascade CLKOUT4 counter with CLKOUT6 (FALSE, TRUE)
-    .COMPENSATION("ZHOLD"),         // ZHOLD, BUF_IN, EXTERNAL, INTERNAL
-    .DIVCLK_DIVIDE(16),              // Master division value (1-106)
-    // REF_JITTER: Reference input jitter in UI (0.000-0.999).
-    .REF_JITTER1(0.0),
-    .REF_JITTER2(0.0),
-    .STARTUP_WAIT("FALSE")         // Delays DONE until MMCM is locked (FALSE, TRUE)
-    )
-    MMCME2_ADV_inst (
-    // Clock Outputs: 1-bit (each) output: User configurable clock outputs
-    .CLKOUT1(dds_syncO),           // 1-bit output: CLKOUT1
-    .CLKIN1(clock),             // 1-bit input: Primary clock
-    .RST(reset),                   // 1-bit input: Reset
-    // Dynamic Phase Shift Ports: 1-bit (each) input: Ports used for dynamic phase shifting of the outputs
-    .PSCLK(clock),               // 1-bit input: Phase shift clock
-    .PSEN(PSEN),                 // 1-bit input: Phase shift enable
-    .PSINCDEC(PSINCDEC),         // 1-bit input: Phase shift increment/decrement
-    // Feedback Clocks: 1-bit (each) output: Clock feedback ports
-    .CLKFBOUT(CLOCK_FB),         // 1-bit output: Feedback clock
-    // Feedback Clocks: 1-bit (each) input: Clock feedback ports
-    .CLKFBIN(CLOCK_FB)            // 1-bit input: Feedback clock
-    );
-
-    // End of MMCME2_ADV_inst instantiation
-end
-    */
-
    localparam DDS_BANK_SIZE = 11;
    localparam MAX_CYCLES = 7;
    localparam CLK_DIV = 3;
@@ -268,12 +210,6 @@ end
          result_WrReq <= 0;
          dds_FUDx <= 0;
          ddr_reset <= 1;
-
-         /* remove DDS sync until finished
-          * PSEN <= 0;
-          * PSINCDEC <= 0;
-          * syncI_counter <= 0;
-          */
       end else begin
          ddr_reset <= 0;
          dds_addr_reg <= dds_addr_reg_next;
