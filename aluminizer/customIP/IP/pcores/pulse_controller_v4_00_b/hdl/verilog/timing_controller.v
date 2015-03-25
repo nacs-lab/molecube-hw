@@ -163,13 +163,20 @@ module timing_controller
    assign extended_bus_data[63:32] = bus_data[31:0];
 
    // FIFO data
-   localparam FIFO_ADDR_BTS = 8;
-   localparam FIFO_DEPTH = 256;
+   // Used as a buffer for commands from the CPU, a deep fifo helps reducing
+   // the time jitter from the CPU scheduling.
+   // Changing the FIFO depth from 256 to 4096 increases FPGA utilization by
+   // < 1% but improves time jitter by 2-3 orders of magnitude.
+   // (see test-latency in molecube, measured as the fluctuation of the average
+   //  time it need to write a single command when writing different numbers
+   //  of commands continuously).
+   localparam FIFO_ADDR_WIDTH = 12;
+   localparam FIFO_DEPTH = 1 << FIFO_ADDR_WIDTH; // 4096
    reg [63:0] fifo [0:(FIFO_DEPTH - 1)];
    reg [31:0] fifo_low_word;
-   reg [(FIFO_ADDR_BTS - 1):0] fifo_write_addr;
-   reg [(FIFO_ADDR_BTS - 1):0] fifo_read_addr;
-   reg [(FIFO_ADDR_BTS - 1):0] fifo_prev_read_addr;
+   reg [(FIFO_ADDR_WIDTH - 1):0] fifo_write_addr;
+   reg [(FIFO_ADDR_WIDTH - 1):0] fifo_read_addr;
+   reg [(FIFO_ADDR_WIDTH - 1):0] fifo_prev_read_addr;
 
    // Control reading of 32 bit words into 64 bit wide FIFO
    reg fifo_next_word_dest;
@@ -295,7 +302,9 @@ module timing_controller
            2 : begin // decrement timer until it equals the minimum pulse time
               dds_we <= 0;
 
-              if (timer == 3) begin
+              // timer < 3 is possible for TTL pulses, swallow this timing error
+              // for now.
+              if (timer <= 3) begin
                  state <= 0;  // minimum pulse time is 3 cycles
               end else begin
                  timer <= timer + 24'hFFFFFF; // decrement timer
