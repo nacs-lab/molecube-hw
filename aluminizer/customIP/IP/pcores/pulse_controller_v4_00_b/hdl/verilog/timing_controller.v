@@ -166,7 +166,7 @@ module timing_controller
    // Used as a buffer for commands from the CPU, a deep fifo helps reducing
    // the time jitter from the CPU scheduling.
    // Changing the FIFO depth from 256 to 4096 increases FPGA utilization by
-   // < 1% but improves time jitter by 2-3 orders of magnitude.
+   // < 1% but improves time jitter by one order of magnitude.
    // (see test-latency in molecube, measured as the fluctuation of the average
    //  time it need to write a single command when writing different numbers
    //  of commands continuously).
@@ -253,7 +253,7 @@ module timing_controller
                  pulses_finished <= 0;
                  instruction <= fifo[fifo_read_addr];
                  fifo_prev_read_addr <= fifo_read_addr;
-                 fifo_read_addr <= fifo_read_addr+1;
+                 fifo_read_addr <= fifo_read_addr + 1;
               end else begin
                  pulses_finished <= 1;
                  // underflow bit is sticky

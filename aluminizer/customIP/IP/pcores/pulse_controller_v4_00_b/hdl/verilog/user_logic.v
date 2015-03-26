@@ -232,13 +232,16 @@ module user_logic
         else begin
            case (slv_reg_write_sel)
              32'b10000000000000000000000000000000 : begin
-                slv_reg0 <= Bus2IP_Data; slv_write_ack <= 1;
+                slv_reg0 <= Bus2IP_Data;
+                slv_write_ack <= 1;
              end
              32'b01000000000000000000000000000000 : begin
-                slv_reg1 <= Bus2IP_Data; slv_write_ack <= 1;
+                slv_reg1 <= Bus2IP_Data;
+                slv_write_ack <= 1;
              end
              32'b00010000000000000000000000000000 : begin
-                slv_reg3 <= Bus2IP_Data; slv_write_ack <= 1;
+                slv_reg3 <= Bus2IP_Data;
+                slv_write_ack <= 1;
              end
              default: begin //this came from Xilinx.  Don't know what it does.
                 slv_reg0 <= slv_reg0;
@@ -278,7 +281,7 @@ module user_logic
 
            slv_reg2[0] <= underflow;
            slv_reg2[2] <= pulses_finished;
-           slv_reg2[(rFIFO_ADDR_BITS+3):4] <= rFIFO_fill;
+           slv_reg2[(rFIFO_ADDR_BITS + 3):4] <= rFIFO_fill;
         end
    end // SLAVE_REG_WRITE_PROC
 
