@@ -231,10 +231,6 @@ module dds_controller
 
             dds_FUDx <= 0;
 
-            /* remove DDS sync until finished
-             * syncI_counter <= 0;
-             */
-
             // wait for write_enable to start
             if (write_enable) begin
                // chip select

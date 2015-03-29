@@ -177,10 +177,10 @@ module user_logic
 
    parameter rFIFO_DEPTH = 32;
    parameter rFIFO_ADDR_BITS = 5;
-   reg [31:0] rFIFO [0:(rFIFO_DEPTH-1)];
-   reg [(rFIFO_ADDR_BITS-1):0]  rFIFO_write_addr;
-   reg [(rFIFO_ADDR_BITS-1):0]  rFIFO_read_addr;
-   reg [(rFIFO_ADDR_BITS-1):0]  rFIFO_fill;
+   reg [31:0] rFIFO [0:(rFIFO_DEPTH - 1)];
+   reg [(rFIFO_ADDR_BITS - 1):0]  rFIFO_write_addr;
+   reg [(rFIFO_ADDR_BITS - 1):0]  rFIFO_read_addr;
+   reg [(rFIFO_ADDR_BITS - 1):0]  rFIFO_fill;
 
    //acknowledge read-requests immediately
    //data will be available on IP2Bus_Data
@@ -362,7 +362,7 @@ module user_logic
    //   slv_reg2[(rFIFO_ADDR_BITS+3):4] <= rFIFO_fill;
    //
    // slv_reg3 -- control (write)
-   //   slv_reg3[7] => pulse_controller_hold.  nothing happens when this is high
+   //   slv_reg3[7] => pulse_controller_hold. nothing happens when this is high
    //   slv_reg3[8] => init.  toggle at start of sequence for reset
    //
    // slv_reg31 -- output of result FIFO (read)
