@@ -188,11 +188,11 @@ module timing_controller
    localparam INSTRUCTION_BITA = 63;
    localparam INSTRUCTION_BITB = 60;
    localparam ENABLE_TIMING_CHECK_BIT = 63 - 4; // 0x08000000
+   localparam TIMER_WIDTH = 24;
    localparam TIMER_BITA = 63 - 8;
    localparam TIMER_BITB = TIMER_BITA - TIMER_WIDTH + 1;
    localparam TTL_BITA = 31;
    localparam TTL_BITB = 0;
-   localparam TIMER_WIDTH = 24;
 
    reg [(TIMER_WIDTH - 1):0] timer;
    reg [2:0] state;
@@ -277,6 +277,10 @@ module timing_controller
                    dds_operand <= instruction[31:0];
                    dds_we <= 1; // write to DDS
                    timer <= 50; // instruction takes 320 ns.  Allocate 500 ns.
+                end
+
+                2 : begin // wait
+                   timer <= instruction[TIMER_BITA:TIMER_BITB];
                 end
 
                 3 : begin // clear underflow
