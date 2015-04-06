@@ -1,11 +1,24 @@
-# Create project
-create_project -quiet molecube_hw "$bin_dir/molecube_hw"
+#
 
-# Set project properties
-set proj [get_projects molecube_hw]
-set_property "board_part" "xilinx.com:zc702:part0:1.1" $proj
-set_property "default_lib" "xil_defaultlib" $proj
-set_property "simulator_language" "Mixed" $proj
+proc try_open_project {name dir} {
+    open_project -quiet "$dir/$name.xpr"
+    return [get_project -quiet $name]
+}
+
+proc ensure_project {name dir} {
+    set proj [try_open_project $name "$dir"]
+    if {[string equal $proj ""]} {
+        create_project -quiet $name "$dir"
+    }
+    return [get_project $name]
+}
+
+proc init_project {proj} {
+    set_property "board_part" "xilinx.com:zc702:part0:1.1" $proj
+    set_property "default_lib" "xil_defaultlib" $proj
+    set_property "simulator_language" "Mixed" $proj
+}
+init_project [ensure_project molecube_hw "$bin_dir/molecube_hw"]
 
 proc ensure_fileset {arg name} {
     if {[string equal [get_filesets -quiet $name] ""]} {
