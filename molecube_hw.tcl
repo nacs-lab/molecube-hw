@@ -1,31 +1,8 @@
 #
 
-proc try_open_project {name dir} {
-    open_project -quiet "$dir/$name.xpr"
-    return [get_project -quiet $name]
-}
+source "$base_dir/lib/utils.tcl"
 
-proc ensure_project {name dir} {
-    set proj [try_open_project $name "$dir"]
-    if {[string equal $proj ""]} {
-        create_project -quiet $name "$dir"
-    }
-    return [get_project $name]
-}
-
-proc init_project {proj} {
-    set_property "board_part" "xilinx.com:zc702:part0:1.1" $proj
-    set_property "default_lib" "xil_defaultlib" $proj
-    set_property "simulator_language" "Mixed" $proj
-}
 init_project [ensure_project molecube_hw "$bin_dir/molecube_hw"]
-
-proc ensure_fileset {arg name} {
-    if {[string equal [get_filesets -quiet $name] ""]} {
-        create_fileset $arg $name
-    }
-    return [get_filesets $name]
-}
 
 set src_set [ensure_fileset -srcset sources_1]
 source "$base_dir/design_1.tcl"
@@ -40,37 +17,8 @@ if {![get_property "is_locked" $file_obj]} {
 ensure_fileset -constrset constrs_1
 ensure_fileset -simset sim_1
 
-set synth_run [get_runs -quiet synth_1]
-if {[string equal $synth_run ""]} {
-    create_run -name synth_1 -part xc7z020clg484-1 \
-        -flow {Vivado Synthesis 2014} \
-        -strategy "Vivado Synthesis Defaults" \
-        -constrset constrs_1
-    set synth_run [get_runs synth_1]
-} else {
-    set_property strategy "Vivado Synthesis Defaults" $synth_run
-    set_property flow "Vivado Synthesis 2014" $synth_run
-}
-
-# set the current synth run
-current_run -synthesis $synth_run
-
-set impl_run [get_runs -quiet impl_1]
-if {[string equal $impl_run ""]} {
-    create_run -name impl_1 \
-        -part xc7z020clg484-1 \
-        -flow {Vivado Implementation 2014} \
-        -strategy "Vivado Implementation Defaults" \
-        -constrset constrs_1 \
-        -parent_run synth_1
-    set impl_run [get_runs impl_1]
-} else {
-    set_property strategy "Vivado Implementation Defaults" $impl_run
-    set_property flow "Vivado Implementation 2014" $impl_run
-}
-
-# set the current impl run
-current_run -implementation $impl_run
+ensure_synth_run synth_1 constrs_1
+ensure_impl_run impl_1 synth_1 constrs_1
 
 # hdl wrapper
 make_wrapper -files [get_files "$design_file"] -top
