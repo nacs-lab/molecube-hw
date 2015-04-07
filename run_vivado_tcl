@@ -1,0 +1,12 @@
+#!/bin/bash
+
+base_dir=$(dirname "$(realpath "${BASH_SOURCE}")")
+bin_dir=$(pwd)
+
+exec vivado -mode batch -source /dev/stdin <<EOF
+set base_dir "$base_dir"
+set bin_dir "$bin_dir"
+$(for f in "$@"; do
+    echo source '"'"$f"'"'
+done)
+EOF
