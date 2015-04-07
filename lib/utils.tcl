@@ -35,6 +35,7 @@ proc ensure_synth_run {name constr} {
     } else {
         set_property strategy "Vivado Synthesis Defaults" $synth_run
         set_property flow "Vivado Synthesis 2014" $synth_run
+        set_property part "xc7z020clg484-1" $synth_run
     }
 
     # set the current synth run
@@ -55,6 +56,7 @@ proc ensure_impl_run {name synth constr} {
     } else {
         set_property strategy "Vivado Implementation Defaults" $impl_run
         set_property flow "Vivado Implementation 2014" $impl_run
+        set_property part "xc7z020clg484-1" $impl_run
     }
 
     # set the current impl run
