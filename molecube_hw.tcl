@@ -24,9 +24,19 @@ proc ensure_fileset {arg name} {
     if {[string equal [get_filesets -quiet $name] ""]} {
         create_fileset $arg $name
     }
+    return [get_filesets $name]
 }
 
-ensure_fileset -srcset sources_1
+set src_set [ensure_fileset -srcset sources_1]
+source "$base_dir/design_1.tcl"
+set design_file \
+    $bin_dir/molecube_hw/molecube_hw.srcs/sources_1/bd/design_1/design_1.bd
+
+set file_obj [get_files -of_objects $src_set [list "*$design_file"]]
+if {![get_property "is_locked" $file_obj]} {
+    set_property "generate_synth_checkpoint" "0" $file_obj
+}
+
 ensure_fileset -constrset constrs_1
 ensure_fileset -simset sim_1
 
@@ -61,3 +71,5 @@ if {[string equal $impl_run ""]} {
 
 # set the current impl run
 current_run -implementation $impl_run
+
+write_project_tcl -quiet $bin_dir/molecube_hw-orig.tcl
