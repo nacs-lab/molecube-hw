@@ -29,8 +29,8 @@ proc ensure_fileset {arg name} {
 
 set src_set [ensure_fileset -srcset sources_1]
 source "$base_dir/design_1.tcl"
-set design_file \
-    $bin_dir/molecube_hw/molecube_hw.srcs/sources_1/bd/design_1/design_1.bd
+set design_dir "$bin_dir/molecube_hw/molecube_hw.srcs/sources_1/bd/design_1"
+set design_file "$design_dir/design_1.bd"
 
 set file_obj [get_files -of_objects $src_set [list "*$design_file"]]
 if {![get_property "is_locked" $file_obj]} {
@@ -72,4 +72,23 @@ if {[string equal $impl_run ""]} {
 # set the current impl run
 current_run -implementation $impl_run
 
-write_project_tcl -quiet $bin_dir/molecube_hw-orig.tcl
+# hdl wrapper
+make_wrapper -files [get_files "$design_file"] -top
+add_files -norecurse "$design_dir/hdl/design_1_wrapper.v"
+update_compile_order -fileset sources_1
+update_compile_order -fileset sim_1
+
+write_bd_tcl -quiet "$bin_dir/$design_name-orig.tcl"
+write_project_tcl -quiet "$bin_dir/molecube_hw-orig.tcl"
+
+# Synthesis
+reset_run synth_1
+launch_runs -runs synth_1
+wait_on_run synth_1
+
+reset_run impl_1
+launch_runs -runs impl_1
+wait_on_run impl_1
+
+open_run impl_1
+write_bitstream -force -bin_file "$bin_dir/system.bit"

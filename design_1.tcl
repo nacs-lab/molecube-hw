@@ -69,4 +69,3 @@ proc create_root_design {parentCell} {
 }
 
 create_root_design ""
-write_bd_tcl -quiet $bin_dir/$design_name-orig.tcl
