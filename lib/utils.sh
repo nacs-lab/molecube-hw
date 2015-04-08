@@ -30,3 +30,7 @@ __replace_vars() {
 print_eval() {
     echo "$1" | __replace_vars "${@:2}"
 }
+
+eval_file() {
+    __replace_vars "${@:2}" < "$1"
+}
