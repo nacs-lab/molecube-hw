@@ -3,7 +3,9 @@ source "$base_dir/lib/utils.tcl"
 set custom_ip_dir "$bin_dir/custom_ip"
 set pulse_ctrl_dir "$custom_ip_dir/pulse_controller_5.0"
 
-init_project [ensure_project pulse_controller_v5_0 "$custom_ip_dir"]
+set proj [ensure_project pulse_controller_v5_0 "$custom_ip_dir"]
+init_project $proj
+set_property "part" "xc7z020clg484-1" $proj
 
 set src_set [ensure_fileset -srcset sources_1]
 

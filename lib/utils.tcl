@@ -12,7 +12,6 @@ proc ensure_project {name dir} {
 }
 
 proc init_project {proj} {
-    set_property "board_part" "xilinx.com:zc702:part0:1.1" $proj
     set_property "default_lib" "xil_defaultlib" $proj
     set_property "simulator_language" "Mixed" $proj
 }
@@ -35,7 +34,6 @@ proc ensure_synth_run {name constr} {
     } else {
         set_property strategy "Vivado Synthesis Defaults" $synth_run
         set_property flow "Vivado Synthesis 2014" $synth_run
-        set_property part "xc7z020clg484-1" $synth_run
     }
 
     # set the current synth run
@@ -47,7 +45,6 @@ proc ensure_impl_run {name synth constr} {
     set impl_run [get_runs -quiet $name]
     if {[string equal $impl_run ""]} {
         create_run -name $name \
-            -part xc7z020clg484-1 \
             -flow {Vivado Implementation 2014} \
             -strategy "Vivado Implementation Defaults" \
             -constrset $constr \
