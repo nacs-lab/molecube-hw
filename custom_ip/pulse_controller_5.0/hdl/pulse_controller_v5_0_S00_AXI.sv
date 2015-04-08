@@ -636,7 +636,7 @@ module pulse_controller_v5_0_S00_AXI
       end
    end
 
-   // Implement axi_arvalid generation
+   // Implement axi_rvalid generation
    // axi_rvalid is asserted for one S_AXI_ACLK clock cycle when both
    // S_AXI_ARVALID and axi_arready are asserted. The slave registers
    // data are available on the axi_rdata bus at this instance. The
