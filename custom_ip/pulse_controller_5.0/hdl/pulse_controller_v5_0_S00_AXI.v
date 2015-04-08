@@ -19,6 +19,8 @@ module pulse_controller_v5_0_S00_AXI
     input wire S_AXI_ACLK,
     // Global Reset Signal. This Signal is Active LOW
     input wire S_AXI_ARESETN,
+
+    // Ports for writing
     // Write address (issued by master, acceped by Slave)
     input wire [C_S_AXI_ADDR_WIDTH - 1:0] S_AXI_AWADDR,
     // Write channel Protection type. This signal indicates the
@@ -52,6 +54,8 @@ module pulse_controller_v5_0_S00_AXI
     // Response ready. This signal indicates that the master
     // can accept a write response.
     input wire S_AXI_BREADY,
+
+    // Ports for reading
     // Read address (issued by master, acceped by Slave)
     input wire [C_S_AXI_ADDR_WIDTH - 1:0] S_AXI_ARADDR,
     // Protection type. This signal indicates the privilege
