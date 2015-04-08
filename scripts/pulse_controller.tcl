@@ -12,8 +12,8 @@ set src_set [ensure_fileset -srcset sources_1]
 # Set IP repository paths
 set_property "ip_repo_paths" "[file normalize "$pulse_ctrl_dir"]" $src_set
 
-set axi_src "$pulse_ctrl_dir/hdl/pulse_controller_v5_0_S00_AXI.v"
-set ctrl_src "$pulse_ctrl_dir/hdl/pulse_controller_v5_0.v"
+set axi_src "$pulse_ctrl_dir/hdl/pulse_controller_v5_0_S00_AXI.sv"
+set ctrl_src "$pulse_ctrl_dir/hdl/pulse_controller_v5_0.sv"
 
 set files [list "[file normalize "$axi_src"]"\
                "[file normalize "$ctrl_src"]"]
