@@ -22,8 +22,11 @@ if {![get_property "is_locked" $file_obj]} {
 ensure_fileset -constrset constrs_1
 ensure_fileset -simset sim_1
 
-ensure_synth_run synth_1 constrs_1
-ensure_impl_run impl_1 synth_1 constrs_1
+set synth_run [ensure_synth_run synth_1 constrs_1]
+set_property "needs_refresh" "1" $synth_run
+
+set impl_run [ensure_impl_run impl_1 synth_1 constrs_1]
+set_property "needs_refresh" "1" $impl_run
 
 # hdl wrapper
 make_wrapper -files [get_files "$design_file"] -top
