@@ -43,3 +43,7 @@ wait_on_run impl_1
 
 open_run impl_1
 write_bitstream -force -bin_file "$bin_dir/system.bit"
+
+set sdk_dir $bin_dir/molecube_hw/molecube_hw.sdk
+file mkdir $sdk_dir
+write_hwdef -force -file $sdk_dir/design_1_wrapper.hdf
