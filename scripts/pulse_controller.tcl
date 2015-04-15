@@ -2,6 +2,7 @@ source "$base_dir/lib/utils.tcl"
 
 set custom_ip_dir "$bin_dir/custom_ip"
 set pulse_ctrl_dir "$custom_ip_dir/pulse_controller_5.0"
+set src_dir "$custom_ip_dir/pulse_controller_v5_0.srcs"
 
 set proj [ensure_project pulse_controller_v5_0 "$custom_ip_dir"]
 init_project $proj
@@ -28,6 +29,22 @@ set_property "used_in_implementation" "0" \
 
 # Set 'sources_1' fileset properties
 set_property "top" "pulse_controller_v5_0" $src_set
+
+create_ip -name div_gen -vendor xilinx.com -library ip -version 5.1 \
+    -module_name div_gen_0
+set_property -dict \
+    [list CONFIG.dividend_and_quotient_width {64} \
+         CONFIG.dividend_has_tuser {true} \
+         CONFIG.dividend_tuser_width {4} \
+         CONFIG.divisor_width {32} \
+         CONFIG.FlowControl {Blocking} \
+         CONFIG.OutTready {true} \
+         CONFIG.latency_configuration {Manual} \
+         CONFIG.latency {16} \
+         CONFIG.fractional_width {32}] [get_ips div_gen_0]
+# Generate template (optional)
+set div_gen_file "$src_dir/sources_1/ip/div_gen_0/div_gen_0.xci"
+generate_target {instantiation_template} [get_files $div_gen_file]
 
 ensure_fileset -constrset constrs_1
 set sim_set [ensure_fileset -simset sim_1]
