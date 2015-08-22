@@ -10,3 +10,4 @@ cp -frs "${base_dir}/custom_ip/"* "$bin_dir/custom_ip"
 "$base_dir"/run_vivado_tcl "$base_dir/scripts/molecube_hw.tcl"
 
 "$base_dir"/scripts/xsdk.sh "${base_dir}" "$bin_dir"
+"$base_dir"/scripts/device-tree.sh "${base_dir}" "$bin_dir"
