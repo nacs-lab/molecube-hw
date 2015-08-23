@@ -27,13 +27,13 @@ proc ensure_synth_run {name constr} {
     set synth_run [get_runs -quiet $name]
     if {[string equal $synth_run ""]} {
         create_run -name $name -part xc7z020clg484-1 \
-            -flow {Vivado Synthesis 2014} \
+            -flow {Vivado Synthesis 2015} \
             -strategy "Vivado Synthesis Defaults" \
             -constrset $constr
         set synth_run [get_runs $name]
     } else {
         set_property strategy "Vivado Synthesis Defaults" $synth_run
-        set_property flow "Vivado Synthesis 2014" $synth_run
+        set_property flow "Vivado Synthesis 2015" $synth_run
     }
 
     # set the current synth run
@@ -45,14 +45,14 @@ proc ensure_impl_run {name synth constr} {
     set impl_run [get_runs -quiet $name]
     if {[string equal $impl_run ""]} {
         create_run -name $name \
-            -flow {Vivado Implementation 2014} \
+            -flow {Vivado Implementation 2015} \
             -strategy "Vivado Implementation Defaults" \
             -constrset $constr \
             -parent_run $synth
         set impl_run [get_runs $name]
     } else {
         set_property strategy "Vivado Implementation Defaults" $impl_run
-        set_property flow "Vivado Implementation 2014" $impl_run
+        set_property flow "Vivado Implementation 2015" $impl_run
         set_property part "xc7z020clg484-1" $impl_run
     }
 
