@@ -26,7 +26,7 @@ open(ARGS[1], "r") do f_in
                 if level == 0
                     find_axi_dma = false
                     write(f_out, """
-                          \t\tdmatest_0: dmatest@0 {
+                          \t\tpulse_ctrl_stream@0 {
                           \t\t\tcompatible ="nacs,pulser-ctrl-stream";
                           \t\t\tdmas = <&axi_dma_0 0
                           \t\t\t        &axi_dma_0 1>;
