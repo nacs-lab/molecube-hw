@@ -27,7 +27,7 @@ open(ARGS[1], "r") do f_in
                     find_axi_dma = false
                     write(f_out, """
                           \t\tdmatest_0: dmatest@0 {
-                          \t\t\tcompatible ="xlnx,axi-dma-test-1.00.a";
+                          \t\t\tcompatible ="nacs,pulser-ctrl-stream";
                           \t\t\tdmas = <&axi_dma_0 0
                           \t\t\t        &axi_dma_0 1>;
                           \t\t\tdma-names = "axidma0", "axidma1";
