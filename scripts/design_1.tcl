@@ -62,7 +62,7 @@ proc create_root_design {parentCell} {
     set processing_system7_0 \
         [create_bd_cell -type ip \
              -vlnv xilinx.com:ip:processing_system7:5.5 processing_system7_0]
-    set_property -dict [list CONFIG.PCW_FPGA0_PERIPHERAL_FREQMHZ {100} \
+    set_property -dict [list CONFIG.PCW_FPGA0_PERIPHERAL_FREQMHZ {125} \
                             CONFIG.PCW_IRQ_F2P_INTR {1} \
                             CONFIG.PCW_USE_FABRIC_INTERRUPT {1} \
                             CONFIG.PCW_USE_S_AXI_HP0 {1} \
