@@ -1,3 +1,12 @@
+// This file was initially produced by a Xilinx code generator to
+// make a bus peripheral with 32 registers. I removed what I thought was useless code. (TR)
+// Earlier versions (Virtex4) used built-in FIFOs from the PowerPC local bus peripheral template.
+// On Zynq with ARM, the AXI bus peripheral templates are more barebones,
+// and did not include an easy FIFO option.
+// Note that writing your own FIFOs in verilog is considereds somewhat error prone.
+// Hopefully the bugs are ironed out, but if there is weird behavior (I have not seen any)
+// it may be worth checking the FIFOs.
+//
 //----------------------------------------------------------------------------
 // user_logic.v - module
 //----------------------------------------------------------------------------
@@ -172,6 +181,7 @@ module user_logic
    // rFIFO = results FIFO. Access by reading slave register 31
    // If using register 31, must check that there is a value in the FIFO to read.
    // Otherwise things will get messed up.
+   // Check that slv_reg2[(rFIFO_ADDR_BITS+3):4] (rFIFO_fill) > 0
    // Register 2 contains rFIFO occupancy. There is no overflow protection,
    // so don't stuff more than rFIFO_DEPTH results
 
@@ -188,7 +198,7 @@ module user_logic
    assign
      slv_reg_write_sel = Bus2IP_WrCE[31:0],
      slv_reg_read_sel  = Bus2IP_RdCE[31:0],
-     slv_read_ack      = Bus2IP_RdCE[0] || Bus2IP_RdCE[1] || Bus2IP_RdCE[2] || Bus2IP_RdCE[3] || Bus2IP_RdCE[4] || Bus2IP_RdCE[5] || Bus2IP_RdCE[6] || Bus2IP_RdCE[7] || Bus2IP_RdCE[8] || Bus2IP_RdCE[9] || Bus2IP_RdCE[10] || Bus2IP_RdCE[11] || Bus2IP_RdCE[12] || Bus2IP_RdCE[13] || Bus2IP_RdCE[14] || Bus2IP_RdCE[15] || Bus2IP_RdCE[16] || Bus2IP_RdCE[17] || Bus2IP_RdCE[18] || Bus2IP_RdCE[19] || Bus2IP_RdCE[20] || Bus2IP_RdCE[21] || Bus2IP_RdCE[22] || Bus2IP_RdCE[23] || Bus2IP_RdCE[24] || Bus2IP_RdCE[25] || Bus2IP_RdCE[26] || Bus2IP_RdCE[27] || Bus2IP_RdCE[28] || Bus2IP_RdCE[29] || Bus2IP_RdCE[30] || Bus2IP_RdCE[31];
+     slv_read_ack      = Bus2IP_RdCE != 32'b0;
 
    // implement slave model register(s)
    always @(posedge Bus2IP_Clk) begin
@@ -225,64 +235,32 @@ module user_logic
          slv_reg29 <= 0;
          slv_reg30 <= 0;
          slv_reg31 <= 0;
-      end
-      else
-        if (slv_write_ack == 1)
-          slv_write_ack <= 0;
-        else begin
-           case (slv_reg_write_sel)
-             32'b10000000000000000000000000000000 : begin
-                slv_reg0 <= Bus2IP_Data;
-                slv_write_ack <= 1;
-             end
-             32'b01000000000000000000000000000000 : begin
-                slv_reg1 <= Bus2IP_Data;
-                slv_write_ack <= 1;
-             end
-             32'b00010000000000000000000000000000 : begin
-                slv_reg3 <= Bus2IP_Data;
-                slv_write_ack <= 1;
-             end
-             default: begin //this came from Xilinx.  Don't know what it does.
-                slv_reg0 <= slv_reg0;
-                slv_reg1 <= slv_reg1;
-                slv_reg2 <= slv_reg2;
-                slv_reg3 <= slv_reg3;
-                slv_reg4 <= slv_reg4;
-                slv_reg5 <= slv_reg5;
-                slv_reg6 <= slv_reg6;
-                slv_reg7 <= slv_reg7;
-                slv_reg8 <= slv_reg8;
-                slv_reg9 <= slv_reg9;
-                slv_reg10 <= slv_reg10;
-                slv_reg11 <= slv_reg11;
-                slv_reg12 <= slv_reg12;
-                slv_reg13 <= slv_reg13;
-                slv_reg14 <= slv_reg14;
-                slv_reg15 <= slv_reg15;
-                slv_reg16 <= slv_reg16;
-                slv_reg17 <= slv_reg17;
-                slv_reg18 <= slv_reg18;
-                slv_reg19 <= slv_reg19;
-                slv_reg20 <= slv_reg20;
-                slv_reg21 <= slv_reg21;
-                slv_reg22 <= slv_reg22;
-                slv_reg23 <= slv_reg23;
-                slv_reg24 <= slv_reg24;
-                slv_reg25 <= slv_reg25;
-                slv_reg26 <= slv_reg26;
-                slv_reg27 <= slv_reg27;
-                slv_reg28 <= slv_reg28;
-                slv_reg29 <= slv_reg29;
-                slv_reg30 <= slv_reg30;
-                slv_reg31 <= slv_reg31;
-             end
-           endcase
+      end else if (slv_write_ack == 1) begin
+         slv_write_ack <= 0;
+      end else begin
+         case (slv_reg_write_sel)
+           32'b10000000000000000000000000000000 : begin
+              slv_reg0 <= Bus2IP_Data;
+              slv_write_ack <= 1;
+           end
+           32'b01000000000000000000000000000000 : begin
+              slv_reg1 <= Bus2IP_Data;
+              slv_write_ack <= 1;
+           end
+           32'b00010000000000000000000000000000 : begin
+              slv_reg3 <= Bus2IP_Data;
+              slv_write_ack <= 1;
+           end
+           32'b00000000000000000000000000000010 : begin
+              slv_reg30 <= Bus2IP_Data;
+              slv_write_ack <= 1;
+           end
+         endcase
 
-           slv_reg2[0] <= underflow;
-           slv_reg2[2] <= pulses_finished;
-           slv_reg2[(rFIFO_ADDR_BITS + 3):4] <= rFIFO_fill;
-        end
+         slv_reg2[0] <= underflow;
+         slv_reg2[2] <= pulses_finished;
+         slv_reg2[(rFIFO_ADDR_BITS + 3):4] <= rFIFO_fill;
+      end
    end // SLAVE_REG_WRITE_PROC
 
    // implement slave model register read mux
