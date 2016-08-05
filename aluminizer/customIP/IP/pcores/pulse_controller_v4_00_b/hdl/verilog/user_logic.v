@@ -263,32 +263,8 @@ module user_logic
       end
    end // SLAVE_REG_WRITE_PROC
 
-   // implement slave model register read mux
-   //  always @( posedge Bus2IP_Clk )
-   //    begin
-   //    if(Bus2IP_RNW && (Bus2IP_CS[0]) ) begin
-   //      case ( Bus2IP_Addr[4:0] )
-   //        0 : slv_ip2bus_data <= slv_reg0;
-   //        1 : slv_ip2bus_data <= slv_reg1;
-   //        2 : slv_ip2bus_data <= slv_reg2;
-   //        3 : slv_ip2bus_data <= slv_reg3;
-   //        4 : slv_ip2bus_data <= slv_reg4;
-   //        5 : slv_ip2bus_data <= slv_reg5;
-   //        6 : slv_ip2bus_data <= slv_reg6;
-   //        7 : slv_ip2bus_data <= slv_reg7;
-   //        31 : slv_ip2bus_data <= rFIFO[rFIFO_read_addr];
-   //        default : slv_ip2bus_data <= 0;
-   //      endcase
-   //    end
-   //  end // SLAVE_REG_READ_PROC
-
-   always @(slv_reg_read_sel or slv_reg0 or slv_reg1 or slv_reg2 or
-            slv_reg3 or slv_reg4 or slv_reg5 or slv_reg6 or slv_reg7 or
-            slv_reg8 or slv_reg9 or slv_reg10 or slv_reg11 or slv_reg12 or
-            slv_reg13 or slv_reg14 or slv_reg15 or slv_reg16 or slv_reg17 or
-            slv_reg18 or slv_reg19 or slv_reg20 or slv_reg21 or slv_reg22 or
-            slv_reg23 or slv_reg24 or slv_reg25 or slv_reg26 or slv_reg27 or
-            slv_reg28 or slv_reg29 or slv_reg30 or slv_reg31 )
+   // read registers here
+   always @(slv_reg_read_sel)
      begin
         case (slv_reg_read_sel)
           32'b10000000000000000000000000000000 : slv_ip2bus_data <= slv_reg0;
