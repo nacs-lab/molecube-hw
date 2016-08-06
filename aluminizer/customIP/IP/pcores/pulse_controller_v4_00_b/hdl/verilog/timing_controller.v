@@ -11,7 +11,9 @@
  * The phase of the photon arrival times with respect to a sync clock can be
  * tracked.
  *
- * DDS and photon counts can be read back via a second read FIFO.
+ * SPI communications can be performed as part of the pulse sequence.
+ *
+ * DDS, photon counts, and SPI results can be read back via a second read FIFO.
  *
  * Underflow of the write FIFO (timing failure) can be detected.
  *
@@ -20,7 +22,7 @@
  *
  * bits 63...60, instruction
  *
- * Currently there are 6 instructions:
+ * Current instructions:
  *
  * 0 TIMED_OUTPUT (6 cycles minimum, 2^24 - 1 = 16,777,215 maximum)
  *   bits 55...32 = duration (in clock cycles, must be at least 6)
@@ -31,6 +33,9 @@
  *   bits 47...32 = DDS opcode (read and write freq/phase/amplitude/registers)
  *   bits 31...0  = DDS operand (phase/frequency/amplitude/register value)
  *
+ * 2 WAIT (pulse output remains unchanged)
+ *   bits 55...32 = duration (in clock cycles, must be at least 6)
+ *
  * 3 CLEAR_UNDERFLOW (5 cycles)
  *
  * 4 PUSH_DATA (variable # cycles)
@@ -39,6 +44,11 @@
  *
  * 5 ENABLE CLOCK OUT
  *   period - 1 = bits 7...0. disabled when bits 7...0 = 255
+ *
+ * 6 SPI COMMAND
+ *   bits 55...48 = duration (x4, in clock cycles, up to 4 x 2.55us)
+ *   bits 47...32 = SPI opcode (see spi_controller.v)
+ *   bits 31... 0 = SPI output data (bit 31 is emitted first)
  *
  * bit 59, disable underflow flag.  Prevents underflow from going high.
  *
@@ -72,6 +82,8 @@ module timing_controller
     parameter U_DDS_ADDR_WIDTH = 7,
     parameter U_DDS_CTRL_WIDTH = 3,
 
+    localparam N_SPI = 1,
+
     parameter BUS_DATA_WIDTH = 32,
     parameter RESULT_WIDTH = 32,
 
@@ -103,6 +115,12 @@ module timing_controller
 
     output reg [(TTL_WIDTH - 1):0] ttl_out,
     output reg underflow,
+
+    // output [(N_SPI - 1):0] spi_cs,
+    // output spi_mosi,
+    // input spi_miso,
+    // output spi_clk,
+
     output reg pulses_finished,
     // pulses wait until this goes low
     input pulse_controller_hold,
@@ -155,6 +173,8 @@ module timing_controller
    reg [31:0] loopback_data;
    reg loopback_WrReq;
    // allow DDS_controller or loop back to write into the rFIFO
+   // Write one word on rising edge of rFIFO_WrReq.
+   // Data should be valid for one cycle after rising edge.
    assign rFIFO_WrReq = dds_WrReq | loopback_WrReq;
    assign rFIFO_data = dds_result | loopback_data;
 
@@ -204,6 +224,35 @@ module timing_controller
    // pulses_hold will be released if FIFO is full or pulse_controller_hold is
    // low once released, the controller runs until it is done
    wire pulses_hold = pulse_controller_hold & ~force_release;
+
+   localparam SPI_OPCODE_WIDTH = 16;
+   localparam SPI_OPERAND_WIDTH = 32;
+   reg spi_we;
+   reg [(SPI_OPCODE_WIDTH - 1):0] spi_opcode;
+   reg [(SPI_OPERAND_WIDTH - 1):0] spi_operand;
+   wire spi_WrReq;
+   wire [0:31] spi_result;
+
+   wire [(N_SPI - 1):0] spi_cs;
+   wire spi_mosi;
+   reg spi_miso;
+   wire spi_clk;
+
+   spi_controller#(.N_SPI(N_SPI),
+                   .SPI_OPCODE_WIDTH(SPI_OPCODE_WIDTH),
+                   .SPI_OPERAND_WIDTH(SPI_OPERAND_WIDTH))
+   spi_controller_inst(.clock(clock),
+                       .reset(reset),
+                       .write_enable(spi_we),
+                       .opcode(spi_opcode),
+                       .operand(spi_operand),
+                       .spi_cs(spi_cs),
+                       .spi_mosi(spi_mosi),
+                       .spi_miso(spi_miso),
+                       .spi_clk(spi_clk),
+                       .result_data(spi_result),
+                       .result_WrReq(spi_WrReq));
+
    always @(posedge clock, posedge reset) begin
       if (reset | init) begin
          if (reset) begin
@@ -241,6 +290,12 @@ module timing_controller
 
          force_release <= force_release | fifo_full;
 
+         //finite state machine
+         // 0 -- try to pull next instruction from FIFO
+         //      if available & not holding, go to state 1
+         //      else, set flags (underflow & pulses_finished)
+         // 1 -- decode instruction and setup pulse timer, go to state 2.
+         // 2 -- count down the pulse timer, then go to state 0
          case (state)
            // If there are no more instructions, set underflow high.
            0: begin
@@ -276,7 +331,7 @@ module timing_controller
                    dds_opcode <= instruction[47:32];
                    dds_operand <= instruction[31:0];
                    dds_we <= 1; // write to DDS
-                   timer <= 50; // instruction takes 320 ns.  Allocate 500 ns.
+                   timer <= 50; // instruction takes 320 ns. Allocate 500 ns.
                 end
 
                 2 : begin // wait
@@ -299,12 +354,21 @@ module timing_controller
                    timer <= 5;
                 end
 
+                // SPI communication.
+                6 : begin
+                   spi_opcode <= instruction[47:32];
+                   spi_operand <= instruction[31:0];
+                   spi_we <= 1; // write to SPI
+                   timer <= (instruction[55:48] << 2);
+                end
+
                 default : timer <= 1000;
               endcase
            end
 
            2 : begin // decrement timer until it equals the minimum pulse time
               dds_we <= 0;
+              spi_we <= 0;
 
               // timer < 3 is possible for TTL pulses, swallow this timing error
               // for now.
