@@ -46,6 +46,7 @@ module user_logic
    pulse_io,
    dds_addr, dds_data_I, dds_data_O, dds_data_T, dds_control, dds_cs,
    dds_addr2, dds_data2_I, dds_data2_O, dds_data2_T, dds_control2, dds_FUD,
+   spi_cs, spi_mosi, spi_miso, spi_clk,
    clock_out,
    // -- ADD USER PORTS ABOVE THIS LINE ---------------
 
@@ -107,15 +108,9 @@ module user_logic
 
    // begin: params and external signals for SPI
    parameter N_SPI = 1;
-   // output [(N_SPI-1):0] spi_cs;
-   // output spi_mosi, spi_clk;
-   // input  spi_miso;
-
-   // TODO: Dummy input/output
-   wire [(N_SPI - 1):0] spi_cs;
-   wire spi_mosi;
-   reg spi_miso;
-   wire spi_clk;
+   output [(N_SPI-1):0] spi_cs;
+   output spi_mosi, spi_clk;
+   input  spi_miso;
    // end: params and external signals for SPI
 
    output clock_out;

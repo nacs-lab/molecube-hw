@@ -107,6 +107,7 @@ entity pulse_controller is
       U_DDS_DATA_WIDTH : integer := 16;
       U_DDS_ADDR_WIDTH : integer := 7;
       U_DDS_CTRL_WIDTH : integer := 3;
+      N_SPI : integer := 1;
       -- ADD USER GENERICS ABOVE THIS LINE ---------------
 
       -- DO NOT EDIT BELOW THIS LINE ---------------------
@@ -142,6 +143,12 @@ entity pulse_controller is
       dds_control2 : out std_logic_vector(0 to U_DDS_CTRL_WIDTH-1);
       dds_cs       : out std_logic_vector(0 to N_DDS-1);
       dds_FUD      : out std_logic_vector(0 to 1); -- DDR --
+
+      spi_cs        : out std_logic_vector(0 to N_SPI-1);
+      spi_mosi      : out std_logic;
+      spi_miso      : in std_logic;
+      spi_clk       : out std_logic;
+
       clock_out    : out std_logic;
       -- ADD USER PORTS ABOVE THIS LINE ------------------
 
@@ -270,6 +277,7 @@ architecture IMP of pulse_controller is
         U_DDS_DATA_WIDTH : integer := 16;
         U_DDS_ADDR_WIDTH : integer := 7;
         U_DDS_CTRL_WIDTH : integer := 4;
+        N_SPI : integer := 1;
         -- ADD USER GENERICS ABOVE THIS LINE ---------------
 
         -- DO NOT EDIT BELOW THIS LINE ---------------------
@@ -297,6 +305,12 @@ architecture IMP of pulse_controller is
         dds_control2  : out std_logic_vector(0 to U_DDS_CTRL_WIDTH-1);
         dds_cs        : out std_logic_vector(0 to N_DDS-1);
         dds_FUD       : out std_logic_vector(0 to 1); -- DDR --
+
+        spi_cs        : out std_logic_vector(0 to N_SPI-1);
+        spi_mosi      : out std_logic;
+        spi_miso      : in std_logic;
+        spi_clk       : out std_logic;
+
         clock_out     : out std_logic;
         -- ADD USER PORTS ABOVE THIS LINE ------------------
 
@@ -407,6 +421,7 @@ begin
       U_DDS_DATA_WIDTH => U_DDS_DATA_WIDTH,
       U_DDS_ADDR_WIDTH => U_DDS_ADDR_WIDTH,
       U_DDS_CTRL_WIDTH => U_DDS_CTRL_WIDTH,
+      N_SPI => N_SPI,
       -- MAP USER GENERICS ABOVE THIS LINE ---------------
 
       C_NUM_REG                => USER_NUM_REG,
@@ -431,6 +446,11 @@ begin
       dds_control2  => dds_control2,
       dds_cs    => dds_cs,
       dds_FUD   => dds_FUD,
+
+      spi_cs => spi_cs,
+      spi_mosi => spi_mosi,
+      spi_miso => spi_miso,
+      spi_clk => spi_clk,
 
       clock_out => clock_out,
       -- MAP USER PORTS ABOVE THIS LINE ------------------
