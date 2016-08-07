@@ -49,7 +49,7 @@ dtd_name=${bin_dir}/molecube.dtb
 # The dts file generated is missing some important values possibly
 # because of the version mismatch
 # Also add dmatest in the device tree
-julia -f "${base_dir}/scripts/fix_pl_dtsi.jl" \
+julia --startup-file=no "${base_dir}/scripts/fix_pl_dtsi.jl" \
       "${pl_dtsi_name}" "${pl_dtsi_name}.new"
 
 base_dts_dir=${bin_dir}/linux-xlnx/arch/arm/boot/dts
@@ -64,7 +64,10 @@ for fpath in "${sdk_dir}/dts/"*; do
 done
 
 perl -p -i -e \
-     '$_ .= qq(/include/ "pl.dtsi"\n) if /\/include\/ "zynq-7000.dtsi"/' \
+     '$_ .= qq(/include/ "pl.dtsi"\n) if /#include "zynq-7000.dtsi"/' \
      "${base_dts_dir}/zynq-zc702.dts"
 
-dtc -I dts -O dtb -o "$dtd_name" "${base_dts_dir}/zynq-zc702.dts"
+arm-linux-gnueabihf-gcc \
+    -E -nostdinc -undef -D__DTC__ -x assembler-with-cpp \
+    -o - "${base_dts_dir}/zynq-zc702.dts" | grep -v '^# ' | \
+    dtc -i "${base_dts_dir}" -I dts -O dtb -o "$dtd_name" -

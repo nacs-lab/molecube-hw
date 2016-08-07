@@ -8,7 +8,6 @@ open(ARGS[1], "r") do f_in
             if !find_axi_dma && match(r"axi_dma_0", line) !== nothing
                 find_axi_dma = true
                 write(f_out, line)
-                write(f_out, "\t\t\t#dma-cells = <1>;\n")
                 level += 1
                 continue
             end
