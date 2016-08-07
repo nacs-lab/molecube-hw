@@ -82,7 +82,7 @@ module timing_controller
     parameter U_DDS_ADDR_WIDTH = 7,
     parameter U_DDS_CTRL_WIDTH = 3,
 
-    localparam N_SPI = 1,
+    parameter N_SPI = 1,
 
     parameter BUS_DATA_WIDTH = 32,
     parameter RESULT_WIDTH = 32,
@@ -116,10 +116,10 @@ module timing_controller
     output reg [(TTL_WIDTH - 1):0] ttl_out,
     output reg underflow,
 
-    // output [(N_SPI - 1):0] spi_cs,
-    // output spi_mosi,
-    // input spi_miso,
-    // output spi_clk,
+    output [(N_SPI - 1):0] spi_cs,
+    output spi_mosi,
+    input spi_miso,
+    output spi_clk,
 
     output reg pulses_finished,
     // pulses wait until this goes low
@@ -232,11 +232,6 @@ module timing_controller
    reg [(SPI_OPERAND_WIDTH - 1):0] spi_operand;
    wire spi_WrReq;
    wire [0:31] spi_result;
-
-   wire [(N_SPI - 1):0] spi_cs;
-   wire spi_mosi;
-   reg spi_miso;
-   wire spi_clk;
 
    spi_controller#(.N_SPI(N_SPI),
                    .SPI_OPCODE_WIDTH(SPI_OPCODE_WIDTH),

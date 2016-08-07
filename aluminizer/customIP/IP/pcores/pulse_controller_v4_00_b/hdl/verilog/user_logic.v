@@ -105,6 +105,19 @@ module user_logic
    output [1:0] dds_FUD;
    output [0:(N_DDS-1)] dds_cs;
 
+   // begin: params and external signals for SPI
+   parameter N_SPI = 1;
+   // output [(N_SPI-1):0] spi_cs;
+   // output spi_mosi, spi_clk;
+   // input  spi_miso;
+
+   // TODO: Dummy input/output
+   wire [(N_SPI - 1):0] spi_cs;
+   wire spi_mosi;
+   reg spi_miso;
+   wire spi_clk;
+   // end: params and external signals for SPI
+
    output clock_out;
 
 
@@ -330,6 +343,7 @@ module user_logic
    assign IP2Bus_RdAck = slv_read_ack;
    assign IP2Bus_Error = 0;
 
+   // rFIFO = result FIFO (records DDS, SPI, and loopback results)
    // push a word onto rFIFO on rising edges of rFIFO_WrReq
    wire rFIFO_WrReq;
    wire rFIFO_WrReqPosEdge;
@@ -339,13 +353,11 @@ module user_logic
    //increment rFIFO_read_addr on falling edges of rFIFO_RdReq
    wire rFIFO_RdReq;
    reg rFIFO_RdReqPrev;
-   wire rFIFO_RdReqNegEdge;
    assign rFIFO_RdReq = (slv_reg_read_sel == 32'b00000000000000000000000000000001);
-   assign rFIFO_RdReqNegEdge = ~rFIFO_RdReq & rFIFO_RdReqPrev;
 
    always @(posedge Bus2IP_Clk)
      begin
-        if (~Bus2IP_Resetn) begin
+        if (~Bus2IP_Resetn | slv_reg3[8]) begin
            rFIFO_fill <= 0;
            rFIFO_read_addr <= 0;
            rFIFO_write_addr <= 0;
@@ -357,21 +369,27 @@ module user_logic
 
            if(rFIFO_WrReqPosEdge) begin
               rFIFO[rFIFO_write_addr] <= result;
-              rFIFO_write_addr <= rFIFO_write_addr+1;
+              rFIFO_write_addr <= rFIFO_write_addr + 1;
            end
 
            if(rFIFO_RdReq) //rFIFO_RdReq should de-assert after one cycle.
-             rFIFO_read_addr <= rFIFO_read_addr+1;
+             rFIFO_read_addr <= rFIFO_read_addr + 1;
 
+           //increment fill counter if writing & not reading
            if(rFIFO_WrReqPosEdge & !rFIFO_RdReq)
-             rFIFO_fill <= rFIFO_fill+1;
+             rFIFO_fill <= rFIFO_fill + 1;
 
+           //decrement fill counter if reading & not writing
            if(!rFIFO_WrReqPosEdge & rFIFO_RdReq)
-             rFIFO_fill <= rFIFO_fill+31;
+             rFIFO_fill <= rFIFO_fill + ~(5'b0);
         end
      end
 
+   // acknowledge to the bus if we got the data
+   // or don't (and hang the bus) if the FIFO is full
    wire tc_write_ack;
+
+   // digital output words (called TTL for historical reasons)
    wire [(U_PULSE_WIDTH - 1):0] ttl_out;
 
    // assume slave register width == pulse width
@@ -380,10 +398,12 @@ module user_logic
    // Writing to register 31 sends data to timing controller
    wire tc_instruction_ready = (slv_reg_write_sel ==  32'b00000000000000000000000000000001 );
 
+   // active-high reset
    wire resetp = ~Bus2IP_Resetn;
 
    timing_controller
-     #(.N_DDS(N_DDS),
+     #(.N_SPI(N_SPI),
+       .N_DDS(N_DDS),
        .U_DDS_DATA_WIDTH(U_DDS_DATA_WIDTH),
        .U_DDS_ADDR_WIDTH(U_DDS_ADDR_WIDTH),
        .U_DDS_CTRL_WIDTH(U_DDS_CTRL_WIDTH),
@@ -410,6 +430,10 @@ module user_logic
       .dds_FUD(dds_FUD),
       .ttl_out(ttl_out),
       .underflow(underflow),
+      .spi_cs(spi_cs),
+      .spi_mosi(spi_mosi),
+      .spi_miso(spi_miso),
+      .spi_clk(spi_clk),
       .pulses_finished(pulses_finished),
       .pulse_controller_hold(slv_reg3[7]),
       .init(slv_reg3[8]),
