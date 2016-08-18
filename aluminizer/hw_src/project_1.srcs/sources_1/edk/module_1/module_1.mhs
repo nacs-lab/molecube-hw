@@ -42,15 +42,10 @@
  PORT dds_FUD_pin = dds_FUD, DIR = O, VEC = [1:0]
  PORT clock_in_pin = clock_in, DIR = I, SIGIS = CLK, CLK_FREQ = 100000000
  PORT clock_out1_pin = clock_out, DIR = O, SIGIS = CLK, CLK_FREQ = 100000000
-
- PORT axi_spi_0_SCK_pin = axi_spi_0_SCK, DIR = O
- PORT axi_spi_0_MISO_pin = axi_spi_0_MISO, DIR = I
- PORT axi_spi_0_MOSI_pin = axi_spi_0_MOSI, DIR = O
- PORT axi_spi_0_SS_pin = axi_spi_0_SS, DIR = O
- PORT axi_spi_1_SCK_pin = axi_spi_1_SCK, DIR = O
- PORT axi_spi_1_MISO_pin = axi_spi_1_MISO, DIR = I
- PORT axi_spi_1_MOSI_pin = axi_spi_1_MOSI, DIR = O
- PORT axi_spi_1_SS_pin = axi_spi_1_SS, DIR = O
+ PORT spi0_cs = spi_cs, DIR = O, VEC = [0:0]
+ PORT spi0_mosi = spi_mosi, DIR = O
+ PORT spi0_miso = spi_miso, DIR = I
+ PORT spi0_clk = spi_clk, DIR = O
 
 BEGIN processing_system7
  PARAMETER INSTANCE = processing_system7_0
@@ -137,7 +132,6 @@ BEGIN processing_system7
  PORT FCLK_CLK0 = processing_system7_0_FCLK_CLK0
  PORT FCLK_RESET0_N = processing_system7_0_FCLK_RESET0_N
  PORT M_AXI_GP0_ACLK = processing_system7_0_FCLK_CLK0
- PORT IRQ_F2P = axi_spi_0_IP2INTC_Irpt & axi_spi_1_IP2INTC_Irpt
 END
 
 # & axi_spi_2_IP2INTC_Irpt & axi_spi_3_IP2INTC_Irpt & axi_spi_4_IP2INTC_Irpt & axi_spi_5_IP2INTC_Irpt
@@ -158,6 +152,11 @@ BEGIN pulse_controller
  PORT dds_control2 = dds_control2
  PORT dds_cs = dds_cs
  PORT dds_FUD = dds_FUD
+ # SPI
+ PORT spi_cs = spi_cs
+ PORT spi_mosi = spi_mosi
+ PORT spi_miso = spi_miso
+ PORT spi_clk = spi_clk
 END
 
 BEGIN axi_interconnect
@@ -166,38 +165,6 @@ BEGIN axi_interconnect
  PARAMETER C_INTERCONNECT_CONNECTIVITY_MODE = 0
  PORT INTERCONNECT_ACLK = processing_system7_0_FCLK_CLK0
  PORT INTERCONNECT_ARESETN = processing_system7_0_FCLK_RESET0_N
-END
-
-BEGIN axi_spi
- PARAMETER INSTANCE = axi_spi_0
- PARAMETER HW_VER = 1.02.a
- PARAMETER C_BASEADDR = 0x42000000
- PARAMETER C_HIGHADDR = 0x4200ffff
- PARAMETER C_SCK_RATIO = 1024
- PARAMETER C_FIFO_EXIST = 0
- BUS_INTERFACE S_AXI = axi_interconnect_1
- PORT S_AXI_ACLK = processing_system7_0_FCLK_CLK0
- PORT SCK_O = axi_spi_0_SCK
- PORT MISO_I = axi_spi_0_MISO
- PORT MOSI_O = axi_spi_0_MOSI
- PORT SS_O = axi_spi_0_SS
- PORT IP2INTC_Irpt = axi_spi_0_IP2INTC_Irpt
-END
-
-BEGIN axi_spi
- PARAMETER INSTANCE = axi_spi_1
- PARAMETER HW_VER = 1.02.a
- PARAMETER C_BASEADDR = 0x42040000
- PARAMETER C_HIGHADDR = 0x4204ffff
- PARAMETER C_SCK_RATIO = 8
- PARAMETER C_FIFO_EXIST = 0
- BUS_INTERFACE S_AXI = axi_interconnect_1
- PORT S_AXI_ACLK = processing_system7_0_FCLK_CLK0
- PORT SCK_O = axi_spi_1_SCK
- PORT MISO_I = axi_spi_1_MISO
- PORT MOSI_O = axi_spi_1_MOSI
- PORT SS_O = axi_spi_1_SS
- PORT IP2INTC_Irpt = axi_spi_1_IP2INTC_Irpt
 END
 
 BEGIN clock_generator

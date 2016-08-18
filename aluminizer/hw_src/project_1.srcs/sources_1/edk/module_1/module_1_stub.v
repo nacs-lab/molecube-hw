@@ -35,15 +35,7 @@ module module_1_stub
     dds_cs_pin,
     dds_FUD_pin,
     clock_in_pin,
-    clock_out1_pin,
-    axi_spi_0_SCK_pin,
-    axi_spi_0_MISO_pin,
-    axi_spi_0_MOSI_pin,
-    axi_spi_0_SS_pin,
-    axi_spi_1_SCK_pin,
-    axi_spi_1_MISO_pin,
-    axi_spi_1_MOSI_pin,
-    axi_spi_1_SS_pin
+    clock_out1_pin
   );
   inout [53:0] processing_system7_0_MIO;
   input processing_system7_0_PS_SRSTB;
@@ -77,14 +69,6 @@ module module_1_stub
   output [1:0] dds_FUD_pin;
   input clock_in_pin;
   output clock_out1_pin;
-  output axi_spi_0_SCK_pin;
-  input axi_spi_0_MISO_pin;
-  output axi_spi_0_MOSI_pin;
-  output axi_spi_0_SS_pin;
-  output axi_spi_1_SCK_pin;
-  input axi_spi_1_MISO_pin;
-  output axi_spi_1_MOSI_pin;
-  output axi_spi_1_SS_pin;
 
   (* BOX_TYPE = "user_black_box" *)
   module_1
@@ -120,15 +104,7 @@ module module_1_stub
       .dds_cs_pin ( dds_cs_pin ),
       .dds_FUD_pin ( dds_FUD_pin ),
       .clock_in_pin ( clock_in_pin ),
-      .clock_out1_pin ( clock_out1_pin ),
-      .axi_spi_0_SCK_pin ( axi_spi_0_SCK_pin ),
-      .axi_spi_0_MISO_pin ( axi_spi_0_MISO_pin ),
-      .axi_spi_0_MOSI_pin ( axi_spi_0_MOSI_pin ),
-      .axi_spi_0_SS_pin ( axi_spi_0_SS_pin ),
-      .axi_spi_1_SCK_pin ( axi_spi_1_SCK_pin ),
-      .axi_spi_1_MISO_pin ( axi_spi_1_MISO_pin ),
-      .axi_spi_1_MOSI_pin ( axi_spi_1_MOSI_pin ),
-      .axi_spi_1_SS_pin ( axi_spi_1_SS_pin )
+      .clock_out1_pin ( clock_out1_pin )
     );
 
 endmodule
