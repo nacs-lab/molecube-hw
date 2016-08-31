@@ -249,7 +249,7 @@ Net dds_cs_pin<21> LOC = Y10 | IOSTANDARD = LVCMOS33 | DRIVE = 4;
 # FMC2, column D
 # LA01_CC_P / FMC2_D08
 # input: Net pulse_io_pin<20> LOC = W16 | IOSTANDARD = LVCMOS33 | DRIVE = 4;
-# LA01_CC_P / FMC2_D9
+# LA01_CC_P / FMC2_D09
 Net pulse_io_pin<21> LOC = Y16 | IOSTANDARD = LVCMOS33 | DRIVE = 4;
 # LA05_P / FMC2_D11
 Net pulse_io_pin<19> LOC = AB19 | IOSTANDARD = LVCMOS33 | DRIVE = 4;
