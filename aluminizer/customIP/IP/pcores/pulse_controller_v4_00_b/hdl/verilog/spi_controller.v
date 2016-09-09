@@ -36,7 +36,7 @@
 module spi_controller
   #(parameter N_SPI = 1,
     parameter SPI_OPCODE_WIDTH = 16,
-    parameter SPI_OPERAND_WIDTH = 32,
+    parameter SPI_OPERAND_WIDTH = 18,
     localparam RESULT_WIDTH = 32)
    (input clock,
     input reset,
@@ -65,19 +65,17 @@ module spi_controller
    reg [7:0] clk_div;
    reg [7:0] div_cycle;
 
-   assign spi_mosi = operand_reg[31];
+   assign spi_mosi = operand_reg[(SPI_OPERAND_WIDTH - 1)];
 
    reg idle; // running SPI command or idle
    assign busy = ~idle;
 
-   reg [6:0] num_spi_clk_edges;
    reg [6:0] spi_clk_edges;
 
    assign spi_cs = ~spi_cs_reg;
 
    always @(posedge clock) begin
       if (reset) begin
-         num_spi_clk_edges <= 0;
          spi_clk_edges <= 0;
          div_cycle <= 0;
          clk_div <= 0;
@@ -112,9 +110,8 @@ module spi_controller
             spi_clk <= opcode_reg[14];
 
             clk_div <= opcode_reg[7:0];
-            num_spi_clk_edges <= 1 + ((opcode_reg[9:8]+1) << 4);
             spi_cs_reg <= (1 << opcode_reg[12:11]);
-         end else if (spi_clk_edges == num_spi_clk_edges) begin
+         end else if (spi_clk_edges == (2 * SPI_OPERAND_WIDTH + 1)) begin
             idle <= 1;// signal idle
             if (opcode_reg[10]) begin
                result_WrReq <= 1;

@@ -226,7 +226,7 @@ module timing_controller
    wire pulses_hold = pulse_controller_hold & ~force_release;
 
    localparam SPI_OPCODE_WIDTH = 16;
-   localparam SPI_OPERAND_WIDTH = 32;
+   localparam SPI_OPERAND_WIDTH = 18;
    reg spi_we;
    reg [(SPI_OPCODE_WIDTH - 1):0] spi_opcode;
    reg [(SPI_OPERAND_WIDTH - 1):0] spi_operand;
@@ -352,7 +352,7 @@ module timing_controller
                 // SPI communication.
                 6 : begin
                    spi_opcode <= instruction[47:32];
-                   spi_operand <= instruction[31:0];
+                   spi_operand <= instruction[(SPI_OPERAND_WIDTH - 1):0];
                    spi_we <= 1; // write to SPI
                    timer <= 250;
                 end
