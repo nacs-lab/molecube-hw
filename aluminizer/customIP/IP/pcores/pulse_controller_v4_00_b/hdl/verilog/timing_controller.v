@@ -354,7 +354,7 @@ module timing_controller
                    spi_opcode <= instruction[47:32];
                    spi_operand <= instruction[31:0];
                    spi_we <= 1; // write to SPI
-                   timer <= (instruction[55:48] << 2);
+                   timer <= 250;
                 end
 
                 default : timer <= 1000;
