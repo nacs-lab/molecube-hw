@@ -9,8 +9,8 @@ hwspecpath=$sdk_dir/design_1_wrapper.hdf
 unset MAKEFLAGS
 
 exec xsdk -batch -source /dev/stdin <<EOF
-set_workspace ${sdk_dir}
-set_user_repo_path ${sdk_dir}
+setws ${sdk_dir}
+repo -set ${sdk_dir}
 set hwspecpath ${hwspecpath}
 source ${base_dir}/scripts/xsdk.tcl
 exit
