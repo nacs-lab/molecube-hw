@@ -37,6 +37,8 @@ module pulse_controller_v5_0
     output wire [1:0] s00_axi_rresp,
     output wire s00_axi_rvalid,
     input wire s00_axi_rready);
+
+   wire clock_out;
    // Instantiation of Axi Bus Interface S00_AXI
    pulse_controller_v5_0_S00_AXI
      #(.C_S_AXI_DATA_WIDTH(C_S00_AXI_DATA_WIDTH),
@@ -61,7 +63,8 @@ module pulse_controller_v5_0
                                       .S_AXI_RDATA(s00_axi_rdata),
                                       .S_AXI_RRESP(s00_axi_rresp),
                                       .S_AXI_RVALID(s00_axi_rvalid),
-                                      .S_AXI_RREADY(s00_axi_rready));
+                                      .S_AXI_RREADY(s00_axi_rready),
+                                      .clock_out(clock_out));
 
    // Add user logic here
 

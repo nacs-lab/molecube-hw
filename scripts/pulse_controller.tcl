@@ -1,3 +1,5 @@
+#
+
 source "$base_dir/lib/utils.tcl"
 
 set custom_ip_dir "$bin_dir/custom_ip"
@@ -16,9 +18,11 @@ set src_set [ensure_fileset -srcset sources_1]
 set_property -name "ip_repo_paths" -value "[file normalize "$pulse_ctrl_dir"]" -objects $src_set
 
 set axi_src "$pulse_ctrl_dir/hdl/pulse_controller_v5_0_S00_AXI.sv"
+set clk_src "$pulse_ctrl_dir/hdl/clock_controller.sv"
 set ctrl_src "$pulse_ctrl_dir/hdl/pulse_controller_v5_0.v"
 
-set files [list "[file normalize "$axi_src"]"\
+set files [list "[file normalize "$axi_src"]" \
+               "[file normalize "$clk_src"]" \
                "[file normalize "$ctrl_src"]"]
 add_files -norecurse -fileset $src_set $files
 
@@ -28,29 +32,13 @@ set_property -name "file_type" -value "SystemVerilog" -objects $axi_file
 set_property -name "used_in" -value "synthesis simulation" -objects $axi_file
 set_property -name "used_in_implementation" -value "0" -objects $axi_file
 
-set ctrl_file [get_files -of_objects $src_set [list "*$ctrl_src"]]
-# set_property -name "file_type" -value "SystemVerilog" -objects $ctrl_file
-# set_property -name "used_in" -value "synthesis simulation" -objects $ctrl_file
-# set_property -name "used_in_implementation" -value "0" -objects $ctrl_file
+set clk_file [get_files -of_objects $src_set [list "*$clk_src"]]
+set_property -name "file_type" -value "SystemVerilog" -objects $clk_file
+set_property -name "used_in" -value "synthesis simulation" -objects $clk_file
+set_property -name "used_in_implementation" -value "0" -objects $clk_file
 
 # Set 'sources_1' fileset properties
 set_property -name "top" -value "pulse_controller_v5_0" -objects $src_set
-
-# create_ip -name div_gen -vendor xilinx.com -library ip -version 5.1 \
-#     -module_name div_gen_0
-# set_property -dict \
-#     [list CONFIG.dividend_and_quotient_width {64} \
-#          CONFIG.dividend_has_tuser {true} \
-#          CONFIG.dividend_tuser_width {4} \
-#          CONFIG.divisor_width {32} \
-#          CONFIG.FlowControl {Blocking} \
-#          CONFIG.OutTready {true} \
-#          CONFIG.latency_configuration {Manual} \
-#          CONFIG.latency {16} \
-#          CONFIG.fractional_width {32}] [get_ips div_gen_0]
-# # Generate template (optional)
-# set div_gen_file "$src_dir/sources_1/ip/div_gen_0/div_gen_0.xci"
-# generate_target {instantiation_template} [get_files $div_gen_file]
 
 ensure_fileset -constrset constrs_1
 set sim_set [ensure_fileset -simset sim_1]

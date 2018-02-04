@@ -99,7 +99,9 @@ module pulse_controller_v5_0_S00_AXI
 
     // Read ready. This signal indicates that the master can
     // accept the read data and response information.
-    input wire S_AXI_RREADY);
+    input wire S_AXI_RREADY,
+
+    output reg clock_out);
 
    // AXI4LITE signals
    reg [C_S_AXI_ADDR_WIDTH - 1:0] axi_awaddr;
@@ -308,6 +310,12 @@ module pulse_controller_v5_0_S00_AXI
    end
 
    // Add user logic here
+
+   reg [7:0] clock_out_div;
+   clock_out_controller clock_out_ctrl(.clock(S_AXI_ACLK),
+                                       .reset(S_AXI_ARESETN),
+                                       .out(clock_out),
+                                       .div(clock_out_div));
 
    // User logic ends
 endmodule
