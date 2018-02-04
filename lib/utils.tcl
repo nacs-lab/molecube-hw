@@ -14,6 +14,7 @@ proc ensure_project {name dir} {
 proc init_project {proj} {
     set_property "default_lib" "xil_defaultlib" $proj
     set_property "simulator_language" "Mixed" $proj
+    set_property part "xc7z020clg484-1" $proj
 }
 
 proc ensure_fileset {arg name} {
