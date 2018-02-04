@@ -4,7 +4,6 @@ source "$base_dir/lib/utils.tcl"
 
 set proj [ensure_project molecube_hw "$bin_dir/molecube_hw"]
 init_project $proj
-set_property "board_part" "xilinx.com:zc702:part0:1.1" $proj
 
 set src_set [ensure_fileset -srcset sources_1]
 set_property "ip_repo_paths" \

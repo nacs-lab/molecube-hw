@@ -6,15 +6,18 @@ proc try_open_project {name dir} {
 proc ensure_project {name dir} {
     set proj [try_open_project $name "$dir"]
     if {[string equal $proj ""]} {
-        create_project -quiet $name "$dir"
+        create_project -quiet $name "$dir" -part xc7z020clg484-1
     }
     return [get_project $name]
 }
 
 proc init_project {proj} {
-    set_property "default_lib" "xil_defaultlib" $proj
-    set_property "simulator_language" "Mixed" $proj
-    set_property part "xc7z020clg484-1" $proj
+    set_property -name "board_part" -value "xilinx.com:zc702:part0:1.1" -objects $proj
+    set_property -name "default_lib" -value "xil_defaultlib" -objects $proj
+    set_property -name "dsa.num_compute_units" -value "60" -objects $proj
+    set_property -name "ip_cache_permissions" -value "read write" -objects $proj
+    set_property -name "sim.ip.auto_export_scripts" -value "1" -objects $proj
+    set_property -name "simulator_language" -value "Mixed" -objects $proj
 }
 
 proc ensure_fileset {arg name} {
