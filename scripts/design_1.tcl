@@ -57,7 +57,7 @@ proc create_root_design {parentCell} {
 
     # Create instance: pulse_controller_0, and set properties
     set pulse_controller_0 \
-        [create_bd_cell -type ip -vlnv xilinx:user:pulse_controller:5.0 \
+        [create_bd_cell -type ip -vlnv nigrp.org:user:pulse_controller:5.0 \
              pulse_controller_0]
 
     # Create instance: rst_processing_system7_0_100M, and set properties

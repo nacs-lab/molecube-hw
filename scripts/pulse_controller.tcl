@@ -63,7 +63,7 @@ ensure_impl_run impl_1 synth_1 constrs_1
 
 ipx::package_project -root_dir $pulse_ctrl_dir
 set cur_core [ipx::current_core]
-set_property vendor xilinx $cur_core
+set_property vendor nigrp.org $cur_core
 set_property taxonomy /UserIP $cur_core
 set_property name pulse_controller $cur_core
 set_property version 5.0 $cur_core
