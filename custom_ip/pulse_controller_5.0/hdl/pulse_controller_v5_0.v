@@ -11,6 +11,8 @@ module pulse_controller_v5_0
     parameter integer C_S00_AXI_ADDR_WIDTH = 7)
    (// Users to add ports here
 
+    output wire clock_out,
+
     // User ports ends
     // Do not modify the ports beyond this line
 
@@ -38,7 +40,6 @@ module pulse_controller_v5_0
     output wire s00_axi_rvalid,
     input wire s00_axi_rready);
 
-   wire clock_out;
    // Instantiation of Axi Bus Interface S00_AXI
    pulse_controller_v5_0_S00_AXI
      #(.C_S_AXI_DATA_WIDTH(C_S00_AXI_DATA_WIDTH),
