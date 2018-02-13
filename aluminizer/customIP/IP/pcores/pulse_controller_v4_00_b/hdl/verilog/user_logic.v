@@ -261,6 +261,9 @@ module user_logic
               slv_reg30 <= Bus2IP_Data;
               slv_write_ack <= 1;
            end
+           32'b00000000000000000000000000000000 : begin
+              slv_write_ack <= 0;
+           end
            default : slv_write_ack <= 1;
          endcase
 
