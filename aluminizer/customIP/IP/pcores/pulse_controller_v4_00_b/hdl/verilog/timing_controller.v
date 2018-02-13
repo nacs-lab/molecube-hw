@@ -357,12 +357,6 @@ module timing_controller
                    timer <= 45;
                 end
 
-                7 : begin // read ttl
-                   loopback_data <= ttl_out;
-                   loopback_WrReq <= 1;
-                   timer <= 5;
-                end
-
                 default : timer <= 1000;
               endcase
            end

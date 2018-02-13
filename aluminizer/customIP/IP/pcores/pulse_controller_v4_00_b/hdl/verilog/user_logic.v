@@ -149,7 +149,6 @@ module user_logic
    reg        [C_SLV_DWIDTH-1 : 0]           slv_reg1;
    reg        [C_SLV_DWIDTH-1 : 0]           slv_reg2;
    reg        [C_SLV_DWIDTH-1 : 0]           slv_reg3;
-   reg        [C_SLV_DWIDTH-1 : 0]           slv_reg4;
    reg        [C_SLV_DWIDTH-1 : 0]           slv_reg5;
    reg        [C_SLV_DWIDTH-1 : 0]           slv_reg6;
    reg        [C_SLV_DWIDTH-1 : 0]           slv_reg7;
@@ -215,7 +214,6 @@ module user_logic
          slv_reg1 <= 0;
          slv_reg2 <= 0;
          slv_reg3 <= 0;
-         slv_reg4 <= 0;
          slv_reg5 <= 0;
          slv_reg6 <= 0;
          slv_reg7 <= 0;
@@ -263,6 +261,7 @@ module user_logic
               slv_reg30 <= Bus2IP_Data;
               slv_write_ack <= 1;
            end
+           default : slv_write_ack <= 1;
          endcase
 
          slv_reg2[0] <= underflow;
@@ -279,7 +278,7 @@ module user_logic
           32'b01000000000000000000000000000000 : slv_ip2bus_data <= slv_reg1;
           32'b00100000000000000000000000000000 : slv_ip2bus_data <= slv_reg2;
           32'b00010000000000000000000000000000 : slv_ip2bus_data <= slv_reg3;
-          32'b00001000000000000000000000000000 : slv_ip2bus_data <= slv_reg4;
+          32'b00001000000000000000000000000000 : slv_ip2bus_data <= ttl_out;
           32'b00000100000000000000000000000000 : slv_ip2bus_data <= slv_reg5;
           32'b00000010000000000000000000000000 : slv_ip2bus_data <= slv_reg6;
           32'b00000001000000000000000000000000 : slv_ip2bus_data <= slv_reg7;
