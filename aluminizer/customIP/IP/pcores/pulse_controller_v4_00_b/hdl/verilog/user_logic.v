@@ -175,7 +175,6 @@ module user_logic
    reg        [C_SLV_DWIDTH-1 : 0]           slv_reg28;
    reg        [C_SLV_DWIDTH-1 : 0]           slv_reg29;
    reg        [C_SLV_DWIDTH-1 : 0]           slv_reg30;
-   reg        [C_SLV_DWIDTH-1 : 0]           slv_reg31;
    wire       [31 : 0]                       slv_reg_write_sel;
    wire       [31 : 0]                       slv_reg_read_sel;
    reg        [C_SLV_DWIDTH-1 : 0]           slv_ip2bus_data;
@@ -240,7 +239,6 @@ module user_logic
          slv_reg28 <= 0;
          slv_reg29 <= 0;
          slv_reg30 <= 0;
-         slv_reg31 <= 0;
       end else if (slv_write_ack == 1) begin
          slv_write_ack <= 0;
       end else begin
