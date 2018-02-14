@@ -251,14 +251,96 @@ module user_logic
               slv_reg1 <= Bus2IP_Data;
               slv_write_ack <= 1;
            end
+           32'b00100000000000000000000000000000 : begin
+              slv_write_ack <= 1;
+           end
            32'b00010000000000000000000000000000 : begin
               slv_reg3 <= Bus2IP_Data;
+              slv_write_ack <= 1;
+           end
+           32'b00001000000000000000000000000000 : begin
+              slv_write_ack <= 1;
+           end
+           32'b00000100000000000000000000000000 : begin
+              slv_write_ack <= 1;
+           end
+           32'b00000010000000000000000000000000 : begin
+              slv_write_ack <= 1;
+           end
+           32'b00000001000000000000000000000000 : begin
+              slv_write_ack <= 1;
+           end
+           32'b00000000100000000000000000000000 : begin
+              slv_write_ack <= 1;
+           end
+           32'b00000000010000000000000000000000 : begin
+              slv_write_ack <= 1;
+           end
+           32'b00000000001000000000000000000000 : begin
+              slv_write_ack <= 1;
+           end
+           32'b00000000000100000000000000000000 : begin
+              slv_write_ack <= 1;
+           end
+           32'b00000000000010000000000000000000 : begin
+              slv_write_ack <= 1;
+           end
+           32'b00000000000001000000000000000000 : begin
+              slv_write_ack <= 1;
+           end
+           32'b00000000000000100000000000000000 : begin
+              slv_write_ack <= 1;
+           end
+           32'b00000000000000010000000000000000 : begin
+              slv_write_ack <= 1;
+           end
+           32'b00000000000000001000000000000000 : begin
+              slv_write_ack <= 1;
+           end
+           32'b00000000000000000100000000000000 : begin
+              slv_write_ack <= 1;
+           end
+           32'b00000000000000000010000000000000 : begin
+              slv_write_ack <= 1;
+           end
+           32'b00000000000000000001000000000000 : begin
+              slv_write_ack <= 1;
+           end
+           32'b00000000000000000000100000000000 : begin
+              slv_write_ack <= 1;
+           end
+           32'b00000000000000000000010000000000 : begin
+              slv_write_ack <= 1;
+           end
+           32'b00000000000000000000001000000000 : begin
+              slv_write_ack <= 1;
+           end
+           32'b00000000000000000000000100000000 : begin
+              slv_write_ack <= 1;
+           end
+           32'b00000000000000000000000010000000 : begin
+              slv_write_ack <= 1;
+           end
+           32'b00000000000000000000000001000000 : begin
+              slv_write_ack <= 1;
+           end
+           32'b00000000000000000000000000100000 : begin
+              slv_write_ack <= 1;
+           end
+           32'b00000000000000000000000000010000 : begin
+              slv_write_ack <= 1;
+           end
+           32'b00000000000000000000000000001000 : begin
+              slv_write_ack <= 1;
+           end
+           32'b00000000000000000000000000000100 : begin
               slv_write_ack <= 1;
            end
            32'b00000000000000000000000000000010 : begin
               slv_reg30 <= Bus2IP_Data;
               slv_write_ack <= 1;
            end
+           // No ack for reg 31 since it's handled by the timing controller
          endcase
 
          slv_reg2[0] <= underflow;
