@@ -40,6 +40,7 @@ proc create_root_design {parentCell} {
              FIXED_IO]
 
     # Create ports
+    set clock_out [create_bd_port -dir O clock_out]
 
     # Create instance: processing_system7_0, and set properties
     set processing_system7_0 \
@@ -90,6 +91,9 @@ proc create_root_design {parentCell} {
     connect_bd_net -net processing_system7_0_FCLK_RESET0_N \
         [get_bd_pins processing_system7_0/FCLK_RESET0_N] \
         [get_bd_pins rst_processing_system7_0_100M/ext_reset_in]
+    connect_bd_net -net pulse_controller_0_clock_out \
+        [get_bd_ports clock_out] \
+        [get_bd_pins pulse_controller_0/clock_out]
     connect_bd_net -net rst_processing_system7_0_100M_interconnect_aresetn \
         [get_bd_pins processing_system7_0_axi_periph/ARESETN] \
         [get_bd_pins rst_processing_system7_0_100M/interconnect_aresetn]

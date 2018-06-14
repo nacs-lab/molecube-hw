@@ -18,7 +18,14 @@ if {![get_property "is_locked" $file_obj]} {
     set_property "generate_synth_checkpoint" "0" $file_obj
 }
 
-ensure_fileset -constrset constrs_1
+set cons_set [ensure_fileset -constrset constrs_1]
+
+# Add/Import constrs file and set constrs file properties
+set molecube_xdc [file normalize "$base_dir/molecube-hw.xdc"]
+set file_added [add_files -norecurse -fileset $cons_set $molecube_xdc]
+set file_obj [get_files -of_objects $cons_set [list "*$molecube_xdc"]]
+set_property -name "file_type" -value "XDC" -objects $file_obj
+
 ensure_fileset -simset sim_1
 
 set synth_run [ensure_synth_run synth_1 constrs_1]
