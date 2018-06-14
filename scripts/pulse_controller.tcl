@@ -65,4 +65,4 @@ ipx::update_checksums $cur_core
 ipx::save_core $cur_core
 update_ip_catalog -rebuild -repo_path $pulse_ctrl_dir
 
-write_project_tcl -quiet "$bin_dir/pulse_controller-orig.tcl"
+write_project_tcl -quiet "$base_dir/gen/pulse_controller-orig.tcl"

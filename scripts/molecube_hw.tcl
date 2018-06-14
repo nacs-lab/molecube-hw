@@ -33,8 +33,8 @@ add_files -norecurse "$design_dir/hdl/design_1_wrapper.v"
 update_compile_order -fileset sources_1
 update_compile_order -fileset sim_1
 
-write_bd_tcl -quiet "$bin_dir/$design_name-orig.tcl"
-write_project_tcl -quiet "$bin_dir/molecube_hw-orig.tcl"
+write_bd_tcl -quiet "$base_dir/gen/$design_name-orig.tcl"
+write_project_tcl -quiet "$base_dir/gen/molecube_hw-orig.tcl"
 
 # Synthesis
 reset_run synth_1
