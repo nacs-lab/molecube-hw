@@ -29,20 +29,12 @@ set files [list "[file normalize "$axi_src"]" \
 add_files -norecurse -fileset $src_set $files
 
 # Set 'sources_1' fileset file properties for remote files
-set axi_file [get_files -of_objects $src_set [list "*$axi_src"]]
-set_property -name "file_type" -value "SystemVerilog" -objects $axi_file
-set_property -name "used_in" -value "synthesis simulation" -objects $axi_file
-set_property -name "used_in_implementation" -value "0" -objects $axi_file
-
-set clk_file [get_files -of_objects $src_set [list "*$clk_src"]]
-set_property -name "file_type" -value "SystemVerilog" -objects $clk_file
-set_property -name "used_in" -value "synthesis simulation" -objects $clk_file
-set_property -name "used_in_implementation" -value "0" -objects $clk_file
-
-set spi_file [get_files -of_objects $src_set [list "*$spi_src"]]
-set_property -name "file_type" -value "SystemVerilog" -objects $spi_file
-set_property -name "used_in" -value "synthesis simulation" -objects $spi_file
-set_property -name "used_in_implementation" -value "0" -objects $spi_file
+foreach src [list "$axi_src" "$clk_src" "$spi_src"] {
+    set file [get_files -of_objects $src_set [list "*$src"]]
+    set_property -name "file_type" -value "SystemVerilog" -objects $file
+    set_property -name "used_in" -value "synthesis simulation" -objects $file
+    set_property -name "used_in_implementation" -value "0" -objects $file
+}
 
 # Set 'sources_1' fileset properties
 set_property -name "top" -value "pulse_controller_v5_0" -objects $src_set
