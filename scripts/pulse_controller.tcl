@@ -19,17 +19,19 @@ set_property -name "ip_repo_paths" -value "[file normalize "$pulse_ctrl_dir"]" -
 
 set axi_src "$pulse_ctrl_dir/hdl/pulse_controller_v5_0_S00_AXI.sv"
 set clk_src "$pulse_ctrl_dir/hdl/clock_controller.sv"
+set dds_src "$pulse_ctrl_dir/hdl/dds_controller.sv"
 set spi_src "$pulse_ctrl_dir/hdl/spi_controller.sv"
 set ctrl_src "$pulse_ctrl_dir/hdl/pulse_controller_v5_0.v"
 
 set files [list "[file normalize "$axi_src"]" \
                "[file normalize "$clk_src"]" \
+               "[file normalize "$dds_src"]" \
                "[file normalize "$spi_src"]" \
                "[file normalize "$ctrl_src"]"]
 add_files -norecurse -fileset $src_set $files
 
 # Set 'sources_1' fileset file properties for remote files
-foreach src [list "$axi_src" "$clk_src" "$spi_src"] {
+foreach src [list "$axi_src" "$clk_src" "$dds_src" "$spi_src"] {
     set file [get_files -of_objects $src_set [list "*$src"]]
     set_property -name "file_type" -value "SystemVerilog" -objects $file
     set_property -name "used_in" -value "synthesis simulation" -objects $file

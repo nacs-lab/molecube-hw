@@ -24,6 +24,7 @@
 #    "/home/yuyichao/projects/vivado/molecube-hw/build/custom_ip/pulse_controller_5.0/hdl/clock_controller.sv"
 #    "/home/yuyichao/projects/vivado/molecube-hw/build/custom_ip/pulse_controller_5.0/hdl/pulse_controller_v5_0_S00_AXI.sv"
 #    "/home/yuyichao/projects/vivado/molecube-hw/build/custom_ip/pulse_controller_5.0/hdl/pulse_controller_v5_0.v"
+#    "/home/yuyichao/projects/vivado/molecube-hw/build/custom_ip/pulse_controller_5.0/hdl/dds_controller.sv"
 #    "/home/yuyichao/projects/vivado/molecube-hw/build/custom_ip/pulse_controller_5.0/hdl/spi_controller.sv"
 #    "/home/yuyichao/projects/vivado/molecube-hw/build/custom_ip/pulse_controller_5.0/component.xml"
 #
@@ -138,6 +139,7 @@ set files [list \
  "[file normalize "$origin_dir/../build/custom_ip/pulse_controller_5.0/hdl/clock_controller.sv"]"\
  "[file normalize "$origin_dir/../build/custom_ip/pulse_controller_5.0/hdl/pulse_controller_v5_0_S00_AXI.sv"]"\
  "[file normalize "$origin_dir/../build/custom_ip/pulse_controller_5.0/hdl/pulse_controller_v5_0.v"]"\
+ "[file normalize "$origin_dir/../build/custom_ip/pulse_controller_5.0/hdl/dds_controller.sv"]"\
  "[file normalize "$origin_dir/../build/custom_ip/pulse_controller_5.0/hdl/spi_controller.sv"]"\
  "[file normalize "$origin_dir/../build/custom_ip/pulse_controller_5.0/component.xml"]"\
 ]
@@ -154,6 +156,12 @@ set_property -name "used_in" -value "synthesis simulation" -objects $file_obj
 set_property -name "used_in_implementation" -value "0" -objects $file_obj
 
 set file "hdl/pulse_controller_v5_0_S00_AXI.sv"
+set file_obj [get_files -of_objects [get_filesets sources_1] [list "*$file"]]
+set_property -name "file_type" -value "SystemVerilog" -objects $file_obj
+set_property -name "used_in" -value "synthesis simulation" -objects $file_obj
+set_property -name "used_in_implementation" -value "0" -objects $file_obj
+
+set file "hdl/dds_controller.sv"
 set file_obj [get_files -of_objects [get_filesets sources_1] [list "*$file"]]
 set_property -name "file_type" -value "SystemVerilog" -objects $file_obj
 set_property -name "used_in" -value "synthesis simulation" -objects $file_obj
