@@ -44,7 +44,8 @@ module pulse_controller_v5_0
    pulse_controller_v5_0_S00_AXI
      #(.C_S_AXI_DATA_WIDTH(C_S00_AXI_DATA_WIDTH),
        .C_S_AXI_ADDR_WIDTH(C_S00_AXI_ADDR_WIDTH))
-   pulse_controller_v5_0_S00_AXI_inst(.S_AXI_ACLK(s00_axi_aclk),
+   pulse_controller_v5_0_S00_AXI_inst(.clock_out(clock_out),
+                                      .S_AXI_ACLK(s00_axi_aclk),
                                       .S_AXI_ARESETN(s00_axi_aresetn),
                                       .S_AXI_AWADDR(s00_axi_awaddr),
                                       .S_AXI_AWPROT(s00_axi_awprot),
@@ -64,8 +65,7 @@ module pulse_controller_v5_0
                                       .S_AXI_RDATA(s00_axi_rdata),
                                       .S_AXI_RRESP(s00_axi_rresp),
                                       .S_AXI_RVALID(s00_axi_rvalid),
-                                      .S_AXI_RREADY(s00_axi_rready),
-                                      .clock_out(clock_out));
+                                      .S_AXI_RREADY(s00_axi_rready));
 
    // Add user logic here
 

@@ -12,6 +12,8 @@ module pulse_controller_v5_0_S00_AXI
     parameter integer C_S_AXI_ADDR_WIDTH = 7)
    (// Users to add ports here
 
+    output reg clock_out,
+
     // User ports ends
 
 
@@ -99,9 +101,7 @@ module pulse_controller_v5_0_S00_AXI
 
     // Read ready. This signal indicates that the master can
     // accept the read data and response information.
-    input wire S_AXI_RREADY,
-
-    output reg clock_out);
+    input wire S_AXI_RREADY);
 
    // AXI4LITE signals
    reg [C_S_AXI_ADDR_WIDTH - 1:0] axi_awaddr;
