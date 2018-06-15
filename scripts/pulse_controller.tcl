@@ -73,3 +73,4 @@ ipx::save_core $cur_core
 update_ip_catalog -rebuild -repo_path $pulse_ctrl_dir
 
 write_project_tcl -force -quiet "$base_dir/gen/pulse_controller-orig.tcl"
+exec "$base_dir/scripts/clean_proj_tcl.sh" "$base_dir/gen/pulse_controller-orig.tcl"

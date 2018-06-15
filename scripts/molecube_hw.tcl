@@ -42,6 +42,7 @@ update_compile_order -fileset sim_1
 
 write_bd_tcl -force -quiet "$base_dir/gen/$design_name-orig.tcl"
 write_project_tcl -force -quiet "$base_dir/gen/molecube_hw-orig.tcl"
+exec "$base_dir/scripts/clean_proj_tcl.sh" "$base_dir/gen/molecube_hw-orig.tcl"
 
 # Synthesis
 reset_run synth_1
