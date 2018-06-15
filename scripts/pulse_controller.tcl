@@ -19,10 +19,12 @@ set_property -name "ip_repo_paths" -value "[file normalize "$pulse_ctrl_dir"]" -
 
 set axi_src "$pulse_ctrl_dir/hdl/pulse_controller_v5_0_S00_AXI.sv"
 set clk_src "$pulse_ctrl_dir/hdl/clock_controller.sv"
+set spi_src "$pulse_ctrl_dir/hdl/spi_controller.sv"
 set ctrl_src "$pulse_ctrl_dir/hdl/pulse_controller_v5_0.v"
 
 set files [list "[file normalize "$axi_src"]" \
                "[file normalize "$clk_src"]" \
+               "[file normalize "$spi_src"]" \
                "[file normalize "$ctrl_src"]"]
 add_files -norecurse -fileset $src_set $files
 
@@ -36,6 +38,11 @@ set clk_file [get_files -of_objects $src_set [list "*$clk_src"]]
 set_property -name "file_type" -value "SystemVerilog" -objects $clk_file
 set_property -name "used_in" -value "synthesis simulation" -objects $clk_file
 set_property -name "used_in_implementation" -value "0" -objects $clk_file
+
+set spi_file [get_files -of_objects $src_set [list "*$spi_src"]]
+set_property -name "file_type" -value "SystemVerilog" -objects $spi_file
+set_property -name "used_in" -value "synthesis simulation" -objects $spi_file
+set_property -name "used_in_implementation" -value "0" -objects $spi_file
 
 # Set 'sources_1' fileset properties
 set_property -name "top" -value "pulse_controller_v5_0" -objects $src_set
@@ -65,4 +72,4 @@ ipx::update_checksums $cur_core
 ipx::save_core $cur_core
 update_ip_catalog -rebuild -repo_path $pulse_ctrl_dir
 
-write_project_tcl -quiet "$base_dir/gen/pulse_controller-orig.tcl"
+write_project_tcl -force -quiet "$base_dir/gen/pulse_controller-orig.tcl"

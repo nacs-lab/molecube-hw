@@ -611,10 +611,8 @@ proc create_root_design { parentCell } {
   set pulse_controller_0 [ create_bd_cell -type ip -vlnv nigrp.org:user:pulse_controller:5.0 pulse_controller_0 ]
 
   set_property -dict [ list \
-   CONFIG.SUPPORTS_NARROW_BURST {0} \
    CONFIG.NUM_READ_OUTSTANDING {1} \
    CONFIG.NUM_WRITE_OUTSTANDING {1} \
-   CONFIG.MAX_BURST_LENGTH {1} \
  ] [get_bd_intf_pins /pulse_controller_0/s00_axi]
 
   # Create instance: rst_processing_system7_0_100M, and set properties
