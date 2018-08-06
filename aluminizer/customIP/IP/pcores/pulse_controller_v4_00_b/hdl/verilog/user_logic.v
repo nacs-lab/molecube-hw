@@ -143,6 +143,7 @@ module user_logic
    wire [0:(C_SLV_DWIDTH-1)] result;
    wire underflow;
    wire pulses_finished;
+   wire [7:0] clock_out_div;
 
    // Nets for user logic slave model s/w accessible register example
    reg        [C_SLV_DWIDTH-1 : 0]           slv_reg0;
@@ -308,7 +309,10 @@ module user_logic
           32'b00100000000000000000000000000000 : slv_ip2bus_data <= slv_reg2;
           32'b00010000000000000000000000000000 : slv_ip2bus_data <= slv_reg3;
           32'b00001000000000000000000000000000 : slv_ip2bus_data <= ttl_out;
-          32'b00000100000000000000000000000000 : slv_ip2bus_data <= 0;
+          32'b00000100000000000000000000000000 : begin
+             slv_ip2bus_data[C_SLV_DWIDTH - 1:8] <= 0;
+             slv_ip2bus_data[7:0] <= clock_out_div;
+          end
           32'b00000010000000000000000000000000 : slv_ip2bus_data <= 0;
           32'b00000001000000000000000000000000 : slv_ip2bus_data <= 0;
           32'b00000000100000000000000000000000 : slv_ip2bus_data <= 0;
@@ -460,7 +464,8 @@ module user_logic
       .pulses_finished(pulses_finished),
       .pulse_controller_hold(slv_reg3[7]),
       .init(slv_reg3[8]),
-      .clock_out(clock_out));
+      .clock_out(clock_out),
+      .clock_out_div(clock_out_div));
    /*
     // ODELAYE2: Output Fixed or Variable Delay Element
     //7 Series

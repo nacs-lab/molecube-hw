@@ -127,11 +127,11 @@ module timing_controller
     // init is like reset, but hold the current TTL outputs toggle this at
     // the start of the sequence.
     input init,
-    output clock_out);
+    output clock_out,
+    output reg [7:0] clock_out_div);
 
    wire reset = ~resetn;
 
-   reg [7:0] clock_out_div;
    clock_out_controller clock_out_ctrl(.clock(clock),
                                        .reset(reset),
                                        .out(clock_out),
