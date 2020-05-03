@@ -1,7 +1,7 @@
 {
   "design": {
     "design_info": {
-      "boundary_crc": "0x1FB0AC04FF8EE483",
+      "boundary_crc": "0xA5345700450A1F87",
       "device": "xc7z020clg484-1",
       "name": "design_1",
       "synth_flow_mode": "Hierarchical",
@@ -112,28 +112,28 @@
       },
       "dds_addr2_pin": {
         "direction": "O",
-        "left": "0",
-        "right": "6"
+        "left": "6",
+        "right": "0"
       },
       "dds_addr_pin": {
         "direction": "O",
-        "left": "0",
-        "right": "6"
+        "left": "6",
+        "right": "0"
       },
       "dds_control2_pin": {
         "direction": "O",
-        "left": "0",
-        "right": "2"
+        "left": "2",
+        "right": "0"
       },
       "dds_control_pin": {
         "direction": "O",
-        "left": "0",
-        "right": "2"
+        "left": "2",
+        "right": "0"
       },
       "dds_cs_pin": {
         "direction": "O",
-        "left": "0",
-        "right": "21"
+        "left": "21",
+        "right": "0"
       },
       "dds_data2_pin": {
         "direction": "IO",
@@ -152,8 +152,8 @@
       },
       "pulse_io_pin": {
         "direction": "O",
-        "left": "0",
-        "right": "31"
+        "left": "31",
+        "right": "0"
       },
       "spi0_clk": {
         "direction": "O"
@@ -1131,16 +1131,16 @@
               }
             },
             "interface_nets": {
-              "auto_pc_to_s00_couplers": {
-                "interface_ports": [
-                  "M_AXI",
-                  "auto_pc/M_AXI"
-                ]
-              },
               "s00_couplers_to_auto_pc": {
                 "interface_ports": [
                   "S_AXI",
                   "auto_pc/S_AXI"
+                ]
+              },
+              "auto_pc_to_s00_couplers": {
+                "interface_ports": [
+                  "M_AXI",
+                  "auto_pc/M_AXI"
                 ]
               }
             },
@@ -1161,16 +1161,16 @@
           }
         },
         "interface_nets": {
-          "axi_interconnect_0_to_s00_couplers": {
-            "interface_ports": [
-              "S00_AXI",
-              "s00_couplers/S_AXI"
-            ]
-          },
           "s00_couplers_to_axi_interconnect_0": {
             "interface_ports": [
               "M00_AXI",
               "s00_couplers/M_AXI"
+            ]
+          },
+          "axi_interconnect_0_to_s00_couplers": {
+            "interface_ports": [
+              "S00_AXI",
+              "s00_couplers/S_AXI"
             ]
           }
         },
@@ -1229,12 +1229,6 @@
       }
     },
     "interface_nets": {
-      "processing_system7_0_FIXED_IO": {
-        "interface_ports": [
-          "FIXED_IO",
-          "processing_system7_0/FIXED_IO"
-        ]
-      },
       "processing_system7_0_M_AXI_GP0": {
         "interface_ports": [
           "processing_system7_0/M_AXI_GP0",
@@ -1245,6 +1239,12 @@
         "interface_ports": [
           "axi_interconnect_0/M00_AXI",
           "pulse_controller_0/S00_AXI"
+        ]
+      },
+      "processing_system7_0_FIXED_IO": {
+        "interface_ports": [
+          "FIXED_IO",
+          "processing_system7_0/FIXED_IO"
         ]
       },
       "processing_system7_0_DDR": {

@@ -71,14 +71,14 @@ module design_1
   (* X_INTERFACE_INFO = "xilinx.com:signal:clock:1.0 CLK.CLOCK_IN_PIN CLK" *) (* X_INTERFACE_PARAMETER = "XIL_INTERFACENAME CLK.CLOCK_IN_PIN, CLK_DOMAIN design_1_clock_in_pin, FREQ_HZ 100000000, INSERT_VIP 0, PHASE 0.000" *) input clock_in_pin;
   output clock_out1_pin;
   output [1:0]dds_FUD_pin;
-  output [0:6]dds_addr2_pin;
-  output [0:6]dds_addr_pin;
-  output [0:2]dds_control2_pin;
-  output [0:2]dds_control_pin;
-  output [0:21]dds_cs_pin;
+  output [6:0]dds_addr2_pin;
+  output [6:0]dds_addr_pin;
+  output [2:0]dds_control2_pin;
+  output [2:0]dds_control_pin;
+  output [21:0]dds_cs_pin;
   inout [15:0]dds_data2_pin;
   inout [15:0]dds_data_pin;
-  output [0:31]pulse_io_pin;
+  output [31:0]pulse_io_pin;
   output spi0_clk;
   output [0:0]spi0_cs;
   input spi0_miso;
@@ -171,15 +171,15 @@ module design_1
   wire processing_system7_0_M_AXI_GP0_WVALID;
   wire pulse_controller_0_clock_out;
   wire [1:0]pulse_controller_0_dds_FUD;
-  wire [0:6]pulse_controller_0_dds_addr;
-  wire [0:6]pulse_controller_0_dds_addr2;
-  wire [0:2]pulse_controller_0_dds_control;
-  wire [0:2]pulse_controller_0_dds_control2;
-  wire [0:21]pulse_controller_0_dds_cs;
+  wire [6:0]pulse_controller_0_dds_addr;
+  wire [6:0]pulse_controller_0_dds_addr2;
+  wire [2:0]pulse_controller_0_dds_control;
+  wire [2:0]pulse_controller_0_dds_control2;
+  wire [21:0]pulse_controller_0_dds_cs;
   wire pulse_controller_0_inst_fifo_rd_en;
   wire [63:0]pulse_controller_0_inst_fifo_wr_data;
   wire pulse_controller_0_inst_fifo_wr_en;
-  wire [0:31]pulse_controller_0_pulse_io;
+  wire [31:0]pulse_controller_0_pulse_io;
   wire pulse_controller_0_spi_clk;
   wire [0:0]pulse_controller_0_spi_cs;
   wire pulse_controller_0_spi_mosi;
@@ -188,12 +188,12 @@ module design_1
 
   assign clock_out1_pin = pulse_controller_0_clock_out;
   assign dds_FUD_pin[1:0] = pulse_controller_0_dds_FUD;
-  assign dds_addr2_pin[0:6] = pulse_controller_0_dds_addr2;
-  assign dds_addr_pin[0:6] = pulse_controller_0_dds_addr;
-  assign dds_control2_pin[0:2] = pulse_controller_0_dds_control2;
-  assign dds_control_pin[0:2] = pulse_controller_0_dds_control;
-  assign dds_cs_pin[0:21] = pulse_controller_0_dds_cs;
-  assign pulse_io_pin[0:31] = pulse_controller_0_pulse_io;
+  assign dds_addr2_pin[6:0] = pulse_controller_0_dds_addr2;
+  assign dds_addr_pin[6:0] = pulse_controller_0_dds_addr;
+  assign dds_control2_pin[2:0] = pulse_controller_0_dds_control2;
+  assign dds_control_pin[2:0] = pulse_controller_0_dds_control;
+  assign dds_cs_pin[21:0] = pulse_controller_0_dds_cs;
+  assign pulse_io_pin[31:0] = pulse_controller_0_pulse_io;
   assign spi0_clk = pulse_controller_0_spi_clk;
   assign spi0_cs[0] = pulse_controller_0_spi_cs;
   assign spi0_miso_1 = spi0_miso;
@@ -343,8 +343,8 @@ module design_1
         .dds_control(pulse_controller_0_dds_control),
         .dds_control2(pulse_controller_0_dds_control2),
         .dds_cs(pulse_controller_0_dds_cs),
-        .dds_data({dds_data_pin[15],dds_data_pin[14],dds_data_pin[13],dds_data_pin[12],dds_data_pin[11],dds_data_pin[10],dds_data_pin[9],dds_data_pin[8],dds_data_pin[7],dds_data_pin[6],dds_data_pin[5],dds_data_pin[4],dds_data_pin[3],dds_data_pin[2],dds_data_pin[1],dds_data_pin[0]}),
-        .dds_data2({dds_data2_pin[15],dds_data2_pin[14],dds_data2_pin[13],dds_data2_pin[12],dds_data2_pin[11],dds_data2_pin[10],dds_data2_pin[9],dds_data2_pin[8],dds_data2_pin[7],dds_data2_pin[6],dds_data2_pin[5],dds_data2_pin[4],dds_data2_pin[3],dds_data2_pin[2],dds_data2_pin[1],dds_data2_pin[0]}),
+        .dds_data(dds_data_pin[15:0]),
+        .dds_data2(dds_data2_pin[15:0]),
         .inst_fifo_empty_n(fifo_generator_0_empty),
         .inst_fifo_full_n(fifo_generator_0_full),
         .inst_fifo_rd_data(fifo_generator_0_dout),

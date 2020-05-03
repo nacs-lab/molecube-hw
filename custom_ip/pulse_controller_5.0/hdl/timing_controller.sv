@@ -99,14 +99,10 @@ module timing_controller
 
     // dds_data*: tri-state for dds_data to allow read & write.
     output [(U_DDS_ADDR_WIDTH - 1):0] dds_addr,
-    input [(U_DDS_DATA_WIDTH - 1):0] dds_data_I,
-    output [(U_DDS_DATA_WIDTH - 1):0] dds_data_O,
-    output dds_data_T,
+    inout [(U_DDS_DATA_WIDTH - 1):0] dds_data,
     output [(U_DDS_CTRL_WIDTH - 1):0] dds_control,
     output [(U_DDS_ADDR_WIDTH - 1):0] dds_addr2,
-    input [(U_DDS_DATA_WIDTH - 1):0] dds_data2_I,
-    output [(U_DDS_DATA_WIDTH - 1):0] dds_data2_O,
-    output dds_data2_T,
+    inout [(U_DDS_DATA_WIDTH - 1):0] dds_data2,
     output [(U_DDS_CTRL_WIDTH - 1):0] dds_control2,
 
     output [(N_DDS - 1):0] dds_cs,
@@ -150,7 +146,20 @@ module timing_controller
    reg [(DDS_OPCODE_WIDTH - 1):0] dds_opcode;
    reg [(DDS_OPERAND_WIDTH - 1):0] dds_operand;
    wire dds_WrReq;
-   wire [0:31] dds_result;
+   wire [31:0] dds_result;
+
+   // DDS signal translation
+   wire [(U_DDS_DATA_WIDTH - 1):0] dds_data_O;
+   wire [(U_DDS_DATA_WIDTH - 1):0] dds_data_I;
+   wire [(U_DDS_DATA_WIDTH - 1):0] dds_data2_O;
+   wire [(U_DDS_DATA_WIDTH - 1):0] dds_data2_I;
+   wire dds_data_T, dds_data2_T;
+
+   assign dds_data = dds_data_T ? dds_data_O : 'Z;
+   assign dds_data_I = dds_data;
+   assign dds_data2 = dds_data2_T ? dds_data2_O : 'Z;
+   assign dds_data2_I = dds_data2;
+
    dds_controller#(.N_DDS(N_DDS),
                    .DDS_OPCODE_WIDTH(DDS_OPCODE_WIDTH),
                    .DDS_OPERAND_WIDTH(DDS_OPERAND_WIDTH),
@@ -220,7 +229,7 @@ module timing_controller
    reg [(SPI_OPCODE_WIDTH - 1):0] spi_opcode;
    reg [(SPI_OPERAND_WIDTH - 1):0] spi_operand;
    wire spi_WrReq;
-   wire [0:31] spi_result;
+   wire [31:0] spi_result;
 
    spi_controller#(.N_SPI(N_SPI),
                    .SPI_OPCODE_WIDTH(SPI_OPCODE_WIDTH),

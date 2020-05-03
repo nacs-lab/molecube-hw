@@ -19,24 +19,21 @@ module pulse_controller_v5_0_S00_AXI #
    )
    (
     // Users to add ports here
-    output [0:(U_PULSE_WIDTH - 1)] pulse_io,
+    output [(U_PULSE_WIDTH - 1):0] pulse_io,
 
     // DDS ports
-    output [0:(U_DDS_ADDR_WIDTH - 1)] dds_addr,
-    output [0:(U_DDS_ADDR_WIDTH - 1)] dds_addr2,
+    output [(U_DDS_ADDR_WIDTH - 1):0] dds_addr,
+    output [(U_DDS_ADDR_WIDTH - 1):0] dds_addr2,
 
     // tri-state for dds_data to allow read & write
-    output [0:(U_DDS_DATA_WIDTH - 1)] dds_data_O,
-    input [0:(U_DDS_DATA_WIDTH - 1)] dds_data_I,
-    output [0:(U_DDS_DATA_WIDTH - 1)] dds_data2_O,
-    input [0:(U_DDS_DATA_WIDTH - 1)] dds_data2_I,
-    output dds_data_T, dds_data2_T,
+    inout [(U_DDS_DATA_WIDTH - 1):0] dds_data,
+    inout [(U_DDS_DATA_WIDTH - 1):0] dds_data2,
 
-    output [0:(U_DDS_CTRL_WIDTH - 1)] dds_control,
-    output [0:(U_DDS_CTRL_WIDTH - 1)] dds_control2,
+    output [(U_DDS_CTRL_WIDTH - 1):0] dds_control,
+    output [(U_DDS_CTRL_WIDTH - 1):0] dds_control2,
 
     output [1:0] dds_FUD,
-    output [0:(N_DDS - 1)] dds_cs,
+    output [(N_DDS - 1):0] dds_cs,
 
     // begin: external signals for SPI
     output [(N_SPI - 1):0] spi_cs,
@@ -384,7 +381,7 @@ module pulse_controller_v5_0_S00_AXI #
    reg [C_S_AXI_DATA_WIDTH - 1:0] slv_reg_dummy;
 
    // active-high reset
-   wire [0:(C_S_AXI_DATA_WIDTH-1)] result;
+   wire [(C_S_AXI_DATA_WIDTH - 1):0] result;
    wire underflow;
    wire pulses_finished;
    wire [7:0] clock_out_div;
@@ -554,14 +551,10 @@ module pulse_controller_v5_0_S00_AXI #
       .rFIFO_data(result),
       .rFIFO_WrReq(rFIFO_WrReq),
       .dds_addr(dds_addr),
-      .dds_data_I(dds_data_I),
-      .dds_data_O(dds_data_O),
-      .dds_data_T(dds_data_T),
+      .dds_data(dds_data),
       .dds_control(dds_control),
       .dds_addr2(dds_addr2),
-      .dds_data2_I(dds_data2_I),
-      .dds_data2_O(dds_data2_O),
-      .dds_data2_T(dds_data2_T),
+      .dds_data2(dds_data2),
       .dds_control2(dds_control2),
       .dds_cs(dds_cs),
       .dds_FUD(dds_FUD),
