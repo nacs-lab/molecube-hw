@@ -19,21 +19,21 @@ module pulse_controller_v5_0 #
    )
    (
     // Users to add ports here
-    output [0:(U_PULSE_WIDTH - 1)] pulse_io,
+    output [(U_PULSE_WIDTH - 1):0] pulse_io,
 
     // DDS ports
-    output [0:(U_DDS_ADDR_WIDTH - 1)] dds_addr,
-    output [0:(U_DDS_ADDR_WIDTH - 1)] dds_addr2,
+    output [(U_DDS_ADDR_WIDTH - 1):0] dds_addr,
+    output [(U_DDS_ADDR_WIDTH - 1):0] dds_addr2,
 
     // tri-state for dds_data to allow read & write
-    inout [0:(U_DDS_DATA_WIDTH - 1)] dds_data,
-    inout [0:(U_DDS_DATA_WIDTH - 1)] dds_data2,
+    inout [(U_DDS_DATA_WIDTH - 1):0] dds_data,
+    inout [(U_DDS_DATA_WIDTH - 1):0] dds_data2,
 
-    output [0:(U_DDS_CTRL_WIDTH - 1)] dds_control,
-    output [0:(U_DDS_CTRL_WIDTH - 1)] dds_control2,
+    output [(U_DDS_CTRL_WIDTH - 1):0] dds_control,
+    output [(U_DDS_CTRL_WIDTH - 1):0] dds_control2,
 
     output [1:0] dds_FUD,
-    output [0:(N_DDS - 1)] dds_cs,
+    output [(N_DDS - 1):0] dds_cs,
 
     // begin: external signals for SPI
     output [(N_SPI - 1):0] spi_cs,
@@ -77,17 +77,6 @@ module pulse_controller_v5_0 #
     input wire s00_axi_rready
     );
 
-   wire [0:(U_DDS_DATA_WIDTH - 1)] dds_data_O;
-   wire [0:(U_DDS_DATA_WIDTH - 1)] dds_data_I;
-   wire [0:(U_DDS_DATA_WIDTH - 1)] dds_data2_O;
-   wire [0:(U_DDS_DATA_WIDTH - 1)] dds_data2_I;
-   wire dds_data_T, dds_data2_T;
-
-   assign dds_data = dds_data_T ? dds_data_O : 16'bZZZZZZZZZZZZZZZZ;
-   assign dds_data_I = dds_data;
-   assign dds_data2 = dds_data2_T ? dds_data2_O : 16'bZZZZZZZZZZZZZZZZ;
-   assign dds_data2_I = dds_data2;
-
    // Instantiation of Axi Bus Interface S00_AXI
    pulse_controller_v5_0_S00_AXI # (.N_SPI(N_SPI),
                                     .N_DDS(N_DDS),
@@ -103,12 +92,8 @@ module pulse_controller_v5_0 #
       .dds_addr(dds_addr),
       .dds_addr2(dds_addr2),
 
-      .dds_data_O(dds_data_O),
-      .dds_data_I(dds_data_I),
-      .dds_data2_O(dds_data2_O),
-      .dds_data2_I(dds_data2_I),
-      .dds_data_T(dds_data_T),
-      .dds_data2_T(dds_data2_T),
+      .dds_data(dds_data),
+      .dds_data2(dds_data2),
 
       .dds_control(dds_control),
       .dds_control2(dds_control2),
