@@ -155,10 +155,21 @@ module timing_controller
    wire [(U_DDS_DATA_WIDTH - 1):0] dds_data2_I;
    wire dds_data_T, dds_data2_T;
 
-   assign dds_data = dds_data_T ? dds_data_O : 'Z;
-   assign dds_data_I = dds_data;
-   assign dds_data2 = dds_data2_T ? dds_data2_O : 'Z;
-   assign dds_data2_I = dds_data2;
+   genvar i;
+   generate
+      for (i = 0; i < U_DDS_DATA_WIDTH; i++) begin
+         IOBUF IOBUF_inst(.O(dds_data_I[i]),
+                          .IO(dds_data[i]),
+                          .I(dds_data_O[i]),
+                          .T(dds_data_T) // 3-state enable input, high=input, low=output
+                          );
+         IOBUF IOBUF_inst2(.O(dds_data2_I[i]),
+                           .IO(dds_data2[i]),
+                           .I(dds_data2_O[i]),
+                           .T(dds_data2_T) // 3-state enable input, high=input, low=output
+                           );
+      end
+   endgenerate
 
    dds_controller#(.N_DDS(N_DDS),
                    .DDS_OPCODE_WIDTH(DDS_OPCODE_WIDTH),
