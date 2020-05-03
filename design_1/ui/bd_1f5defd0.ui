@@ -1,25 +1,54 @@
 {
    "ActiveEmotionalView":"Default View",
-   "Default View_ScaleFactor":"1.51857",
-   "Default View_TopLeft":"-157,-200",
+   "Default View_ScaleFactor":"1.88276",
+   "Default View_TopLeft":"0,-37",
    "ExpandedHierarchyInLayout":"",
    "guistr":"# # String gsaved with Nlview 7.0.21  2019-05-29 bk=1.5064 VDI=41 GEI=36 GUI=JA:9.0 TLS
 #  -string -flagsOSRD
-preplace port DDR -pg 1 -lvl 4 -x 1190 -y 60 -defaultsOSRD
-preplace port FIXED_IO -pg 1 -lvl 4 -x 1190 -y 80 -defaultsOSRD
-preplace inst processing_system7_0 -pg 1 -lvl 2 -x 560 -y 140 -defaultsOSRD
-preplace inst axi_interconnect_0 -pg 1 -lvl 2 -x 560 -y 380 -defaultsOSRD
-preplace inst pulse_controller_0 -pg 1 -lvl 1 -x 180 -y 40 -defaultsOSRD
-preplace inst rst_ps7_0_100M -pg 1 -lvl 3 -x 990 -y -100 -defaultsOSRD
-preplace netloc processing_system7_0_FCLK_CLK0 1 0 3 30 -140 330 -20 790
-preplace netloc processing_system7_0_FCLK_RESET0_N 1 2 1 810 -120n
-preplace netloc rst_ps7_0_100M_peripheral_aresetn 1 0 4 30 220 340 -10 800J 0 1170
-preplace netloc processing_system7_0_DDR 1 2 2 NJ 60 N
-preplace netloc processing_system7_0_FIXED_IO 1 2 2 NJ 80 N
-preplace netloc processing_system7_0_M_AXI_GP0 1 1 2 350 0 770
-preplace netloc axi_interconnect_0_M00_AXI 1 0 3 20 -150 NJ -150 780
-levelinfo -pg 1 0 180 560 990 1190
-pagesize -pg 1 -db -bbox -sgen 0 -200 1310 840
+preplace port DDR -pg 1 -lvl 4 -x 1100 -y 60 -defaultsOSRD
+preplace port FIXED_IO -pg 1 -lvl 4 -x 1100 -y 80 -defaultsOSRD
+preplace port clock_in_pin -pg 1 -lvl 4 -x 1100 -y 20 -defaultsOSRD -right
+preplace port clock_out1_pin -pg 1 -lvl 4 -x 1100 -y 430 -defaultsOSRD
+preplace port spi0_clk -pg 1 -lvl 4 -x 1100 -y 410 -defaultsOSRD
+preplace port spi0_miso -pg 1 -lvl 4 -x 1100 -y 130 -defaultsOSRD -right
+preplace port spi0_mosi -pg 1 -lvl 4 -x 1100 -y 390 -defaultsOSRD
+preplace portBus dds_addr2_pin -pg 1 -lvl 4 -x 1100 -y 230 -defaultsOSRD
+preplace portBus dds_addr_pin -pg 1 -lvl 4 -x 1100 -y 210 -defaultsOSRD
+preplace portBus dds_control2_pin -pg 1 -lvl 4 -x 1100 -y 310 -defaultsOSRD
+preplace portBus dds_control_pin -pg 1 -lvl 4 -x 1100 -y 290 -defaultsOSRD
+preplace portBus dds_cs_pin -pg 1 -lvl 4 -x 1100 -y 350 -defaultsOSRD
+preplace portBus dds_data2_pin -pg 1 -lvl 4 -x 1100 -y 270 -defaultsOSRD
+preplace portBus dds_data_pin -pg 1 -lvl 4 -x 1100 -y 250 -defaultsOSRD
+preplace portBus dds_FUD_pin -pg 1 -lvl 4 -x 1100 -y 330 -defaultsOSRD
+preplace portBus pulse_io_pin -pg 1 -lvl 4 -x 1100 -y 190 -defaultsOSRD
+preplace portBus spi0_cs -pg 1 -lvl 4 -x 1100 -y 370 -defaultsOSRD
+preplace inst processing_system7_0 -pg 1 -lvl 1 -x 240 -y 140 -defaultsOSRD
+preplace inst axi_interconnect_0 -pg 1 -lvl 2 -x 620 -y 200 -defaultsOSRD
+preplace inst pulse_controller_0 -pg 1 -lvl 3 -x 930 -y 310 -defaultsOSRD
+preplace inst rst_ps7_0_100M -pg 1 -lvl 1 -x 240 -y 390 -defaultsOSRD
+preplace netloc processing_system7_0_FCLK_CLK0 1 0 3 20 280 460 320 N
+preplace netloc processing_system7_0_FCLK_RESET0_N 1 0 2 30 290 450
+preplace netloc rst_ps7_0_100M_peripheral_aresetn 1 1 2 470 340 N
+preplace netloc spi0_miso_1 1 2 2 780 130 NJ
+preplace netloc pulse_controller_0_pulse_io 1 3 1 NJ 190
+preplace netloc pulse_controller_0_dds_addr 1 3 1 NJ 210
+preplace netloc pulse_controller_0_dds_addr2 1 3 1 NJ 230
+preplace netloc Net 1 3 1 NJ 250
+preplace netloc Net1 1 3 1 NJ 270
+preplace netloc pulse_controller_0_dds_control 1 3 1 NJ 290
+preplace netloc pulse_controller_0_dds_control2 1 3 1 NJ 310
+preplace netloc pulse_controller_0_dds_FUD 1 3 1 NJ 330
+preplace netloc pulse_controller_0_dds_cs 1 3 1 NJ 350
+preplace netloc pulse_controller_0_spi_cs 1 3 1 NJ 370
+preplace netloc pulse_controller_0_spi_mosi 1 3 1 NJ 390
+preplace netloc pulse_controller_0_spi_clk 1 3 1 NJ 410
+preplace netloc pulse_controller_0_clock_out 1 3 1 NJ 430
+preplace netloc processing_system7_0_DDR 1 1 3 NJ 60 NJ 60 NJ
+preplace netloc processing_system7_0_FIXED_IO 1 1 3 NJ 80 NJ 80 NJ
+preplace netloc processing_system7_0_M_AXI_GP0 1 1 1 470 120n
+preplace netloc axi_interconnect_0_M00_AXI 1 2 1 770 200n
+levelinfo -pg 1 0 240 620 930 1100
+pagesize -pg 1 -db -bbox -sgen 0 0 1310 490
 "
 }
 {
