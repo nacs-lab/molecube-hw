@@ -1,8 +1,0 @@
-/hdl/
-/__xps/
-/etc/
-/module_1.bxml
-*.make
-*.opt
-/data/module_1.ncf
-/data/ps7_constraints.*

@@ -40,3 +40,6 @@ elaborate/
 *.jou
 *.str
 *.cache/
+*.debug
+vivado*
+*.zip
