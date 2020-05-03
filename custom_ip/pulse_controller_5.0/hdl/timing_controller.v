@@ -127,7 +127,15 @@ module timing_controller
     // the start of the sequence.
     input init,
     output clock_out,
-    output reg [7:0] clock_out_div);
+    output reg [7:0] clock_out_div,
+
+    input inst_fifo_empty_n,
+    input [63:0] inst_fifo_rd_data,
+    output inst_fifo_rd_en,
+    input inst_fifo_full_n,
+    output [63:0] inst_fifo_wr_data,
+    output inst_fifo_wr_en
+    );
 
    wire reset = ~resetn;
 
@@ -177,31 +185,15 @@ module timing_controller
    assign rFIFO_WrReq = dds_WrReq | loopback_WrReq;
    assign rFIFO_data = dds_result | loopback_data;
 
-   wire [63:0] extended_bus_data;
-   assign extended_bus_data[31:0] = 32'h00000000;
-   assign extended_bus_data[63:32] = bus_data[31:0];
-
-   // FIFO data
-   // Used as a buffer for commands from the CPU, a deep fifo helps reducing
-   // the time jitter from the CPU scheduling.
-   // Changing the FIFO depth from 256 to 4096 increases FPGA utilization by
-   // < 1% but improves time jitter by one order of magnitude.
-   // (see test-latency in molecube, measured as the fluctuation of the average
-   //  time it need to write a single command when writing different numbers
-   //  of commands continuously).
-   localparam FIFO_ADDR_WIDTH = 12;
-   localparam FIFO_DEPTH = 1 << FIFO_ADDR_WIDTH; // 4096
-   reg [63:0] fifo [0:(FIFO_DEPTH - 1)];
-   reg [31:0] fifo_low_word;
-   reg [(FIFO_ADDR_WIDTH - 1):0] fifo_write_addr;
-   reg [(FIFO_ADDR_WIDTH - 1):0] fifo_read_addr;
-   reg [(FIFO_ADDR_WIDTH - 1):0] fifo_prev_read_addr;
-
    // Control reading of 32 bit words into 64 bit wide FIFO
    reg fifo_next_word_dest;
-
+   reg [31:0] fifo_low_word;
+   assign inst_fifo_wr_data[63:32] = bus_data[31:0]; // Timing, flags or DDS opcode word
+   assign inst_fifo_wr_data[31:0] = fifo_low_word; // TTL or DDS operand word
+   assign inst_fifo_wr_en = bus_data_valid & fifo_next_word_dest;
+   assign inst_fifo_rd_en = ~init & ~reset & state == 0 & ~pulses_hold;
    // acknowledge if FIFO has space
-   assign bus_data_ready = fifo_write_addr !== fifo_prev_read_addr;
+   assign bus_data_ready = ~inst_fifo_full_n;
 
    localparam INSTRUCTION_BITA = 63;
    localparam INSTRUCTION_BITB = 60;
@@ -216,8 +208,7 @@ module timing_controller
    reg [2:0] state;
    reg timing_check;
    reg [63:0] instruction;
-   wire fifo_full = (fifo_write_addr == fifo_prev_read_addr);
-   // goes high when fifo_full is true.  also goes low at last pulse;
+   // goes high when inst_fifo_full_n is true.  also goes low at last pulse;
    reg force_release;
    // pulses_hold will be released if FIFO is full or pulse_controller_hold is
    // low once released, the controller runs until it is done
@@ -261,9 +252,6 @@ module timing_controller
          loopback_data <= 0;
          loopback_WrReq <= 0;
          fifo_next_word_dest <= 0;
-         fifo_write_addr <= 0;
-         fifo_read_addr <= 0;
-         fifo_prev_read_addr <= (FIFO_DEPTH - 1);
          clock_out_div <= 255;
          force_release <= 0;
       end else begin
@@ -271,17 +259,14 @@ module timing_controller
          // FIFO is full, until there is space.
          if (bus_data_ready & bus_data_valid) begin
             if (fifo_next_word_dest == 0) begin
-               fifo_low_word <= bus_data; // TTL or DDS operand word
+               fifo_low_word <= bus_data;
                fifo_next_word_dest <= 1;
             end else begin
-               // Timing, flags or DDS opcode word
-               fifo[fifo_write_addr] <= extended_bus_data | fifo_low_word;
-               fifo_write_addr <= fifo_write_addr + 1;
                fifo_next_word_dest <= 0;
             end
          end
 
-         force_release <= force_release | fifo_full;
+         force_release <= force_release | inst_fifo_full_n;
 
          //finite state machine
          // 0 -- try to pull next instruction from FIFO
@@ -296,12 +281,10 @@ module timing_controller
               loopback_data <= 0;
 
               // here read_addr == write_addr means FIFO is empty
-              if ((fifo_read_addr !== fifo_write_addr) & ~pulses_hold) begin
+              if (~inst_fifo_empty_n & ~pulses_hold) begin
                  state <= 1;
                  pulses_finished <= 0;
-                 instruction <= fifo[fifo_read_addr];
-                 fifo_prev_read_addr <= fifo_read_addr;
-                 fifo_read_addr <= fifo_read_addr + 1;
+                 instruction <= inst_fifo_rd_data;
               end else begin
                  pulses_finished <= 1;
                  // underflow bit is sticky

@@ -1,7 +1,7 @@
 //Copyright 1986-2019 Xilinx, Inc. All Rights Reserved.
 //--------------------------------------------------------------------------------
 //Tool Version: Vivado v.2019.2 (lin64) Build 2708876 Wed Nov  6 21:39:14 MST 2019
-//Date        : Sun May  3 13:13:59 2020
+//Date        : Sun May  3 13:37:17 2020
 //Host        : yyc.yyc-arch.org running 64-bit Arch Linux
 //Command     : generate_target design_1.bd
 //Design      : design_1
@@ -9,7 +9,7 @@
 //--------------------------------------------------------------------------------
 `timescale 1 ps / 1 ps
 
-(* CORE_GENERATION_INFO = "design_1,IP_Integrator,{x_ipVendor=xilinx.com,x_ipLibrary=BlockDiagram,x_ipName=design_1,x_ipVersion=1.00.a,x_ipLanguage=VERILOG,numBlks=6,numReposBlks=4,numNonXlnxBlks=1,numHierBlks=2,maxHierDepth=0,numSysgenBlks=0,numHlsBlks=0,numHdlrefBlks=0,numPkgbdBlks=0,bdsource=USER,da_axi4_cnt=1,da_clkrst_cnt=2,da_ps7_cnt=1,synth_mode=OOC_per_IP}" *) (* HW_HANDOFF = "design_1.hwdef" *) 
+(* CORE_GENERATION_INFO = "design_1,IP_Integrator,{x_ipVendor=xilinx.com,x_ipLibrary=BlockDiagram,x_ipName=design_1,x_ipVersion=1.00.a,x_ipLanguage=VERILOG,numBlks=7,numReposBlks=5,numNonXlnxBlks=1,numHierBlks=2,maxHierDepth=0,numSysgenBlks=0,numHlsBlks=0,numHdlrefBlks=0,numPkgbdBlks=0,bdsource=USER,da_axi4_cnt=1,da_clkrst_cnt=3,da_ps7_cnt=1,synth_mode=OOC_per_IP}" *) (* HW_HANDOFF = "design_1.hwdef" *) 
 module design_1
    (DDR_addr,
     DDR_ba,
@@ -105,6 +105,9 @@ module design_1
   wire axi_interconnect_0_M00_AXI_WREADY;
   wire [3:0]axi_interconnect_0_M00_AXI_WSTRB;
   wire axi_interconnect_0_M00_AXI_WVALID;
+  wire [63:0]fifo_generator_0_dout;
+  wire fifo_generator_0_empty;
+  wire fifo_generator_0_full;
   wire [14:0]processing_system7_0_DDR_ADDR;
   wire [2:0]processing_system7_0_DDR_BA;
   wire processing_system7_0_DDR_CAS_N;
@@ -173,6 +176,9 @@ module design_1
   wire [0:2]pulse_controller_0_dds_control;
   wire [0:2]pulse_controller_0_dds_control2;
   wire [0:21]pulse_controller_0_dds_cs;
+  wire pulse_controller_0_inst_fifo_rd_en;
+  wire [63:0]pulse_controller_0_inst_fifo_wr_data;
+  wire pulse_controller_0_inst_fifo_wr_en;
   wire [0:31]pulse_controller_0_pulse_io;
   wire pulse_controller_0_spi_clk;
   wire [0:0]pulse_controller_0_spi_cs;
@@ -256,6 +262,15 @@ module design_1
         .S00_AXI_wready(processing_system7_0_M_AXI_GP0_WREADY),
         .S00_AXI_wstrb(processing_system7_0_M_AXI_GP0_WSTRB),
         .S00_AXI_wvalid(processing_system7_0_M_AXI_GP0_WVALID));
+  design_1_fifo_generator_0_1 fifo_generator_0
+       (.clk(processing_system7_0_FCLK_CLK0),
+        .din(pulse_controller_0_inst_fifo_wr_data),
+        .dout(fifo_generator_0_dout),
+        .empty(fifo_generator_0_empty),
+        .full(fifo_generator_0_full),
+        .rd_en(pulse_controller_0_inst_fifo_rd_en),
+        .rst(rst_ps7_0_100M_peripheral_aresetn),
+        .wr_en(pulse_controller_0_inst_fifo_wr_en));
   design_1_processing_system7_0_0 processing_system7_0
        (.DDR_Addr(DDR_addr[14:0]),
         .DDR_BankAddr(DDR_ba[2:0]),
@@ -330,6 +345,12 @@ module design_1
         .dds_cs(pulse_controller_0_dds_cs),
         .dds_data({dds_data_pin[15],dds_data_pin[14],dds_data_pin[13],dds_data_pin[12],dds_data_pin[11],dds_data_pin[10],dds_data_pin[9],dds_data_pin[8],dds_data_pin[7],dds_data_pin[6],dds_data_pin[5],dds_data_pin[4],dds_data_pin[3],dds_data_pin[2],dds_data_pin[1],dds_data_pin[0]}),
         .dds_data2({dds_data2_pin[15],dds_data2_pin[14],dds_data2_pin[13],dds_data2_pin[12],dds_data2_pin[11],dds_data2_pin[10],dds_data2_pin[9],dds_data2_pin[8],dds_data2_pin[7],dds_data2_pin[6],dds_data2_pin[5],dds_data2_pin[4],dds_data2_pin[3],dds_data2_pin[2],dds_data2_pin[1],dds_data2_pin[0]}),
+        .inst_fifo_empty_n(fifo_generator_0_empty),
+        .inst_fifo_full_n(fifo_generator_0_full),
+        .inst_fifo_rd_data(fifo_generator_0_dout),
+        .inst_fifo_rd_en(pulse_controller_0_inst_fifo_rd_en),
+        .inst_fifo_wr_data(pulse_controller_0_inst_fifo_wr_data),
+        .inst_fifo_wr_en(pulse_controller_0_inst_fifo_wr_en),
         .pulse_io(pulse_controller_0_pulse_io),
         .s00_axi_aclk(processing_system7_0_FCLK_CLK0),
         .s00_axi_araddr(axi_interconnect_0_M00_AXI_ARADDR[6:0]),
