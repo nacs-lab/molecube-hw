@@ -91,9 +91,8 @@ module timing_controller
    (input clock,
     input resetn,
     input [(BUS_DATA_WIDTH - 1):0] bus_data,
-    input bus_data_ready,
-    // acknowledge that we read the data.
-    output bus_data_ack,
+    input bus_data_valid,
+    output bus_data_ready,
 
     output [(RESULT_WIDTH - 1):0] rFIFO_data,
     output rFIFO_WrReq,
@@ -202,8 +201,7 @@ module timing_controller
    reg fifo_next_word_dest;
 
    // acknowledge if FIFO has space
-   assign bus_data_ack = ((fifo_write_addr !== fifo_prev_read_addr) &&
-                          bus_data_ready);
+   assign bus_data_ready = fifo_write_addr !== fifo_prev_read_addr;
 
    localparam INSTRUCTION_BITA = 63;
    localparam INSTRUCTION_BITB = 60;
@@ -271,7 +269,7 @@ module timing_controller
       end else begin
          // Get new instructions if FIFO has space. The bus will hang if
          // FIFO is full, until there is space.
-         if (bus_data_ack) begin
+         if (bus_data_ready & bus_data_valid) begin
             if (fifo_next_word_dest == 0) begin
                fifo_low_word <= bus_data; // TTL or DDS operand word
                fifo_next_word_dest <= 1;
@@ -307,7 +305,7 @@ module timing_controller
               end else begin
                  pulses_finished <= 1;
                  // underflow bit is sticky
-                 underflow <= (underflow || timing_check);
+                 underflow <= (underflow | timing_check);
               end
            end
 
