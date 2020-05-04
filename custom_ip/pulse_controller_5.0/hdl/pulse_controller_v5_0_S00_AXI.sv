@@ -121,218 +121,6 @@ module pulse_controller_v5_0_S00_AXI #
    localparam integer ADDR_LSB = (C_S_AXI_DATA_WIDTH / 32) + 1;
    localparam integer OPT_MEM_ADDR_BITS = 4;
 
-   // Read signals
-   // Inputs:
-   //   ARADDR: Read address
-   //   ARVALID: Read address valid
-   //   RREADY: Read ready
-   // Outputs:
-   //   ARREADY: Read address ready
-   //   RDATA: Read data
-   //   RVALID: Read valid
-
-   // Sequence:
-   // Reset:
-   //   Condition: `ARESETN == 0`
-   //   Action:
-   //     ARREADY <= 1
-   //     RDATA <= 0
-   //     RVALID <= 0
-   //     Go to phase 0
-   // Phase 0: Idle
-   //   Wait for `ARVALID == 1`:
-   //     Latch ARADDR
-   //     ARREADY <= 0
-   //     Trigger user logic
-   //     Go to phase 1
-   // User logic:
-   //   When ready, write to `RDATA` and assert `RVALID`
-   // Phase 1: Request
-   //   Wait for user logic ready (`RVALID == 1`) && `RREADY == 1`
-   //     ARREADY <= 1
-   //     RVALID <= 0
-   //     Go to phase 0
-   //   Wait for user logic ready (`RVALID == 1`)
-   //     Go to phase 2
-   // Phase 2: Reply
-   //   Wait for user logic ready (`RVALID == 1`) && `RREADY == 1`
-   //     ARREADY <= 1
-   //     RVALID <= 0
-   //     Go to phase 0
-   reg [1:0] s_axi_read_state;
-   reg [C_S_AXI_ADDR_WIDTH - 1:0] s_axi_araddr_l;
-   wire [C_S_AXI_ADDR_WIDTH - 1:0] s_axi_araddr =
-                                   s_axi_read_state == 0 ? S_AXI_ARADDR : s_axi_araddr_l;
-   // `s_axi_rdvalid` become 1 on the cycle `S_AXI_ARVALID == 1`
-   // which is also the cycle `s_axi_araddr` become valid.
-   // As soon as a reply is generated (the same cycle) it should reset to 0 on the next cycle.
-   wire s_axi_rdvalid = (s_axi_read_state == 0 ? S_AXI_ARVALID :
-                         s_axi_read_state == 1 ? ~S_AXI_RVALID : 1'b0);
-   assign S_AXI_RRESP = 0;
-   always @(posedge S_AXI_ACLK) begin
-      if (~S_AXI_ARESETN) begin
-         S_AXI_ARREADY <= 1'b1;
-         S_AXI_RDATA <= 0;
-         S_AXI_RVALID <= 1'b0;
-         s_axi_read_state <= 2'b00;
-      end else begin
-         case (s_axi_read_state)
-           2'b00: begin
-              // Idle (wait for request)
-              if (S_AXI_ARVALID) begin
-                 s_axi_araddr_l <= S_AXI_ARADDR;
-                 S_AXI_ARREADY <= 1'b0;
-                 s_axi_read_state <= 2'b01; // Trigger user logic
-              end
-           end
-           2'b01: begin
-              // Requested (wait for reply and acknowledgement)
-              if (S_AXI_RVALID & S_AXI_RREADY) begin
-                 S_AXI_ARREADY <= 1'b1;
-                 S_AXI_RVALID <= 1'b0;
-                 s_axi_read_state <= 2'b00;
-              end else if (S_AXI_RVALID) begin
-                 s_axi_read_state <= 2'b10;
-              end
-           end
-           2'b10: begin
-              // Replied (wait for acknowledgement)
-              if (S_AXI_RREADY) begin
-                 S_AXI_ARREADY <= 1'b1;
-                 S_AXI_RVALID <= 1'b0;
-                 s_axi_read_state <= 2'b00;
-              end
-           end
-         endcase
-      end
-   end
-
-   // Write signals
-   // Inputs:
-   //   AWADDR: Write address
-   //   AWVALID: Write address valid
-   //   WSTRB: Write strobes
-   //   WDATA: Write data
-   //   WVALID: Write valid
-   //   BREADY: Response ready
-   // Outputs:
-   //   AWREADY: Write address ready
-   //   WREADY: Write ready
-   //   BVALID: Write response valid
-
-   // Sequence:
-   // Reset:
-   //   Condition: `ARESETN == 0`
-   //   Action:
-   //     AWREADY <= 1
-   //     WREADY <= 1
-   //     BVALID <= 0
-   //     Go to phase 0
-   // Phase 0: Idle
-   //   Wait for `AWVALID == 1` || `WVALID == 1`:
-   //     Latch AWADDR and/or (WSTRB && WDATA)
-   //     AWREADY <= 0 and/or WREADY <= 0
-   //     Trigger user logic
-   //     Go to phase 1
-   // User logic:
-   //   When ready, assert `BVALID`
-   // Phase 1: Request
-   //   Wait for user logic ready (`BVALID`)
-   //     Go to phase 2
-   // Phase 2: Reply
-   //   Wait for `BREADY == 1`
-   //     AWREADY <= 1
-   //     WREADY <= 1
-   //     BVALID <= 0
-   //     Go to phase 0
-   reg [1:0] s_axi_write_state;
-   reg s_axi_write_addr_latched;
-   reg s_axi_write_data_latched;
-   reg [C_S_AXI_ADDR_WIDTH - 1:0] s_axi_awaddr_l;
-   reg [C_S_AXI_DATA_WIDTH - 1:0] s_axi_wdata_l;
-   reg [(C_S_AXI_DATA_WIDTH / 8) - 1:0] s_axi_wstrb_l;
-
-   wire [C_S_AXI_ADDR_WIDTH - 1:0] s_axi_awaddr = (s_axi_write_addr_latched ? s_axi_awaddr_l :
-                                                   S_AXI_AWADDR);
-   wire [C_S_AXI_DATA_WIDTH - 1:0] s_axi_wdata = (s_axi_write_data_latched ? s_axi_wdata_l :
-                                                  S_AXI_WDATA);
-   wire [(C_S_AXI_DATA_WIDTH / 8) - 1:0] s_axi_wstrb = (s_axi_write_data_latched ? s_axi_wstrb_l :
-                                                        S_AXI_WSTRB);
-
-   wire s_axi_wrvalid = (s_axi_write_state == 0 ?
-                         (S_AXI_AWVALID | s_axi_write_addr_latched) &
-                         (S_AXI_WVALID | s_axi_write_data_latched) :
-                         s_axi_write_state == 1 ? ~S_AXI_BVALID : 1'b0);
-   assign S_AXI_BRESP = 0;
-   always @(posedge S_AXI_ACLK) begin
-      if (~S_AXI_ARESETN) begin
-         S_AXI_AWREADY <= 1;
-         S_AXI_WREADY <= 1;
-         S_AXI_BVALID <= 0;
-         s_axi_write_state <= 2'b00;
-         s_axi_write_addr_latched <= 1'b0;
-         s_axi_write_data_latched <= 1'b0;
-         s_axi_awaddr_l <= 0;
-         s_axi_wdata_l <= 0;
-         s_axi_wstrb_l <= 0;
-      end else begin
-         case (s_axi_write_state)
-           2'b00: begin
-              // Idle (wait for request)
-              if (S_AXI_AWVALID & S_AXI_WVALID) begin
-                 if (~s_axi_write_addr_latched) begin
-                    s_axi_awaddr_l <= S_AXI_AWADDR;
-                 end
-                 if (~s_axi_write_data_latched) begin
-                    s_axi_wdata_l <= S_AXI_WDATA;
-                    s_axi_wstrb_l <= S_AXI_WSTRB;
-                 end
-                 s_axi_write_addr_latched <= 1'b1;
-                 s_axi_write_data_latched <= 1'b1;
-                 s_axi_write_state <= 2'b01; // Trigger user logic
-              end else if (S_AXI_AWVALID & ~s_axi_write_addr_latched) begin
-                 s_axi_awaddr_l <= S_AXI_AWADDR;
-                 s_axi_write_addr_latched <= 1'b1;
-                 if (s_axi_write_data_latched) begin
-                    s_axi_write_state <= 2'b01; // Trigger user logic
-                 end
-              end else if (S_AXI_WVALID && ~s_axi_write_data_latched) begin
-                 s_axi_wdata_l <= S_AXI_WDATA;
-                 s_axi_wstrb_l <= S_AXI_WSTRB;
-                 s_axi_write_data_latched <= 1'b1;
-                 if (~s_axi_write_addr_latched) begin
-                    s_axi_write_state <= 2'b01; // Trigger user logic
-                 end
-              end
-           end
-           2'b01: begin
-              // Requested (wait for reply and acknowledgement)
-              if (S_AXI_BVALID & S_AXI_BREADY) begin
-                 S_AXI_AWREADY <= 1;
-                 S_AXI_WREADY <= 1;
-                 S_AXI_BVALID <= 0;
-                 s_axi_write_state <= 2'b00;
-                 s_axi_write_addr_latched <= 1'b0;
-                 s_axi_write_data_latched <= 1'b0;
-              end else if (S_AXI_BVALID) begin
-                 s_axi_write_state <= 2'b10;
-                 s_axi_write_addr_latched <= 1'b0;
-                 s_axi_write_data_latched <= 1'b0;
-              end
-           end
-           2'b10: begin
-              // Replied (wait for acknowledgement)
-              if (S_AXI_BREADY) begin
-                 S_AXI_AWREADY <= 1;
-                 S_AXI_WREADY <= 1;
-                 S_AXI_BVALID <= 0;
-                 s_axi_write_state <= 2'b00;
-              end
-           end
-         endcase
-      end
-   end
-
    //----------------------------------------------------------------------------
    // User logic
    //----------------------------------------------------------------------------
@@ -391,111 +179,298 @@ module pulse_controller_v5_0_S00_AXI #
    // assume slave register width == pulse width
    assign pulse_io = (ttl_out | ttl_hi_mask) & (~ttl_lo_mask);
 
+   // Read signals
+   // Inputs:
+   //   ARADDR: Read address
+   //   ARVALID: Read address valid
+   //   RREADY: Read ready
+   // Outputs:
+   //   ARREADY: Read address ready
+   //   RDATA: Read data
+   //   RVALID: Read valid
+
+   // Sequence:
+   // Reset:
+   //   Condition: `ARESETN == 0`
+   //   Action:
+   //     ARREADY <= 1
+   //     RDATA <= 0
+   //     RVALID <= 0
+   //     Go to phase 0
+   // Phase 0: Idle
+   //   Wait for `ARVALID == 1`:
+   //     Latch ARADDR
+   //     ARREADY <= 0
+   //     RDATA <= <data>
+   //     RVALID <= 1
+   //     Trigger user logic
+   //     Go to phase 1
+   // Phase 1: Replied
+   //   Wait for `RREADY == 1`
+   //     ARREADY <= 1
+   //     RVALID <= 0
+   //     Go to phase 0
+
+   // Read state:
+   //   0: idle
+   //   1: wait for master to acknowledge the read
+   reg s_axi_read_state;
+   // This will assert exactly one cycle per request and is used by rFIFO below.
+   wire s_axi_rdvalid = s_axi_read_state == 0 & S_AXI_ARVALID;
+   assign S_AXI_RRESP = 0;
    always @(posedge S_AXI_ACLK) begin
-      if (S_AXI_ARESETN && s_axi_rdvalid) begin
-         // Address decoding for reading registers
-         case (s_axi_araddr[ADDR_LSB + OPT_MEM_ADDR_BITS:ADDR_LSB])
-           5'h00: begin
-              S_AXI_RDATA <= ttl_hi_mask;
-              S_AXI_RVALID <= 1'b1;
+      if (~S_AXI_ARESETN) begin
+         S_AXI_ARREADY <= 1'b1;
+         S_AXI_RVALID <= 1'b0;
+         S_AXI_RDATA <= 0;
+         s_axi_read_state <= 1'b0;
+      end else begin
+         case (s_axi_read_state)
+           1'b0: begin
+              // Idle (wait for request)
+              if (S_AXI_ARVALID) begin
+                 S_AXI_ARREADY <= 1'b0;
+                 // Address decoding for reading registers
+                 case (S_AXI_ARADDR[ADDR_LSB + OPT_MEM_ADDR_BITS:ADDR_LSB])
+                   5'h00: begin
+                      S_AXI_RDATA <= ttl_hi_mask;
+                   end
+                   5'h01: begin
+                      S_AXI_RDATA <= ttl_lo_mask;
+                   end
+                   5'h02: begin
+                      S_AXI_RDATA <= slv_reg_status;
+                   end
+                   5'h03: begin
+                      S_AXI_RDATA <= slv_reg_ctrl;
+                   end
+                   5'h04: begin
+                      S_AXI_RDATA <= ttl_out;
+                   end
+                   5'h05: begin
+                      S_AXI_RDATA[C_S_AXI_DATA_WIDTH - 1:8] <= 0;
+                      S_AXI_RDATA[7:0] <= clock_out_div;
+                   end
+                   5'h1E: begin
+                      S_AXI_RDATA <= slv_reg_dummy;
+                   end
+                   5'h1F: begin
+                      S_AXI_RDATA <= rFIFO[rFIFO_read_addr];
+                   end
+                   default: begin
+                      S_AXI_RDATA <= 0;
+                   end
+                 endcase
+                 S_AXI_RVALID <= 1'b1;
+                 s_axi_read_state <= 1'b1;
+              end
            end
-           5'h01: begin
-              S_AXI_RDATA <= ttl_lo_mask;
-              S_AXI_RVALID <= 1'b1;
-           end
-           5'h02: begin
-              S_AXI_RDATA <= slv_reg_status;
-              S_AXI_RVALID <= 1'b1;
-           end
-           5'h03: begin
-              S_AXI_RDATA <= slv_reg_ctrl;
-              S_AXI_RVALID <= 1'b1;
-           end
-           5'h04: begin
-              S_AXI_RDATA <= ttl_out;
-              S_AXI_RVALID <= 1'b1;
-           end
-           5'h05: begin
-              S_AXI_RDATA[C_S_AXI_DATA_WIDTH - 1:8] <= 0;
-              S_AXI_RDATA[7:0] <= clock_out_div;
-              S_AXI_RVALID <= 1'b1;
-           end
-           5'h1E: begin
-              S_AXI_RDATA <= slv_reg_dummy;
-              S_AXI_RVALID <= 1'b1;
-           end
-           5'h1F: begin
-              S_AXI_RDATA <= rFIFO[rFIFO_read_addr];
-              S_AXI_RVALID <= 1'b1;
-           end
-           default: begin
-              S_AXI_RDATA <= 0;
-              S_AXI_RVALID <= 1'b1;
+           1'b1: begin
+              // Replied (wait for acknowledgement)
+              if (S_AXI_RREADY) begin
+                 S_AXI_ARREADY <= 1'b1;
+                 S_AXI_RVALID <= 1'b0;
+                 s_axi_read_state <= 1'b0;
+              end
            end
          endcase
       end
    end
 
-   integer byte_index;
+   // Write signals
+   // Inputs:
+   //   AWADDR: Write address
+   //   AWVALID: Write address valid
+   //   WSTRB: Write strobes
+   //   WDATA: Write data
+   //   WVALID: Write valid
+   //   BREADY: Response ready
+   // Outputs:
+   //   AWREADY: Write address ready
+   //   WREADY: Write ready
+   //   BVALID: Write response valid
+
+   // Sequence:
+   // Reset:
+   //   Condition: `ARESETN == 0`
+   //   Action:
+   //     AWREADY <= 1
+   //     WREADY <= 1
+   //     BVALID <= 0
+   //     Go to phase 0
+   // Phase 0: Idle
+   //   Wait for `AWVALID == 1` || `WVALID == 1`:
+   //     Latch AWADDR and/or (WSTRB && WDATA)
+   //     AWREADY <= 0 and/or WREADY <= 0
+   //     if write ready:
+   //       Write data
+   //       BVALID <= 1
+   //       Go to phase 2
+   //     else:
+   //       Go to phase 1
+   // Phase 1: Recieved
+   //   Wait for write ready
+   //     Write data
+   //     BVALID <= 1
+   //     Go to phase 2
+   // Phase 2: Replied
+   //   Wait for `BREADY == 1`
+   //     AWREADY <= 1
+   //     WREADY <= 1
+   //     BVALID <= 0
+   //     Go to phase 0
+
+   // Write state:
+   //   0: idle / waiting for either address or data with the other one latched.
+   //   1: wait for instruction FIFO to acknowledge the write
+   //   2: wait for master to acknowledge the write reply
+   reg [1:0] s_axi_write_state;
+
+   // The caches here are used to handle the case where
+   // the data and address do not arrive on the same cycle.
+   // Once we acknowledge the read we can't use the input version anymore.
+   reg s_axi_write_addr_latched;
+   reg s_axi_write_data_latched;
+   reg [C_S_AXI_ADDR_WIDTH - 1:0] s_axi_awaddr_l;
+   reg [C_S_AXI_DATA_WIDTH - 1:0] s_axi_wdata_l;
+   reg [(C_S_AXI_DATA_WIDTH / 8) - 1:0] s_axi_wstrb_l;
+   wire [C_S_AXI_ADDR_WIDTH - 1:0] s_axi_awaddr = (s_axi_write_addr_latched ? s_axi_awaddr_l :
+                                                   S_AXI_AWADDR);
+   wire [C_S_AXI_DATA_WIDTH - 1:0] s_axi_wdata = (s_axi_write_data_latched ? s_axi_wdata_l :
+                                                  S_AXI_WDATA);
+   wire [(C_S_AXI_DATA_WIDTH / 8) - 1:0] s_axi_wstrb = (s_axi_write_data_latched ? s_axi_wstrb_l :
+                                                        S_AXI_WSTRB);
+
+   wire s_axi_wrvalid = (s_axi_write_state == 0 ?
+                         (S_AXI_AWVALID | s_axi_write_addr_latched) &
+                         (S_AXI_WVALID | s_axi_write_data_latched) : s_axi_write_state == 1);
    wire tc_inst_ready;
+   // This will de-assert the cycle following the one
+   // `tc_inst_ready && tc_inst_valid`
+   wire tc_inst_valid = (s_axi_wrvalid &
+                         s_axi_awaddr[ADDR_LSB + OPT_MEM_ADDR_BITS:ADDR_LSB] == 5'h1F);
+
+   assign S_AXI_BRESP = 0;
+   integer byte_index;
    always @(posedge S_AXI_ACLK) begin
       if (~S_AXI_ARESETN) begin
+         S_AXI_AWREADY <= 1;
+         S_AXI_WREADY <= 1;
+         S_AXI_BVALID <= 0;
+         s_axi_write_state <= 2'b00;
+         s_axi_write_addr_latched <= 1'b0;
+         s_axi_write_data_latched <= 1'b0;
+         s_axi_awaddr_l <= 0;
+         s_axi_wdata_l <= 0;
+         s_axi_wstrb_l <= 0;
+
          ttl_hi_mask <= 0;
          ttl_lo_mask <= 0;
-         slv_reg_status <= 0;
          slv_reg_ctrl <= 0;
          slv_reg_dummy <= 0;
       end else begin
-         if (s_axi_wrvalid) begin
-            case (s_axi_awaddr[ADDR_LSB + OPT_MEM_ADDR_BITS:ADDR_LSB])
-              5'h00: begin
-                 for (byte_index = 0; byte_index <= (C_S_AXI_DATA_WIDTH / 8) - 1;
-                      byte_index = byte_index + 1)
-                   if (s_axi_wstrb[byte_index] == 1) begin
-                      // Respective byte enables are asserted as per write strobes
-                      // Slave register 0
-                      ttl_hi_mask[(byte_index * 8)+:8] <= s_axi_wdata[(byte_index * 8)+:8];
+         case (s_axi_write_state)
+           2'b00: begin
+              // Idle (wait for request)
+
+              // Latch address/data
+              if (S_AXI_AWVALID & S_AXI_WVALID) begin
+                 if (~s_axi_write_addr_latched) begin
+                    s_axi_awaddr_l <= S_AXI_AWADDR;
+                 end
+                 if (~s_axi_write_data_latched) begin
+                    s_axi_wdata_l <= S_AXI_WDATA;
+                    s_axi_wstrb_l <= S_AXI_WSTRB;
+                 end
+                 s_axi_write_addr_latched <= 1'b1;
+                 s_axi_write_data_latched <= 1'b1;
+              end else if (S_AXI_AWVALID & ~s_axi_write_addr_latched) begin
+                 s_axi_awaddr_l <= S_AXI_AWADDR;
+                 s_axi_write_addr_latched <= 1'b1;
+              end else if (S_AXI_WVALID && ~s_axi_write_data_latched) begin
+                 s_axi_wdata_l <= S_AXI_WDATA;
+                 s_axi_wstrb_l <= S_AXI_WSTRB;
+                 s_axi_write_data_latched <= 1'b1;
+              end
+
+              // We got both the address and the data
+              if ((S_AXI_AWVALID | s_axi_write_addr_latched) &
+                  (S_AXI_WVALID | s_axi_write_data_latched)) begin
+                 if (s_axi_awaddr[ADDR_LSB + OPT_MEM_ADDR_BITS:ADDR_LSB] == 5'h1F) begin
+                    if (tc_inst_ready)
+                      s_axi_write_state <= 2'b10;
+                    else
+                      s_axi_write_state <= 2'b01;
+                    S_AXI_BVALID <= tc_inst_ready;
+                 end else begin
+                    S_AXI_BVALID <= 1'b1;
+                    s_axi_write_state <= 2'b10;
+                 end
+                 case (s_axi_awaddr[ADDR_LSB + OPT_MEM_ADDR_BITS:ADDR_LSB])
+                   5'h00: begin
+                      for (byte_index = 0; byte_index <= (C_S_AXI_DATA_WIDTH / 8) - 1;
+                           byte_index = byte_index + 1)
+                        if (s_axi_wstrb[byte_index] == 1) begin
+                           // Respective byte enables are asserted as per write strobes
+                           // Slave register 0
+                           ttl_hi_mask[(byte_index * 8)+:8] <= s_axi_wdata[(byte_index * 8)+:8];
+                        end
                    end
-                 S_AXI_BVALID <= 1'b1;
-              end
-              5'h01: begin
-                 for (byte_index = 0; byte_index <= (C_S_AXI_DATA_WIDTH / 8) - 1;
-                      byte_index = byte_index + 1)
-                   if (s_axi_wstrb[byte_index] == 1) begin
-                      // Respective byte enables are asserted as per write strobes
-                      // Slave register 1
-                      ttl_lo_mask[(byte_index * 8)+:8] <= s_axi_wdata[(byte_index * 8)+:8];
+                   5'h01: begin
+                      for (byte_index = 0; byte_index <= (C_S_AXI_DATA_WIDTH / 8) - 1;
+                           byte_index = byte_index + 1)
+                        if (s_axi_wstrb[byte_index] == 1) begin
+                           // Respective byte enables are asserted as per write strobes
+                           // Slave register 1
+                           ttl_lo_mask[(byte_index * 8)+:8] <= s_axi_wdata[(byte_index * 8)+:8];
+                        end
                    end
-                 S_AXI_BVALID <= 1'b1;
-              end
-              5'h03: begin
-                 for (byte_index = 0; byte_index <= (C_S_AXI_DATA_WIDTH / 8) - 1;
-                      byte_index = byte_index + 1)
-                   if (s_axi_wstrb[byte_index] == 1) begin
-                      // Respective byte enables are asserted as per write strobes
-                      // Slave register 1
-                      slv_reg_ctrl[(byte_index * 8)+:8] <= s_axi_wdata[(byte_index * 8)+:8];
+                   5'h03: begin
+                      for (byte_index = 0; byte_index <= (C_S_AXI_DATA_WIDTH / 8) - 1;
+                           byte_index = byte_index + 1)
+                        if (s_axi_wstrb[byte_index] == 1) begin
+                           // Respective byte enables are asserted as per write strobes
+                           // Slave register 1
+                           slv_reg_ctrl[(byte_index * 8)+:8] <= s_axi_wdata[(byte_index * 8)+:8];
+                        end
                    end
-                 S_AXI_BVALID <= 1'b1;
-              end
-              5'h1E: begin
-                 for (byte_index = 0; byte_index <= (C_S_AXI_DATA_WIDTH / 8) - 1;
-                      byte_index = byte_index + 1)
-                   if (s_axi_wstrb[byte_index] == 1) begin
-                      // Respective byte enables are asserted as per write strobes
-                      // Slave register 1
-                      slv_reg_dummy[(byte_index * 8)+:8] <= s_axi_wdata[(byte_index * 8)+:8];
+                   5'h1E: begin
+                      for (byte_index = 0; byte_index <= (C_S_AXI_DATA_WIDTH / 8) - 1;
+                           byte_index = byte_index + 1)
+                        if (s_axi_wstrb[byte_index] == 1) begin
+                           // Respective byte enables are asserted as per write strobes
+                           // Slave register 1
+                           slv_reg_dummy[(byte_index * 8)+:8] <= s_axi_wdata[(byte_index * 8)+:8];
+                        end
                    end
-                 S_AXI_BVALID <= 1'b1;
+                 endcase
               end
-              5'h1F: begin
-                 S_AXI_BVALID <= tc_inst_ready;
+           end
+           2'b01: begin
+              // Recieved (wait for instruction FIFO to acknowledge the write)
+              if (tc_inst_ready)
+                s_axi_write_state <= 2'b10;
+              S_AXI_BVALID <= tc_inst_ready;
+           end
+           2'b10: begin
+              // Replied (wait for acknowledgement)
+              if (S_AXI_BREADY) begin
+                 S_AXI_AWREADY <= 1;
+                 S_AXI_WREADY <= 1;
+                 S_AXI_BVALID <= 0;
+                 s_axi_write_state <= 2'b00;
+                 s_axi_write_addr_latched <= 1'b0;
+                 s_axi_write_data_latched <= 1'b0;
               end
-              default: begin
-                 S_AXI_BVALID <= 1'b1;
-              end
-            endcase
-         end
+           end
+         endcase
+      end
+   end
+
+   always @(posedge S_AXI_ACLK) begin
+      if (~S_AXI_ARESETN) begin
+         slv_reg_status <= 0;
+      end else begin
          slv_reg_status[0] <= underflow;
          slv_reg_status[2] <= pulses_finished;
          slv_reg_status[(rFIFO_ADDR_BITS + 3):4] <= rFIFO_fill;
@@ -505,7 +480,7 @@ module pulse_controller_v5_0_S00_AXI #
    // rFIFO
    // Assumes that this only assert a single cycle
    assign rFIFO_RdReq = s_axi_rdvalid &&
-                        s_axi_araddr[ADDR_LSB + OPT_MEM_ADDR_BITS:ADDR_LSB] == 5'h1F;
+                        S_AXI_ARADDR[ADDR_LSB + OPT_MEM_ADDR_BITS:ADDR_LSB] == 5'h1F;
    always @(posedge S_AXI_ACLK) begin
       if (~S_AXI_ARESETN | slv_reg_ctrl[8]) begin
          rFIFO_fill <= 0;
@@ -533,8 +508,6 @@ module pulse_controller_v5_0_S00_AXI #
       end
    end
 
-   wire tc_inst_valid = (s_axi_wrvalid &
-                         s_axi_awaddr[ADDR_LSB + OPT_MEM_ADDR_BITS:ADDR_LSB] == 5'h1F);
    timing_controller
      #(.N_SPI(N_SPI),
        .N_DDS(N_DDS),
