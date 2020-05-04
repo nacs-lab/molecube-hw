@@ -91,8 +91,6 @@ module dds_controller
     output reg [(RESULT_WIDTH - 1):0] result_data,
     output reg result_WrReq);
 
-   // synthesis attribute iostandard of dds_bus is LVCMOS33;
-
    // delay dds_addr by 1 cycle (10 ns)
    // to meet timing for AD9914 (tASU)
    reg [(U_DDS_ADDR_WIDTH - 1):0] dds_addr_reg;
@@ -135,7 +133,7 @@ module dds_controller
    reg dds_FUDx; // aux signal for dds_FUD DDR signal
    // dds_FUDx will be low for 1 clock cycle
 
-   reg ddr_reset;
+   // reg ddr_reset;
 
    localparam FUD_DDR_MODE = 0;
    generate
@@ -150,29 +148,29 @@ module dds_controller
          // and Clock Enable.
          // 7 Series
          // Xilinx HDL Libraries Guide, version 14.3
-         ODDR#(.DDR_CLK_EDGE("OPPOSITE_EDGE"), // "OPPOSITE_EDGE" or "SAME_EDGE"
-               .INIT(1'b0), // Initial value of Q: 1'b0 or 1'b1
-               .SRTYPE("SYNC") // Set/Reset type: "SYNC" or "ASYNC"
-               ) sODDR_inst1(.Q(dds_FUD[0]), // 1-bit DDR output
-                             .C(clock), // 1-bit clock input
-                             .CE(1'b1), // 1-bit clock enable input
-                             .D1(dds_FUDx), // 1-bit data input (positive edge)
-                             .D2(1'b0), // 1-bit data input (negative edge)
-                             .R(ddr_reset), // 1-bit reset
-                             .S(1'b0) // 1-bit set
-                             );
+         // ODDR#(.DDR_CLK_EDGE("OPPOSITE_EDGE"), // "OPPOSITE_EDGE" or "SAME_EDGE"
+         //       .INIT(1'b0), // Initial value of Q: 1'b0 or 1'b1
+         //       .SRTYPE("SYNC") // Set/Reset type: "SYNC" or "ASYNC"
+         //       ) sODDR_inst1(.Q(dds_FUD[0]), // 1-bit DDR output
+         //                     .C(clock), // 1-bit clock input
+         //                     .CE(1'b1), // 1-bit clock enable input
+         //                     .D1(dds_FUDx), // 1-bit data input (positive edge)
+         //                     .D2(1'b0), // 1-bit data input (negative edge)
+         //                     .R(ddr_reset), // 1-bit reset
+         //                     .S(1'b0) // 1-bit set
+         //                     );
 
-         ODDR#(.DDR_CLK_EDGE("OPPOSITE_EDGE"), // "OPPOSITE_EDGE" or "SAME_EDGE"
-               .INIT(1'b0), // Initial value of Q: 1'b0 or 1'b1
-               .SRTYPE("SYNC") // Set/Reset type: "SYNC" or "ASYNC"
-               ) ODDR_inst2(.Q(dds_FUD[1]), // 1-bit DDR output
-                            .C(clock), // 1-bit clock input
-                            .CE(1'b1), // 1-bit clock enable input
-                            .D1(dds_FUDx), // 1-bit data input (positive edge)
-                            .D2(1'b0), // 1-bit data input (negative edge)
-                            .R(ddr_reset), // 1-bit reset
-                            .S(1'b0) // 1-bit set
-                            );
+         // ODDR#(.DDR_CLK_EDGE("OPPOSITE_EDGE"), // "OPPOSITE_EDGE" or "SAME_EDGE"
+         //       .INIT(1'b0), // Initial value of Q: 1'b0 or 1'b1
+         //       .SRTYPE("SYNC") // Set/Reset type: "SYNC" or "ASYNC"
+         //       ) ODDR_inst2(.Q(dds_FUD[1]), // 1-bit DDR output
+         //                    .C(clock), // 1-bit clock input
+         //                    .CE(1'b1), // 1-bit clock enable input
+         //                    .D1(dds_FUDx), // 1-bit data input (positive edge)
+         //                    .D2(1'b0), // 1-bit data input (negative edge)
+         //                    .R(ddr_reset), // 1-bit reset
+         //                    .S(1'b0) // 1-bit set
+         //                    );
          // End of ODDR_inst instantiation
       end
    endgenerate
@@ -209,9 +207,9 @@ module dds_controller
 
          result_WrReq <= 0;
          dds_FUDx <= 0;
-         ddr_reset <= 1;
+         // ddr_reset <= 1;
       end else begin
-         ddr_reset <= 0;
+         // ddr_reset <= 0;
          dds_addr_reg <= dds_addr_reg_next;
 
          if (cycle == 0) begin

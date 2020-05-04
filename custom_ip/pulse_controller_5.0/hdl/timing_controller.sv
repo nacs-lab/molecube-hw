@@ -208,12 +208,6 @@ module timing_controller
    // Control reading of 32 bit words into 64 bit wide FIFO
    reg fifo_next_word_dest;
    reg [31:0] fifo_low_word;
-   assign inst_fifo_wr_data[63:32] = bus_data[31:0]; // Timing, flags or DDS opcode word
-   assign inst_fifo_wr_data[31:0] = fifo_low_word; // TTL or DDS operand word
-   assign inst_fifo_wr_en = bus_data_valid & fifo_next_word_dest;
-   assign inst_fifo_rd_en = ~init & ~reset & state == 0 & ~pulses_hold;
-   // acknowledge if FIFO has space
-   assign bus_data_ready = ~inst_fifo_full_n;
 
    localparam INSTRUCTION_BITA = 63;
    localparam INSTRUCTION_BITB = 60;
@@ -233,6 +227,12 @@ module timing_controller
    // pulses_hold will be released if FIFO is full or pulse_controller_hold is
    // low once released, the controller runs until it is done
    wire pulses_hold = pulse_controller_hold & ~force_release;
+   assign inst_fifo_wr_data[63:32] = bus_data[31:0]; // Timing, flags or DDS opcode word
+   assign inst_fifo_wr_data[31:0] = fifo_low_word; // TTL or DDS operand word
+   assign inst_fifo_wr_en = bus_data_valid & fifo_next_word_dest;
+   assign inst_fifo_rd_en = ~init & ~reset & state == 0 & ~pulses_hold;
+   // acknowledge if FIFO has space
+   assign bus_data_ready = ~inst_fifo_full_n;
 
    localparam SPI_OPCODE_WIDTH = 16;
    localparam SPI_OPERAND_WIDTH = 18;
