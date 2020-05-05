@@ -148,29 +148,6 @@ module timing_controller
    wire dds_WrReq;
    wire [31:0] dds_result;
 
-   // DDS signal translation
-   wire [(U_DDS_DATA_WIDTH - 1):0] dds_data_O;
-   wire [(U_DDS_DATA_WIDTH - 1):0] dds_data_I;
-   wire [(U_DDS_DATA_WIDTH - 1):0] dds_data2_O;
-   wire [(U_DDS_DATA_WIDTH - 1):0] dds_data2_I;
-   wire dds_data_T, dds_data2_T;
-
-   genvar i;
-   generate
-      for (i = 0; i < U_DDS_DATA_WIDTH; i++) begin
-         IOBUF IOBUF_inst(.O(dds_data_I[i]),
-                          .IO(dds_data[i]),
-                          .I(dds_data_O[i]),
-                          .T(dds_data_T) // 3-state enable input, high=input, low=output
-                          );
-         IOBUF IOBUF_inst2(.O(dds_data2_I[i]),
-                           .IO(dds_data2[i]),
-                           .I(dds_data2_O[i]),
-                           .T(dds_data2_T) // 3-state enable input, high=input, low=output
-                           );
-      end
-   endgenerate
-
    dds_controller#(.N_DDS(N_DDS),
                    .DDS_OPCODE_WIDTH(DDS_OPCODE_WIDTH),
                    .DDS_OPERAND_WIDTH(DDS_OPERAND_WIDTH),
@@ -183,14 +160,10 @@ module timing_controller
                        .opcode(dds_opcode),
                        .operand(dds_operand),
                        .dds_addr(dds_addr),
-                       .dds_data_I(dds_data_I),
-                       .dds_data_O(dds_data_O),
-                       .dds_data_T(dds_data_T),
+                       .dds_data(dds_data),
                        .dds_control(dds_control),
                        .dds_addr2(dds_addr2),
-                       .dds_data2_I(dds_data2_I),
-                       .dds_data2_O(dds_data2_O),
-                       .dds_data2_T(dds_data2_T),
+                       .dds_data2(dds_data2),
                        .dds_control2(dds_control2),
                        .dds_cs(dds_cs),
                        .dds_FUD(dds_FUD),

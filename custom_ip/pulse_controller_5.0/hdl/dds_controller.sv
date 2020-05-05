@@ -20,8 +20,8 @@
  * signals data availability.
  *
  * External signals connecting to the DDS boards:
- * dds_addr, dds_data_I, dds_data_O, dds_data_T, dds_control,
- * dds_addr2, dds_data2_I, dds_data2_O, dds_data2_T, dds_control2,
+ * dds_addr, dds_data, dds_control,
+ * dds_addr2, dds_data2, dds_control2,
  * dds_cs, dds_FUD
  *
  * opcode[3:0] DDS command
@@ -69,18 +69,12 @@ module dds_controller
     // external signals for DDS bank
     output [(U_DDS_ADDR_WIDTH - 1):0] dds_addr,
     // tri-state for dds_data to allow read & write
-    input [(U_DDS_DATA_WIDTH - 1):0] dds_data_I,
-    output [(U_DDS_DATA_WIDTH - 1):0] dds_data_O,
-    // dds_data_T = 0 means output, dds_data_T = 1 means high-Z
-    output dds_data_T,
+    inout [(U_DDS_DATA_WIDTH - 1):0] dds_data,
     output [(U_DDS_CTRL_WIDTH - 1):0] dds_control,
     // external signals for 2nd DDS bank
     output [(U_DDS_ADDR_WIDTH - 1):0] dds_addr2,
     // tri-state for dds_data to allow read & write
-    input [(U_DDS_DATA_WIDTH - 1):0] dds_data2_I,
-    output [(U_DDS_DATA_WIDTH - 1):0] dds_data2_O,
-    // dds_data_T = 0 means output, dds_data_T = 1 means high-Z
-    output dds_data2_T,
+    inout [(U_DDS_DATA_WIDTH - 1):0] dds_data2,
     output [(U_DDS_CTRL_WIDTH - 1):0] dds_control2,
     output reg [(N_DDS - 1):0] dds_cs,
     // FUD = IO_UPDATE on DDS boards can be lowered on posedge of clock.
@@ -105,14 +99,32 @@ module dds_controller
    reg dds_reset;
 
    reg [1:0] active_dds_bank;
+   // DDS signal translation
+   wire dds_data_T = active_dds_bank[0] ? dds_data_T_reg : 1'b0;
+   wire [(U_DDS_DATA_WIDTH - 1):0] dds_data_O = active_dds_bank[0] ? dds_data_reg : 1'b0;
+   wire [(U_DDS_DATA_WIDTH - 1):0] dds_data_I;
+   wire dds_data2_T = active_dds_bank[1] ? dds_data_T_reg : 1'b0;
+   wire [(U_DDS_DATA_WIDTH - 1):0] dds_data2_O = active_dds_bank[1] ? dds_data_reg : 1'b0;
+   wire [(U_DDS_DATA_WIDTH - 1):0] dds_data2_I;
+
+   genvar i;
+   generate
+      for (i = 0; i < U_DDS_DATA_WIDTH; i++) begin
+         IOBUF IOBUF_inst(.O(dds_data_I[i]),
+                          .IO(dds_data[i]),
+                          .I(dds_data_O[i]),
+                          .T(dds_data_T) // 3-state enable input, high=input, low=output
+                          );
+         IOBUF IOBUF_inst2(.O(dds_data2_I[i]),
+                           .IO(dds_data2[i]),
+                           .I(dds_data2_O[i]),
+                           .T(dds_data2_T) // 3-state enable input, high=input, low=output
+                           );
+      end
+   endgenerate
 
    assign dds_addr = active_dds_bank[0] ? dds_addr_reg : 1'b0;
-   assign dds_data_O = active_dds_bank[0] ? dds_data_reg : 1'b0;
-   assign dds_data_T = active_dds_bank[0] ? dds_data_T_reg : 1'b0;
-
    assign dds_addr2 = active_dds_bank[1] ? dds_addr_reg : 1'b0;
-   assign dds_data2_O = active_dds_bank[1] ? dds_data_reg : 1'b0;
-   assign dds_data2_T = active_dds_bank[1] ? dds_data_T_reg : 1'b0;
 
    assign dds_control = (active_dds_bank[0] ?
                          {dds_reset, dds_r_strobe_n, dds_w_strobe_n} :
