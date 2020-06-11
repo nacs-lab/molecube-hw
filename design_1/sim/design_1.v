@@ -1,7 +1,7 @@
-//Copyright 1986-2019 Xilinx, Inc. All Rights Reserved.
+//Copyright 1986-2020 Xilinx, Inc. All Rights Reserved.
 //--------------------------------------------------------------------------------
-//Tool Version: Vivado v.2019.2 (lin64) Build 2708876 Wed Nov  6 21:39:14 MST 2019
-//Date        : Tue May  5 11:27:25 2020
+//Tool Version: Vivado v.2020.1 (lin64) Build 2902540 Wed May 27 19:54:35 MDT 2020
+//Date        : Thu Jun 11 12:13:52 2020
 //Host        : yyc.yyc-arch.org running 64-bit Arch Linux
 //Command     : generate_target design_1.bd
 //Design      : design_1
@@ -68,7 +68,7 @@ module design_1
   (* X_INTERFACE_INFO = "xilinx.com:display_processing_system7:fixedio:1.0 FIXED_IO PS_CLK" *) inout FIXED_IO_ps_clk;
   (* X_INTERFACE_INFO = "xilinx.com:display_processing_system7:fixedio:1.0 FIXED_IO PS_PORB" *) inout FIXED_IO_ps_porb;
   (* X_INTERFACE_INFO = "xilinx.com:display_processing_system7:fixedio:1.0 FIXED_IO PS_SRSTB" *) inout FIXED_IO_ps_srstb;
-  (* X_INTERFACE_INFO = "xilinx.com:signal:clock:1.0 CLK.CLOCK_IN_PIN CLK" *) (* X_INTERFACE_PARAMETER = "XIL_INTERFACENAME CLK.CLOCK_IN_PIN, CLK_DOMAIN design_1_clock_in_pin, FREQ_HZ 100000000, INSERT_VIP 0, PHASE 0.000" *) input clock_in_pin;
+  (* X_INTERFACE_INFO = "xilinx.com:signal:clock:1.0 CLK.CLOCK_IN_PIN CLK" *) (* X_INTERFACE_PARAMETER = "XIL_INTERFACENAME CLK.CLOCK_IN_PIN, CLK_DOMAIN design_1_clock_in_pin, FREQ_HZ 100000000, FREQ_TOLERANCE_HZ 0, INSERT_VIP 0, PHASE 0.000" *) input clock_in_pin;
   output clock_out1_pin;
   output [1:0]dds_FUD_pin;
   output [6:0]dds_addr2_pin;

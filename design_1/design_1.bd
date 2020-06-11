@@ -1,23 +1,24 @@
 {
   "design": {
     "design_info": {
-      "boundary_crc": "0xA5345700450A1F87",
+      "boundary_crc": "0xA5345700CF18E6AC",
       "device": "xc7z020clg484-1",
       "name": "design_1",
+      "rev_ctrl_bd_flag": "RevCtrlBdOff",
       "synth_flow_mode": "None",
-      "tool_version": "2019.2",
+      "tool_version": "2020.1",
       "validated": "true"
     },
     "design_tree": {
       "processing_system7_0": "",
+      "rst_ps7_0_100M": "",
+      "fifo_generator_0": "",
+      "pulse_controller_0": "",
       "axi_interconnect_0": {
         "s00_couplers": {
           "auto_pc": ""
         }
-      },
-      "rst_ps7_0_100M": "",
-      "fifo_generator_0": "",
-      "pulse_controller_0": ""
+      }
     },
     "interface_ports": {
       "DDR": {
@@ -96,6 +97,10 @@
           },
           "FREQ_HZ": {
             "value": "100000000"
+          },
+          "FREQ_TOLERANCE_HZ": {
+            "value": "0",
+            "value_src": "default"
           },
           "INSERT_VIP": {
             "value": "0",
@@ -1003,7 +1008,51 @@
           "preset": {
             "value": "ZC702"
           }
+        },
+        "addressing": {
+          "address_spaces": {
+            "Data": {
+              "range": "4G",
+              "width": "32"
+            }
+          },
+          "interface_ports": {
+            "M_AXI_GP0": {
+              "mode": "Master",
+              "address_space_ref": "Data",
+              "base_address": {
+                "minimum": "0x40000000",
+                "maximum": "0x7FFFFFFF"
+              }
+            }
+          }
         }
+      },
+      "rst_ps7_0_100M": {
+        "vlnv": "xilinx.com:ip:proc_sys_reset:5.0",
+        "xci_name": "design_1_rst_ps7_0_100M_1"
+      },
+      "fifo_generator_0": {
+        "vlnv": "xilinx.com:ip:fifo_generator:13.2",
+        "xci_name": "design_1_fifo_generator_0_1",
+        "parameters": {
+          "Fifo_Implementation": {
+            "value": "Common_Clock_Builtin_FIFO"
+          },
+          "Input_Data_Width": {
+            "value": "64"
+          },
+          "Input_Depth": {
+            "value": "4096"
+          },
+          "Performance_Options": {
+            "value": "First_Word_Fall_Through"
+          }
+        }
+      },
+      "pulse_controller_0": {
+        "vlnv": "nigrp.org:nigrp:pulse_controller:5.0",
+        "xci_name": "design_1_pulse_controller_0_0"
       },
       "axi_interconnect_0": {
         "vlnv": "xilinx.com:ip:axi_interconnect:2.1",
@@ -1127,6 +1176,16 @@
                   "SI_PROTOCOL": {
                     "value": "AXI3"
                   }
+                },
+                "addressing": {
+                  "interface_ports": {
+                    "S_AXI": {
+                      "mode": "Slave",
+                      "bridges": [
+                        "M_AXI"
+                      ]
+                    }
+                  }
                 }
               }
             },
@@ -1161,16 +1220,16 @@
           }
         },
         "interface_nets": {
-          "s00_couplers_to_axi_interconnect_0": {
-            "interface_ports": [
-              "M00_AXI",
-              "s00_couplers/M_AXI"
-            ]
-          },
           "axi_interconnect_0_to_s00_couplers": {
             "interface_ports": [
               "S00_AXI",
               "s00_couplers/S_AXI"
+            ]
+          },
+          "s00_couplers_to_axi_interconnect_0": {
+            "interface_ports": [
+              "M00_AXI",
+              "s00_couplers/M_AXI"
             ]
           }
         },
@@ -1200,32 +1259,6 @@
             ]
           }
         }
-      },
-      "rst_ps7_0_100M": {
-        "vlnv": "xilinx.com:ip:proc_sys_reset:5.0",
-        "xci_name": "design_1_rst_ps7_0_100M_1"
-      },
-      "fifo_generator_0": {
-        "vlnv": "xilinx.com:ip:fifo_generator:13.2",
-        "xci_name": "design_1_fifo_generator_0_1",
-        "parameters": {
-          "Fifo_Implementation": {
-            "value": "Common_Clock_Builtin_FIFO"
-          },
-          "Input_Data_Width": {
-            "value": "64"
-          },
-          "Input_Depth": {
-            "value": "4096"
-          },
-          "Performance_Options": {
-            "value": "First_Word_Fall_Through"
-          }
-        }
-      },
-      "pulse_controller_0": {
-        "vlnv": "nigrp.org:nigrp:pulse_controller:5.0",
-        "xci_name": "design_1_pulse_controller_0_0"
       }
     },
     "interface_nets": {
@@ -1258,13 +1291,13 @@
       "processing_system7_0_FCLK_CLK0": {
         "ports": [
           "processing_system7_0/FCLK_CLK0",
-          "axi_interconnect_0/ACLK",
           "rst_ps7_0_100M/slowest_sync_clk",
           "processing_system7_0/M_AXI_GP0_ACLK",
-          "axi_interconnect_0/S00_ACLK",
-          "axi_interconnect_0/M00_ACLK",
           "fifo_generator_0/clk",
-          "pulse_controller_0/s00_axi_aclk"
+          "pulse_controller_0/s00_axi_aclk",
+          "axi_interconnect_0/ACLK",
+          "axi_interconnect_0/S00_ACLK",
+          "axi_interconnect_0/M00_ACLK"
         ]
       },
       "processing_system7_0_FCLK_RESET0_N": {
@@ -1276,11 +1309,11 @@
       "rst_ps7_0_100M_peripheral_aresetn": {
         "ports": [
           "rst_ps7_0_100M/peripheral_aresetn",
+          "fifo_generator_0/rst",
+          "pulse_controller_0/s00_axi_aresetn",
           "axi_interconnect_0/ARESETN",
           "axi_interconnect_0/S00_ARESETN",
-          "axi_interconnect_0/M00_ARESETN",
-          "fifo_generator_0/rst",
-          "pulse_controller_0/s00_axi_aresetn"
+          "axi_interconnect_0/M00_ARESETN"
         ]
       },
       "spi0_miso_1": {
