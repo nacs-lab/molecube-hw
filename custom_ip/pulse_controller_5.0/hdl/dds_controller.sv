@@ -1,5 +1,3 @@
-`timescale 1ns / 1ps
-
 /*
  * dds_controller is a module to communicate with multiple DDS boards.
  * The current configuration (June, 2014) consists of two banks of 11 boards each.

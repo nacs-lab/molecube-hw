@@ -1,7 +1,7 @@
 //Copyright 1986-2020 Xilinx, Inc. All Rights Reserved.
 //--------------------------------------------------------------------------------
 //Tool Version: Vivado v.2020.1 (lin64) Build 2902540 Wed May 27 19:54:35 MDT 2020
-//Date        : Thu Jun 11 12:13:52 2020
+//Date        : Fri Jan 22 21:36:15 2021
 //Host        : yyc.yyc-arch.org running 64-bit Arch Linux
 //Command     : generate_target design_1.bd
 //Design      : design_1
@@ -105,9 +105,6 @@ module design_1
   wire axi_interconnect_0_M00_AXI_WREADY;
   wire [3:0]axi_interconnect_0_M00_AXI_WSTRB;
   wire axi_interconnect_0_M00_AXI_WVALID;
-  wire [63:0]fifo_generator_0_dout;
-  wire fifo_generator_0_empty;
-  wire fifo_generator_0_full;
   wire [14:0]processing_system7_0_DDR_ADDR;
   wire [2:0]processing_system7_0_DDR_BA;
   wire processing_system7_0_DDR_CAS_N;
@@ -176,14 +173,18 @@ module design_1
   wire [2:0]pulse_controller_0_dds_control;
   wire [2:0]pulse_controller_0_dds_control2;
   wire [21:0]pulse_controller_0_dds_cs;
-  wire pulse_controller_0_inst_fifo_rd_en;
-  wire [63:0]pulse_controller_0_inst_fifo_wr_data;
-  wire pulse_controller_0_inst_fifo_wr_en;
+  wire pulse_controller_0_inst_fifo_rd_EMPTY;
+  wire [63:0]pulse_controller_0_inst_fifo_rd_RD_DATA;
+  wire pulse_controller_0_inst_fifo_rd_RD_EN;
+  wire pulse_controller_0_inst_fifo_wr_FULL;
+  wire [63:0]pulse_controller_0_inst_fifo_wr_WR_DATA;
+  wire pulse_controller_0_inst_fifo_wr_WR_EN;
   wire [31:0]pulse_controller_0_pulse_io;
   wire pulse_controller_0_spi_clk;
   wire [0:0]pulse_controller_0_spi_cs;
   wire pulse_controller_0_spi_mosi;
   wire [0:0]rst_ps7_0_100M_peripheral_aresetn;
+  wire [0:0]rst_ps7_0_100M_peripheral_reset;
   wire spi0_miso_1;
 
   assign clock_out1_pin = pulse_controller_0_clock_out;
@@ -264,13 +265,13 @@ module design_1
         .S00_AXI_wvalid(processing_system7_0_M_AXI_GP0_WVALID));
   design_1_fifo_generator_0_1 fifo_generator_0
        (.clk(processing_system7_0_FCLK_CLK0),
-        .din(pulse_controller_0_inst_fifo_wr_data),
-        .dout(fifo_generator_0_dout),
-        .empty(fifo_generator_0_empty),
-        .full(fifo_generator_0_full),
-        .rd_en(pulse_controller_0_inst_fifo_rd_en),
-        .rst(rst_ps7_0_100M_peripheral_aresetn),
-        .wr_en(pulse_controller_0_inst_fifo_wr_en));
+        .din(pulse_controller_0_inst_fifo_wr_WR_DATA),
+        .dout(pulse_controller_0_inst_fifo_rd_RD_DATA),
+        .empty(pulse_controller_0_inst_fifo_rd_EMPTY),
+        .full(pulse_controller_0_inst_fifo_wr_FULL),
+        .rd_en(pulse_controller_0_inst_fifo_rd_RD_EN),
+        .rst(rst_ps7_0_100M_peripheral_reset),
+        .wr_en(pulse_controller_0_inst_fifo_wr_WR_EN));
   design_1_processing_system7_0_0 processing_system7_0
        (.DDR_Addr(DDR_addr[14:0]),
         .DDR_BankAddr(DDR_ba[2:0]),
@@ -345,12 +346,12 @@ module design_1
         .dds_cs(pulse_controller_0_dds_cs),
         .dds_data(dds_data_pin[15:0]),
         .dds_data2(dds_data2_pin[15:0]),
-        .inst_fifo_empty_n(fifo_generator_0_empty),
-        .inst_fifo_full_n(fifo_generator_0_full),
-        .inst_fifo_rd_data(fifo_generator_0_dout),
-        .inst_fifo_rd_en(pulse_controller_0_inst_fifo_rd_en),
-        .inst_fifo_wr_data(pulse_controller_0_inst_fifo_wr_data),
-        .inst_fifo_wr_en(pulse_controller_0_inst_fifo_wr_en),
+        .inst_fifo_empty(pulse_controller_0_inst_fifo_rd_EMPTY),
+        .inst_fifo_full(pulse_controller_0_inst_fifo_wr_FULL),
+        .inst_fifo_rd_data(pulse_controller_0_inst_fifo_rd_RD_DATA),
+        .inst_fifo_rd_en(pulse_controller_0_inst_fifo_rd_RD_EN),
+        .inst_fifo_wr_data(pulse_controller_0_inst_fifo_wr_WR_DATA),
+        .inst_fifo_wr_en(pulse_controller_0_inst_fifo_wr_WR_EN),
         .pulse_io(pulse_controller_0_pulse_io),
         .s00_axi_aclk(processing_system7_0_FCLK_CLK0),
         .s00_axi_araddr(axi_interconnect_0_M00_AXI_ARADDR[6:0]),
@@ -383,6 +384,7 @@ module design_1
         .ext_reset_in(processing_system7_0_FCLK_RESET0_N),
         .mb_debug_sys_rst(1'b0),
         .peripheral_aresetn(rst_ps7_0_100M_peripheral_aresetn),
+        .peripheral_reset(rst_ps7_0_100M_peripheral_reset),
         .slowest_sync_clk(processing_system7_0_FCLK_CLK0));
 endmodule
 

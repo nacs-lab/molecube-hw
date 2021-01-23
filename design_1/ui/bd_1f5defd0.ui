@@ -1,61 +1,58 @@
 {
    "ActiveEmotionalView":"Default View",
-   "Default View_ScaleFactor":"1.40802",
-   "Default View_TopLeft":"0,-27",
+   "Default View_ScaleFactor":"1.0",
+   "Default View_TopLeft":"-714,-566",
    "ExpandedHierarchyInLayout":"",
    "guistr":"# # String gsaved with Nlview 7.0r4  2019-12-20 bk=1.5203 VDI=41 GEI=36 GUI=JA:9.0 TLS
 #  -string -flagsOSRD
-preplace port DDR -pg 1 -lvl 5 -x 1540 -y 60 -defaultsOSRD
-preplace port FIXED_IO -pg 1 -lvl 5 -x 1540 -y 80 -defaultsOSRD
-preplace port clock_in_pin -pg 1 -lvl 5 -x 1540 -y 20 -defaultsOSRD -right
-preplace port clock_out1_pin -pg 1 -lvl 5 -x 1540 -y 620 -defaultsOSRD
-preplace port spi0_clk -pg 1 -lvl 5 -x 1540 -y 600 -defaultsOSRD
-preplace port spi0_miso -pg 1 -lvl 5 -x 1540 -y 680 -defaultsOSRD -right
-preplace port spi0_mosi -pg 1 -lvl 5 -x 1540 -y 580 -defaultsOSRD
-preplace portBus dds_addr2_pin -pg 1 -lvl 5 -x 1540 -y 420 -defaultsOSRD
-preplace portBus dds_addr_pin -pg 1 -lvl 5 -x 1540 -y 400 -defaultsOSRD
-preplace portBus dds_control2_pin -pg 1 -lvl 5 -x 1540 -y 500 -defaultsOSRD
-preplace portBus dds_control_pin -pg 1 -lvl 5 -x 1540 -y 480 -defaultsOSRD
-preplace portBus dds_cs_pin -pg 1 -lvl 5 -x 1540 -y 540 -defaultsOSRD
-preplace portBus dds_data2_pin -pg 1 -lvl 5 -x 1540 -y 460 -defaultsOSRD
-preplace portBus dds_data_pin -pg 1 -lvl 5 -x 1540 -y 440 -defaultsOSRD
-preplace portBus dds_FUD_pin -pg 1 -lvl 5 -x 1540 -y 520 -defaultsOSRD
-preplace portBus pulse_io_pin -pg 1 -lvl 5 -x 1540 -y 380 -defaultsOSRD
-preplace portBus spi0_cs -pg 1 -lvl 5 -x 1540 -y 560 -defaultsOSRD
+preplace port DDR -pg 1 -lvl 5 -x 1490 -y 60 -defaultsOSRD
+preplace port FIXED_IO -pg 1 -lvl 5 -x 1490 -y 80 -defaultsOSRD
+preplace port clock_in_pin -pg 1 -lvl 5 -x 1490 -y 20 -defaultsOSRD -right
+preplace port clock_out1_pin -pg 1 -lvl 5 -x 1490 -y 480 -defaultsOSRD
+preplace port spi0_clk -pg 1 -lvl 5 -x 1490 -y 460 -defaultsOSRD
+preplace port spi0_miso -pg 1 -lvl 5 -x 1490 -y 320 -defaultsOSRD -right
+preplace port spi0_mosi -pg 1 -lvl 5 -x 1490 -y 440 -defaultsOSRD
+preplace portBus dds_addr2_pin -pg 1 -lvl 5 -x 1490 -y 160 -defaultsOSRD
+preplace portBus dds_addr_pin -pg 1 -lvl 5 -x 1490 -y 100 -defaultsOSRD
+preplace portBus dds_control2_pin -pg 1 -lvl 5 -x 1490 -y 360 -defaultsOSRD
+preplace portBus dds_control_pin -pg 1 -lvl 5 -x 1490 -y 340 -defaultsOSRD
+preplace portBus dds_cs_pin -pg 1 -lvl 5 -x 1490 -y 400 -defaultsOSRD
+preplace portBus dds_data2_pin -pg 1 -lvl 5 -x 1490 -y 140 -defaultsOSRD
+preplace portBus dds_data_pin -pg 1 -lvl 5 -x 1490 -y 120 -defaultsOSRD
+preplace portBus dds_FUD_pin -pg 1 -lvl 5 -x 1490 -y 380 -defaultsOSRD
+preplace portBus pulse_io_pin -pg 1 -lvl 5 -x 1490 -y 180 -defaultsOSRD
+preplace portBus spi0_cs -pg 1 -lvl 5 -x 1490 -y 420 -defaultsOSRD
 preplace inst processing_system7_0 -pg 1 -lvl 1 -x 240 -y 140 -defaultsOSRD
-preplace inst rst_ps7_0_100M -pg 1 -lvl 1 -x 240 -y 390 -defaultsOSRD
-preplace inst fifo_generator_0 -pg 1 -lvl 4 -x 1370 -y 230 -defaultsOSRD
-preplace inst pulse_controller_0 -pg 1 -lvl 3 -x 970 -y 420 -defaultsOSRD
-preplace inst axi_interconnect_0 -pg 1 -lvl 2 -x 620 -y 390 -defaultsOSRD
-preplace netloc processing_system7_0_FCLK_CLK0 1 0 4 20 280 470 200 770 160 1160
+preplace inst rst_ps7_0_100M -pg 1 -lvl 1 -x 240 -y 540 -defaultsOSRD
+preplace inst fifo_generator_0 -pg 1 -lvl 4 -x 1320 -y 250 -defaultsOSRD
+preplace inst axi_interconnect_0 -pg 1 -lvl 2 -x 640 -y 310 -defaultsOSRD
+preplace inst pulse_controller_0 -pg 1 -lvl 3 -x 950 -y 340 -defaultsOSRD
+preplace netloc processing_system7_0_FCLK_CLK0 1 0 4 20 280 480 190 790 140 1150J
 preplace netloc processing_system7_0_FCLK_RESET0_N 1 0 2 30 290 450
-preplace netloc rst_ps7_0_100M_peripheral_aresetn 1 1 3 450 510 770 680 1220
-preplace netloc spi0_miso_1 1 2 3 780 690 NJ 690 1520J
-preplace netloc pulse_controller_0_pulse_io 1 3 2 NJ 380 NJ
-preplace netloc pulse_controller_0_dds_addr 1 3 2 NJ 400 NJ
-preplace netloc pulse_controller_0_dds_addr2 1 3 2 NJ 420 NJ
-preplace netloc Net 1 3 2 NJ 440 NJ
-preplace netloc Net1 1 3 2 NJ 460 NJ
-preplace netloc pulse_controller_0_dds_control 1 3 2 NJ 480 NJ
-preplace netloc pulse_controller_0_dds_control2 1 3 2 NJ 500 NJ
-preplace netloc pulse_controller_0_dds_FUD 1 3 2 NJ 520 NJ
-preplace netloc pulse_controller_0_dds_cs 1 3 2 NJ 540 NJ
-preplace netloc pulse_controller_0_spi_cs 1 3 2 NJ 560 NJ
-preplace netloc pulse_controller_0_spi_mosi 1 3 2 NJ 580 NJ
-preplace netloc pulse_controller_0_spi_clk 1 3 2 NJ 600 NJ
-preplace netloc pulse_controller_0_clock_out 1 3 2 NJ 620 NJ
-preplace netloc fifo_generator_0_full 1 3 1 1180 160n
-preplace netloc pulse_controller_0_inst_fifo_wr_data 1 3 1 1150 180n
-preplace netloc pulse_controller_0_inst_fifo_wr_en 1 3 1 1210 200n
-preplace netloc fifo_generator_0_dout 1 3 1 1190 240n
-preplace netloc fifo_generator_0_empty 1 3 1 1200 240n
-preplace netloc pulse_controller_0_inst_fifo_rd_en 1 3 1 1170 260n
+preplace netloc spi0_miso_1 1 2 3 800 540 1140J 350 1470J
+preplace netloc pulse_controller_0_pulse_io 1 3 2 1120J 150 1470J
+preplace netloc pulse_controller_0_dds_addr 1 3 2 1100J 100 NJ
+preplace netloc pulse_controller_0_dds_addr2 1 3 2 1110J 160 NJ
+preplace netloc Net 1 3 2 1130J 120 NJ
+preplace netloc Net1 1 3 2 1170J 140 NJ
+preplace netloc pulse_controller_0_dds_control 1 3 2 NJ 340 NJ
+preplace netloc pulse_controller_0_dds_control2 1 3 2 NJ 360 NJ
+preplace netloc pulse_controller_0_dds_FUD 1 3 2 NJ 380 NJ
+preplace netloc pulse_controller_0_dds_cs 1 3 2 NJ 400 NJ
+preplace netloc pulse_controller_0_spi_cs 1 3 2 NJ 420 NJ
+preplace netloc pulse_controller_0_spi_mosi 1 3 2 NJ 440 NJ
+preplace netloc pulse_controller_0_spi_clk 1 3 2 NJ 460 NJ
+preplace netloc pulse_controller_0_clock_out 1 3 2 NJ 480 NJ
+preplace netloc rst_ps7_0_100M_peripheral_aresetn 1 1 2 490 430 790
+preplace netloc rst_ps7_0_100M_peripheral_reset 1 1 3 460J 130 NJ 130 1160
+preplace netloc processing_system7_0_M_AXI_GP0 1 1 1 470 120n
+preplace netloc axi_interconnect_0_M00_AXI 1 2 1 N 310
 preplace netloc processing_system7_0_FIXED_IO 1 1 4 NJ 80 NJ 80 NJ 80 NJ
 preplace netloc processing_system7_0_DDR 1 1 4 NJ 60 NJ 60 NJ 60 NJ
-preplace netloc processing_system7_0_M_AXI_GP0 1 1 1 460 120n
-preplace netloc axi_interconnect_0_M00_AXI 1 2 1 N 390
-levelinfo -pg 1 0 240 620 970 1370 1540
-pagesize -pg 1 -db -bbox -sgen 0 0 1750 700
+preplace netloc pulse_controller_0_inst_fifo_wr 1 3 1 N 220
+preplace netloc pulse_controller_0_inst_fifo_rd 1 3 1 1140 200n
+levelinfo -pg 1 0 240 640 950 1320 1490
+pagesize -pg 1 -db -bbox -sgen 0 0 1700 640
 "
 }
 {

@@ -1,4 +1,4 @@
-// (c) Copyright 1995-2020 Xilinx, Inc. All rights reserved.
+// (c) Copyright 1995-2021 Xilinx, Inc. All rights reserved.
 // 
 // This file contains confidential and proprietary information
 // of Xilinx, Inc. and is protected under U.S. and
@@ -48,7 +48,7 @@
 
 
 // IP VLNV: nigrp.org:nigrp:pulse_controller:5.0
-// IP Revision: 15
+// IP Revision: 17
 
 `timescale 1ns/1ps
 
@@ -68,10 +68,10 @@ module design_1_pulse_controller_0_0 (
   spi_clk,
   spi_miso,
   clock_out,
-  inst_fifo_empty_n,
+  inst_fifo_empty,
   inst_fifo_rd_data,
   inst_fifo_rd_en,
-  inst_fifo_full_n,
+  inst_fifo_full,
   inst_fifo_wr_data,
   inst_fifo_wr_en,
   s00_axi_aclk,
@@ -111,19 +111,19 @@ output wire spi_mosi;
 output wire spi_clk;
 input wire spi_miso;
 output wire clock_out;
-(* X_INTERFACE_INFO = "xilinx.com:interface:acc_fifo_read:1.0 inst_fifo_rd EMPTY_N" *)
-input wire inst_fifo_empty_n;
-(* X_INTERFACE_INFO = "xilinx.com:interface:acc_fifo_read:1.0 inst_fifo_rd RD_DATA" *)
+(* X_INTERFACE_INFO = "xilinx.com:interface:fifo_read:1.0 inst_fifo_rd EMPTY" *)
+input wire inst_fifo_empty;
+(* X_INTERFACE_INFO = "xilinx.com:interface:fifo_read:1.0 inst_fifo_rd RD_DATA" *)
 input wire [63 : 0] inst_fifo_rd_data;
-(* X_INTERFACE_INFO = "xilinx.com:interface:acc_fifo_read:1.0 inst_fifo_rd RD_EN" *)
+(* X_INTERFACE_INFO = "xilinx.com:interface:fifo_read:1.0 inst_fifo_rd RD_EN" *)
 output wire inst_fifo_rd_en;
-(* X_INTERFACE_INFO = "xilinx.com:interface:acc_fifo_write:1.0 inst_fifo_wr FULL_N" *)
-input wire inst_fifo_full_n;
-(* X_INTERFACE_INFO = "xilinx.com:interface:acc_fifo_write:1.0 inst_fifo_wr WR_DATA" *)
+(* X_INTERFACE_INFO = "xilinx.com:interface:fifo_write:1.0 inst_fifo_wr FULL" *)
+input wire inst_fifo_full;
+(* X_INTERFACE_INFO = "xilinx.com:interface:fifo_write:1.0 inst_fifo_wr WR_DATA" *)
 output wire [63 : 0] inst_fifo_wr_data;
-(* X_INTERFACE_INFO = "xilinx.com:interface:acc_fifo_write:1.0 inst_fifo_wr WR_EN" *)
+(* X_INTERFACE_INFO = "xilinx.com:interface:fifo_write:1.0 inst_fifo_wr WR_EN" *)
 output wire inst_fifo_wr_en;
-(* X_INTERFACE_PARAMETER = "XIL_INTERFACENAME S00_AXI_CLK, ASSOCIATED_BUSIF S00_AXI, ASSOCIATED_RESET s00_axi_aresetn, FREQ_HZ 100000000, PHASE 0.000, CLK_DOMAIN design_1_processing_system7_0_0_FCLK_CLK0, INSERT_VIP 0" *)
+(* X_INTERFACE_PARAMETER = "XIL_INTERFACENAME S00_AXI_CLK, ASSOCIATED_BUSIF S00_AXI, ASSOCIATED_RESET s00_axi_aresetn, FREQ_HZ 100000000, FREQ_TOLERANCE_HZ 0, PHASE 0.000, CLK_DOMAIN design_1_processing_system7_0_0_FCLK_CLK0, INSERT_VIP 0" *)
 (* X_INTERFACE_INFO = "xilinx.com:signal:clock:1.0 S00_AXI_CLK CLK" *)
 input wire s00_axi_aclk;
 (* X_INTERFACE_PARAMETER = "XIL_INTERFACENAME S00_AXI_RST, POLARITY ACTIVE_LOW, INSERT_VIP 0" *)
@@ -194,10 +194,10 @@ input wire s00_axi_rready;
     .spi_clk(spi_clk),
     .spi_miso(spi_miso),
     .clock_out(clock_out),
-    .inst_fifo_empty_n(inst_fifo_empty_n),
+    .inst_fifo_empty(inst_fifo_empty),
     .inst_fifo_rd_data(inst_fifo_rd_data),
     .inst_fifo_rd_en(inst_fifo_rd_en),
-    .inst_fifo_full_n(inst_fifo_full_n),
+    .inst_fifo_full(inst_fifo_full),
     .inst_fifo_wr_data(inst_fifo_wr_data),
     .inst_fifo_wr_en(inst_fifo_wr_en),
     .s00_axi_aclk(s00_axi_aclk),

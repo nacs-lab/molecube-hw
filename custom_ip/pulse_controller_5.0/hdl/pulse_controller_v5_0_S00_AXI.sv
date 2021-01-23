@@ -1,5 +1,3 @@
-`timescale 1 ns / 1 ps
-
 module pulse_controller_v5_0_S00_AXI #
   (
    // Users to add parameters here
@@ -43,10 +41,10 @@ module pulse_controller_v5_0_S00_AXI #
 
     output clock_out,
 
-    input inst_fifo_empty_n,
+    input inst_fifo_empty,
     input [63:0] inst_fifo_rd_data,
     output inst_fifo_rd_en,
-    input inst_fifo_full_n,
+    input inst_fifo_full,
     output [63:0] inst_fifo_wr_data,
     output inst_fifo_wr_en,
     // User ports ends
@@ -542,10 +540,10 @@ module pulse_controller_v5_0_S00_AXI #
       .init(slv_reg_ctrl[8]),
       .clock_out(clock_out),
       .clock_out_div(clock_out_div),
-      .inst_fifo_empty_n(inst_fifo_empty_n),
+      .inst_fifo_empty(inst_fifo_empty),
       .inst_fifo_rd_data(inst_fifo_rd_data),
       .inst_fifo_rd_en(inst_fifo_rd_en),
-      .inst_fifo_full_n(inst_fifo_full_n),
+      .inst_fifo_full(inst_fifo_full),
       .inst_fifo_wr_data(inst_fifo_wr_data),
       .inst_fifo_wr_en(inst_fifo_wr_en)
       );

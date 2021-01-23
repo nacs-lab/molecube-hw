@@ -1,5 +1,3 @@
-`timescale 1ns / 1ps
-
 /**
  * timing_controller: precise timing FIFO to control experiments
  *
@@ -125,10 +123,10 @@ module timing_controller
     output clock_out,
     output reg [7:0] clock_out_div,
 
-    input inst_fifo_empty_n,
+    input inst_fifo_empty,
     input [63:0] inst_fifo_rd_data,
     output inst_fifo_rd_en,
-    input inst_fifo_full_n,
+    input inst_fifo_full,
     output [63:0] inst_fifo_wr_data,
     output inst_fifo_wr_en
     );
@@ -195,17 +193,17 @@ module timing_controller
    reg [2:0] state;
    reg timing_check;
    reg [63:0] instruction;
-   // goes high when inst_fifo_full_n is true.  also goes low at last pulse;
+   // goes high when inst_fifo_full is true.  also goes low at last pulse;
    reg force_release;
    // pulses_hold will be released if FIFO is full or pulse_controller_hold is
    // low once released, the controller runs until it is done
    wire pulses_hold = pulse_controller_hold & ~force_release;
    assign inst_fifo_wr_data[63:32] = bus_data[31:0]; // Timing, flags or DDS opcode word
    assign inst_fifo_wr_data[31:0] = fifo_low_word; // TTL or DDS operand word
-   assign inst_fifo_wr_en = bus_data_valid & fifo_next_word_dest;
+   assign inst_fifo_wr_en = ~init & ~reset & bus_data_valid & fifo_next_word_dest;
    assign inst_fifo_rd_en = ~init & ~reset & state == 0 & ~pulses_hold;
    // acknowledge if FIFO has space
-   assign bus_data_ready = ~inst_fifo_full_n;
+   assign bus_data_ready = ~inst_fifo_full;
 
    localparam SPI_OPCODE_WIDTH = 16;
    localparam SPI_OPERAND_WIDTH = 18;
@@ -259,7 +257,7 @@ module timing_controller
             end
          end
 
-         force_release <= force_release | inst_fifo_full_n;
+         force_release <= force_release | inst_fifo_full;
 
          //finite state machine
          // 0 -- try to pull next instruction from FIFO
@@ -274,7 +272,7 @@ module timing_controller
               loopback_data <= 0;
 
               // here read_addr == write_addr means FIFO is empty
-              if (~inst_fifo_empty_n & ~pulses_hold) begin
+              if (~inst_fifo_empty & ~pulses_hold) begin
                  state <= 1;
                  pulses_finished <= 0;
                  instruction <= inst_fifo_rd_data;
