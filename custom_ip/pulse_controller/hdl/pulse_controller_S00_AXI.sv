@@ -216,7 +216,7 @@ module pulse_controller_S00_AXI #
    // Change this version when making backward incompatible changes.
    localparam MAJOR_VER = 5;
    // Change this version when adding new features
-   localparam MINOR_VER = 0;
+   localparam MINOR_VER = 1;
 
    // Read state:
    //   0: idle

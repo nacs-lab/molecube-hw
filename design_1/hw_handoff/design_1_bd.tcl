@@ -612,7 +612,7 @@ proc create_root_design { parentCell } {
  ] $processing_system7_0
 
   # Create instance: pulse_controller_0, and set properties
-  set pulse_controller_0 [ create_bd_cell -type ip -vlnv nigrp.org:nigrp:pulse_controller:5.0 pulse_controller_0 ]
+  set pulse_controller_0 [ create_bd_cell -type ip -vlnv nigrp.org:nigrp:pulse_controller:5.1 pulse_controller_0 ]
   set_property -dict [ list \
    CONFIG.C_S00_AXI_ADDR_WIDTH {9} \
  ] $pulse_controller_0

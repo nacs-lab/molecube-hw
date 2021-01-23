@@ -240,6 +240,12 @@ module timing_controller
    localparam DBG_CLOCK_COUNT = 7;
    localparam DBG_SPI_COUNT = 8;
    localparam DBG_UNDERFLOW_CYCLE = 9;
+   localparam DBG_INST_CYCLE = 10;
+   localparam DBG_TTL_CYCLE = 11;
+   localparam DBG_WAIT_CYCLE = 12;
+
+   reg is_ttl;
+   reg is_wait;
 
    always @(posedge clock, posedge reset) begin
       if (reset | init) begin
@@ -286,6 +292,7 @@ module timing_controller
                  // fills the MSB first whereas we want the LSB first.
                  instruction <= {inst_fifo_rd_data[31:0], inst_fifo_rd_data[63:32]};
                  dbg_regs[DBG_INST_COUNT] = dbg_regs[DBG_INST_COUNT] + 1;
+                 dbg_regs[DBG_INST_CYCLE] <= dbg_regs[DBG_INST_CYCLE] + 1;
               end else begin
                  pulses_finished <= 1;
                  if (timing_check)
@@ -293,16 +300,22 @@ module timing_controller
                  // underflow bit is sticky
                  underflow <= (underflow | timing_check);
               end
+              is_ttl <= 0;
+              is_wait <= 0;
            end
 
            // New data
            1: begin
               state <= 2;
               timing_check <= instruction[ENABLE_TIMING_CHECK_BIT];
+              dbg_regs[DBG_INST_CYCLE] <= dbg_regs[DBG_INST_CYCLE] + 1;
 
               case (instruction[INSTRUCTION_BITA:INSTRUCTION_BITB])
                 0 : begin // set digital output for given duration
+                   is_ttl <= 1;
                    dbg_regs[DBG_TTL_COUNT] = dbg_regs[DBG_TTL_COUNT] + 1;
+                   // Account for the state 1 cycle
+                   dbg_regs[DBG_TTL_CYCLE] = dbg_regs[DBG_TTL_CYCLE] + 2;
                    timer <= instruction[TIMER_BITA:TIMER_BITB];
                    ttl_out <= instruction[TTL_BITA:TTL_BITB];
                 end
@@ -316,7 +329,10 @@ module timing_controller
                 end
 
                 2 : begin // wait
+                   is_wait <= 1;
                    dbg_regs[DBG_WAIT_COUNT] = dbg_regs[DBG_WAIT_COUNT] + 1;
+                   // Account for the state 1 cycle
+                   dbg_regs[DBG_WAIT_CYCLE] = dbg_regs[DBG_WAIT_CYCLE] + 2;
                    timer <= instruction[TIMER_BITA:TIMER_BITB];
                 end
 
@@ -356,6 +372,12 @@ module timing_controller
            2 : begin // decrement timer until it equals the minimum pulse time
               dds_we <= 0;
               spi_we <= 0;
+              dbg_regs[DBG_INST_CYCLE] <= dbg_regs[DBG_INST_CYCLE] + 1;
+
+              if (is_ttl)
+                dbg_regs[DBG_TTL_CYCLE] = dbg_regs[DBG_TTL_CYCLE] + 1;
+              if (is_wait)
+                dbg_regs[DBG_WAIT_CYCLE] = dbg_regs[DBG_WAIT_CYCLE] + 1;
 
               // timer < 3 is possible for TTL pulses, swallow this timing error
               // for now.
