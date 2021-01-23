@@ -213,6 +213,11 @@ module pulse_controller_v5_0_S00_AXI #
    //     RVALID <= 0
    //     Go to phase 0
 
+   // Change this version when making backward incompatible changes.
+   localparam MAJOR_VER = 5;
+   // Change this version when adding new features
+   localparam MINOR_VER = 0;
+
    // Read state:
    //   0: idle
    //   1: wait for master to acknowledge the read
@@ -254,6 +259,12 @@ module pulse_controller_v5_0_S00_AXI #
                    7'h05: begin
                       S_AXI_RDATA[C_S_AXI_DATA_WIDTH - 1:8] <= 0;
                       S_AXI_RDATA[7:0] <= clock_out_div;
+                   end
+                   7'h06: begin
+                      S_AXI_RDATA <= MAJOR_VER;
+                   end
+                   7'h07: begin
+                      S_AXI_RDATA <= MINOR_VER;
                    end
                    7'h1E: begin
                       S_AXI_RDATA <= slv_reg_loopback;
