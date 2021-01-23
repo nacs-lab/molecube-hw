@@ -48,7 +48,7 @@
 
 
 // IP VLNV: nigrp.org:nigrp:pulse_controller:5.1
-// IP Revision: 1
+// IP Revision: 2
 
 (* X_CORE_INFO = "pulse_controller,Vivado 2020.1" *)
 (* CHECK_LICENSE_TYPE = "design_1_pulse_controller_0_0,pulse_controller,{}" *)

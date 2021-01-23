@@ -189,22 +189,25 @@ module timing_controller
    localparam TTL_BITA = 31;
    localparam TTL_BITB = 0;
 
-   reg [(TIMER_WIDTH - 1):0] timer;
-   reg [2:0] state;
+   reg [(TIMER_WIDTH - 1):0] wait_timer;
+   reg waiting;
    reg timing_check;
-   reg [63:0] instruction;
    // goes high when inst_fifo_full is true.  also goes low at last pulse;
    reg force_release;
    // pulses_hold will be released if FIFO is full or pulse_controller_hold is
    // low once released, the controller runs until it is done
-   wire pulses_hold = pulse_controller_hold & ~force_release;
+   wire pulses_hold = pulse_controller_hold & ~force_release & ~inst_fifo_full;
+
    assign inst_fifo_wr_data = bus_data;
    assign inst_fifo_wr_en = ~init & ~reset & bus_data_valid;
    wire inst_fifo_wr_ready = ~inst_fifo_full;
    // The following condition must be consistent with how the fifo is read below.
-   assign inst_fifo_rd_en = ~init & ~reset & state == 0 & ~pulses_hold;
+   assign inst_fifo_rd_en = ~init & ~reset & ~waiting & ~pulses_hold;
    // Signal the AXI controller that we've read the data
    assign bus_data_ready = inst_fifo_wr_ready;
+   // Swap the word order since the FIFO generater
+   // fills the MSB first whereas we want the LSB first.
+   wire [63:0] instruction = {inst_fifo_rd_data[31:0], inst_fifo_rd_data[63:32]};
 
    localparam SPI_OPCODE_WIDTH = 16;
    localparam SPI_OPERAND_WIDTH = 18;
@@ -253,8 +256,8 @@ module timing_controller
             ttl_out <= 0;
          end
 
-         state <= 0;
-         timer <= 0;
+         waiting <= 0;
+         wait_timer <= 0;
          dds_we <= 0;
          timing_check <= 0;
          underflow <= 0;
@@ -267,127 +270,118 @@ module timing_controller
          for (int i = 0; i < 32; i = i + 1)
            dbg_regs[i] <= 0;
       end else begin
-         if (inst_fifo_wr_ready & inst_fifo_wr_en) begin
-            dbg_regs[DBG_INST_WORD_COUNT] = dbg_regs[DBG_INST_WORD_COUNT] + 1;
+         if (inst_fifo_wr_ready & inst_fifo_wr_en)
+           dbg_regs[DBG_INST_WORD_COUNT] = dbg_regs[DBG_INST_WORD_COUNT] + 1;
+         if (inst_fifo_full)
+           force_release <= 1;
+
+         // `waiting`:
+         // 0: Fetch and dispatch instruction from instruction FIFO
+         // 1: Wait for the instruction to finish
+         if (!waiting) begin
+            if (inst_fifo_empty | ~inst_fifo_rd_en) begin
+               pulses_finished <= 1;
+               if (timing_check) begin
+                  dbg_regs[DBG_UNDERFLOW_CYCLE] <= dbg_regs[DBG_UNDERFLOW_CYCLE] + 1;
+                  // underflow bit is sticky
+                  underflow <= 1;
+               end
+            end else begin
+               // Note that this is the only block where `instruction` is valid.
+               // All necessary data fields must be cached in a different register
+               // if it needs to be accessible later.
+               // default values, may be overwritten below.
+               is_ttl <= 0;
+               is_wait <= 0;
+               waiting <= 1;
+               pulses_finished <= 0;
+               dbg_regs[DBG_INST_COUNT] = dbg_regs[DBG_INST_COUNT] + 1;
+               dbg_regs[DBG_INST_CYCLE] <= dbg_regs[DBG_INST_CYCLE] + 1;
+               timing_check <= instruction[ENABLE_TIMING_CHECK_BIT];
+               case (instruction[INSTRUCTION_BITA:INSTRUCTION_BITB])
+                 0 : begin // set digital output for given duration
+                    is_ttl <= 1;
+                    dbg_regs[DBG_TTL_COUNT] = dbg_regs[DBG_TTL_COUNT] + 1;
+                    dbg_regs[DBG_TTL_CYCLE] = dbg_regs[DBG_TTL_CYCLE] + 1;
+                    if (instruction[TIMER_BITA:TIMER_BITB] == 1 ||
+                        instruction[TIMER_BITA:TIMER_BITB] == 0)
+                      waiting <= 0; // 1 cycle pulse, go to next instruction immediately
+                    wait_timer <= instruction[TIMER_BITA:TIMER_BITB];
+                    ttl_out <= instruction[TTL_BITA:TTL_BITB];
+                 end
+                 1 : begin // DDS instruction
+                    dbg_regs[DBG_DDS_COUNT] = dbg_regs[DBG_DDS_COUNT] + 1;
+                    dds_opcode <= instruction[47:32];
+                    dds_operand <= instruction[31:0];
+                    dds_we <= 1; // write to DDS
+                    wait_timer <= 50; // instruction takes 320 ns. Allocate 500 ns.
+                 end
+                 2 : begin // wait
+                    is_wait <= 1;
+                    dbg_regs[DBG_WAIT_COUNT] = dbg_regs[DBG_WAIT_COUNT] + 1;
+                    dbg_regs[DBG_WAIT_CYCLE] = dbg_regs[DBG_WAIT_CYCLE] + 1;
+                    if (instruction[TIMER_BITA:TIMER_BITB] == 1 ||
+                        instruction[TIMER_BITA:TIMER_BITB] == 0)
+                      waiting <= 0; // 1 cycle pulse, go to next instruction immediately
+                    wait_timer <= instruction[TIMER_BITA:TIMER_BITB];
+                 end
+                 3 : begin // clear underflow
+                    dbg_regs[DBG_CLEAR_COUNT] = dbg_regs[DBG_CLEAR_COUNT] + 1;
+                    underflow <= 0;
+                    dbg_regs[DBG_UNDERFLOW_CYCLE] <= 0;
+                    wait_timer <= 5;
+                 end
+                 4 : begin // loop-back data
+                    dbg_regs[DBG_LOOPBACK_COUNT] = dbg_regs[DBG_LOOPBACK_COUNT] + 1;
+                    loopback_data <= instruction[31:0];
+                    loopback_WrReq <= 1;
+                    wait_timer <= 5;
+                 end
+                 5 : begin // enable/disable clock_out
+                    dbg_regs[DBG_CLOCK_COUNT] = dbg_regs[DBG_CLOCK_COUNT] + 1;
+                    clock_out_div <= instruction[7:0];
+                    wait_timer <= 5;
+                 end
+                 // SPI communication.
+                 6 : begin
+                    dbg_regs[DBG_SPI_COUNT] = dbg_regs[DBG_SPI_COUNT] + 1;
+                    spi_opcode <= instruction[47:32];
+                    spi_operand <= instruction[(SPI_OPERAND_WIDTH - 1):0];
+                    spi_we <= 1; // write to SPI
+                    wait_timer <= 45;
+                 end
+                 default : wait_timer <= 1000;
+               endcase
+            end
+         end else begin
+            // Waiting
+            // decrement timer until it equals the minimum pulse time
+            loopback_WrReq <= 0;
+            loopback_data <= 0;
+            dds_we <= 0;
+            spi_we <= 0;
+            // Although we knew the length of each instruction in the previous step
+            // doing the counting like this should be more robust against off-by-one error
+            // and also hopefully reduce the maximum amount of work in a single step.
+            dbg_regs[DBG_INST_CYCLE] <= dbg_regs[DBG_INST_CYCLE] + 1;
+            if (is_ttl)
+              dbg_regs[DBG_TTL_CYCLE] = dbg_regs[DBG_TTL_CYCLE] + 1;
+            if (is_wait)
+              dbg_regs[DBG_WAIT_CYCLE] = dbg_regs[DBG_WAIT_CYCLE] + 1;
+            // The `wait_timer` includes the fetch/decoding cycle
+            // to avoid doing an unnecessary `- 1`
+            // (we should just change the interface to store cycle - 1
+            // in the instruction though since a wait time of `0` is never legal anyway).
+            // Unfortunately that's a breaking change so we can't do that for now...
+            // Therefore, we should wait here for `wait_timer - 1` cycles.
+            // (i.e. end condition is `2` on entry)
+            // 1 cycle wait/ttl pulse bypasses this step.
+            if (wait_timer == 2) begin
+               waiting <= 0;
+            end else begin
+               wait_timer <= wait_timer - 1; // decrement timer
+            end
          end
-
-         force_release <= force_release | inst_fifo_full;
-
-         //finite state machine
-         // 0 -- try to pull next instruction from FIFO
-         //      if available & not holding, go to state 1
-         //      else, set flags (underflow & pulses_finished)
-         // 1 -- decode instruction and setup pulse timer, go to state 2.
-         // 2 -- count down the pulse timer, then go to state 0
-         case (state)
-           // If there are no more instructions, set underflow high.
-           0: begin
-              loopback_WrReq <= 0;
-              loopback_data <= 0;
-
-              if (~inst_fifo_empty & ~pulses_hold) begin
-                 state <= 1;
-                 pulses_finished <= 0;
-                 // Swap the word order since the FIFO generater
-                 // fills the MSB first whereas we want the LSB first.
-                 instruction <= {inst_fifo_rd_data[31:0], inst_fifo_rd_data[63:32]};
-                 dbg_regs[DBG_INST_COUNT] = dbg_regs[DBG_INST_COUNT] + 1;
-                 dbg_regs[DBG_INST_CYCLE] <= dbg_regs[DBG_INST_CYCLE] + 1;
-              end else begin
-                 pulses_finished <= 1;
-                 if (timing_check)
-                   dbg_regs[DBG_UNDERFLOW_CYCLE] <= dbg_regs[DBG_UNDERFLOW_CYCLE] + 1;
-                 // underflow bit is sticky
-                 underflow <= (underflow | timing_check);
-              end
-              is_ttl <= 0;
-              is_wait <= 0;
-           end
-
-           // New data
-           1: begin
-              state <= 2;
-              timing_check <= instruction[ENABLE_TIMING_CHECK_BIT];
-              dbg_regs[DBG_INST_CYCLE] <= dbg_regs[DBG_INST_CYCLE] + 1;
-
-              case (instruction[INSTRUCTION_BITA:INSTRUCTION_BITB])
-                0 : begin // set digital output for given duration
-                   is_ttl <= 1;
-                   dbg_regs[DBG_TTL_COUNT] = dbg_regs[DBG_TTL_COUNT] + 1;
-                   // Account for the state 1 cycle
-                   dbg_regs[DBG_TTL_CYCLE] = dbg_regs[DBG_TTL_CYCLE] + 2;
-                   timer <= instruction[TIMER_BITA:TIMER_BITB];
-                   ttl_out <= instruction[TTL_BITA:TTL_BITB];
-                end
-
-                1 : begin // DDS instruction
-                   dbg_regs[DBG_DDS_COUNT] = dbg_regs[DBG_DDS_COUNT] + 1;
-                   dds_opcode <= instruction[47:32];
-                   dds_operand <= instruction[31:0];
-                   dds_we <= 1; // write to DDS
-                   timer <= 50; // instruction takes 320 ns. Allocate 500 ns.
-                end
-
-                2 : begin // wait
-                   is_wait <= 1;
-                   dbg_regs[DBG_WAIT_COUNT] = dbg_regs[DBG_WAIT_COUNT] + 1;
-                   // Account for the state 1 cycle
-                   dbg_regs[DBG_WAIT_CYCLE] = dbg_regs[DBG_WAIT_CYCLE] + 2;
-                   timer <= instruction[TIMER_BITA:TIMER_BITB];
-                end
-
-                3 : begin // clear underflow
-                   dbg_regs[DBG_CLEAR_COUNT] = dbg_regs[DBG_CLEAR_COUNT] + 1;
-                   underflow <= 0;
-                   dbg_regs[DBG_UNDERFLOW_CYCLE] <= 0;
-                   timer <= 5;
-                end
-
-                4 : begin // loop-back data
-                   dbg_regs[DBG_LOOPBACK_COUNT] = dbg_regs[DBG_LOOPBACK_COUNT] + 1;
-                   loopback_data <= instruction[31:0];
-                   loopback_WrReq <= 1;
-                   timer <= 5;
-                end
-
-                5 : begin // enable/disable clock_out
-                   dbg_regs[DBG_CLOCK_COUNT] = dbg_regs[DBG_CLOCK_COUNT] + 1;
-                   clock_out_div <= instruction[7:0];
-                   timer <= 5;
-                end
-
-                // SPI communication.
-                6 : begin
-                   dbg_regs[DBG_SPI_COUNT] = dbg_regs[DBG_SPI_COUNT] + 1;
-                   spi_opcode <= instruction[47:32];
-                   spi_operand <= instruction[(SPI_OPERAND_WIDTH - 1):0];
-                   spi_we <= 1; // write to SPI
-                   timer <= 45;
-                end
-
-                default : timer <= 1000;
-              endcase
-           end
-
-           2 : begin // decrement timer until it equals the minimum pulse time
-              dds_we <= 0;
-              spi_we <= 0;
-              dbg_regs[DBG_INST_CYCLE] <= dbg_regs[DBG_INST_CYCLE] + 1;
-
-              if (is_ttl)
-                dbg_regs[DBG_TTL_CYCLE] = dbg_regs[DBG_TTL_CYCLE] + 1;
-              if (is_wait)
-                dbg_regs[DBG_WAIT_CYCLE] = dbg_regs[DBG_WAIT_CYCLE] + 1;
-
-              // timer < 3 is possible for TTL pulses, swallow this timing error
-              // for now.
-              if (timer <= 3) begin
-                 state <= 0;  // minimum pulse time is 3 cycles
-              end else begin
-                 timer <= timer + 24'hFFFFFF; // decrement timer
-              end
-           end
-         endcase
       end
    end
 endmodule

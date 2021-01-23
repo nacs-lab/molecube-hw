@@ -48,7 +48,7 @@
 
 
 // IP VLNV: nigrp.org:nigrp:pulse_controller:5.1
-// IP Revision: 1
+// IP Revision: 2
 
 `timescale 1ns/1ps
 
