@@ -48,7 +48,7 @@
 
 
 // IP VLNV: nigrp.org:nigrp:pulse_controller:5.0
-// IP Revision: 20
+// IP Revision: 21
 
 (* X_CORE_INFO = "pulse_controller_v5_0,Vivado 2020.1" *)
 (* CHECK_LICENSE_TYPE = "design_1_pulse_controller_0_0,pulse_controller_v5_0,{}" *)
@@ -69,9 +69,11 @@ module design_1_pulse_controller_0_0 (
   spi_miso,
   clock_out,
   inst_fifo_empty,
+  inst_fifo_almost_empty,
   inst_fifo_rd_data,
   inst_fifo_rd_en,
   inst_fifo_full,
+  inst_fifo_almost_full,
   inst_fifo_wr_data,
   inst_fifo_wr_en,
   s00_axi_aclk,
@@ -113,12 +115,16 @@ input wire spi_miso;
 output wire clock_out;
 (* X_INTERFACE_INFO = "xilinx.com:interface:fifo_read:1.0 inst_fifo_rd EMPTY" *)
 input wire inst_fifo_empty;
+(* X_INTERFACE_INFO = "xilinx.com:interface:fifo_read:1.0 inst_fifo_rd ALMOST_EMPTY" *)
+input wire inst_fifo_almost_empty;
 (* X_INTERFACE_INFO = "xilinx.com:interface:fifo_read:1.0 inst_fifo_rd RD_DATA" *)
 input wire [63 : 0] inst_fifo_rd_data;
 (* X_INTERFACE_INFO = "xilinx.com:interface:fifo_read:1.0 inst_fifo_rd RD_EN" *)
 output wire inst_fifo_rd_en;
 (* X_INTERFACE_INFO = "xilinx.com:interface:fifo_write:1.0 inst_fifo_wr FULL" *)
 input wire inst_fifo_full;
+(* X_INTERFACE_INFO = "xilinx.com:interface:fifo_write:1.0 inst_fifo_wr ALMOST_FULL" *)
+input wire inst_fifo_almost_full;
 (* X_INTERFACE_INFO = "xilinx.com:interface:fifo_write:1.0 inst_fifo_wr WR_DATA" *)
 output wire [31 : 0] inst_fifo_wr_data;
 (* X_INTERFACE_INFO = "xilinx.com:interface:fifo_write:1.0 inst_fifo_wr WR_EN" *)
@@ -195,9 +201,11 @@ input wire s00_axi_rready;
     .spi_miso(spi_miso),
     .clock_out(clock_out),
     .inst_fifo_empty(inst_fifo_empty),
+    .inst_fifo_almost_empty(inst_fifo_almost_empty),
     .inst_fifo_rd_data(inst_fifo_rd_data),
     .inst_fifo_rd_en(inst_fifo_rd_en),
     .inst_fifo_full(inst_fifo_full),
+    .inst_fifo_almost_full(inst_fifo_almost_full),
     .inst_fifo_wr_data(inst_fifo_wr_data),
     .inst_fifo_wr_en(inst_fifo_wr_en),
     .s00_axi_aclk(s00_axi_aclk),

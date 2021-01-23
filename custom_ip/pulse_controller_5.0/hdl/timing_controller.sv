@@ -124,9 +124,11 @@ module timing_controller
     output reg [7:0] clock_out_div,
 
     input inst_fifo_empty,
+    input inst_fifo_almost_empty, // unused
     input [63:0] inst_fifo_rd_data,
     output inst_fifo_rd_en,
     input inst_fifo_full,
+    input inst_fifo_almost_full, // unused
     output [31:0] inst_fifo_wr_data,
     output inst_fifo_wr_en,
 

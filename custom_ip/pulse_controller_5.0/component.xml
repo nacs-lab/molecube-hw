@@ -259,6 +259,14 @@
             <spirit:name>inst_fifo_empty</spirit:name>
           </spirit:physicalPort>
         </spirit:portMap>
+        <spirit:portMap>
+          <spirit:logicalPort>
+            <spirit:name>ALMOST_EMPTY</spirit:name>
+          </spirit:logicalPort>
+          <spirit:physicalPort>
+            <spirit:name>inst_fifo_almost_empty</spirit:name>
+          </spirit:physicalPort>
+        </spirit:portMap>
       </spirit:portMaps>
     </spirit:busInterface>
     <spirit:busInterface>
@@ -289,6 +297,14 @@
           </spirit:logicalPort>
           <spirit:physicalPort>
             <spirit:name>inst_fifo_full</spirit:name>
+          </spirit:physicalPort>
+        </spirit:portMap>
+        <spirit:portMap>
+          <spirit:logicalPort>
+            <spirit:name>ALMOST_FULL</spirit:name>
+          </spirit:logicalPort>
+          <spirit:physicalPort>
+            <spirit:name>inst_fifo_almost_full</spirit:name>
           </spirit:physicalPort>
         </spirit:portMap>
       </spirit:portMaps>
@@ -330,7 +346,7 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>viewChecksum</spirit:name>
-            <spirit:value>537e2f32</spirit:value>
+            <spirit:value>0ff0ba4e</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -346,7 +362,7 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>viewChecksum</spirit:name>
-            <spirit:value>537e2f32</spirit:value>
+            <spirit:value>0ff0ba4e</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -619,6 +635,19 @@
         </spirit:wire>
       </spirit:port>
       <spirit:port>
+        <spirit:name>inst_fifo_almost_empty</spirit:name>
+        <spirit:wire>
+          <spirit:direction>in</spirit:direction>
+          <spirit:wireTypeDefs>
+            <spirit:wireTypeDef>
+              <spirit:typeName>std_logic</spirit:typeName>
+              <spirit:viewNameRef>xilinx_verilogsynthesis</spirit:viewNameRef>
+              <spirit:viewNameRef>xilinx_verilogbehavioralsimulation</spirit:viewNameRef>
+            </spirit:wireTypeDef>
+          </spirit:wireTypeDefs>
+        </spirit:wire>
+      </spirit:port>
+      <spirit:port>
         <spirit:name>inst_fifo_rd_data</spirit:name>
         <spirit:wire>
           <spirit:direction>in</spirit:direction>
@@ -665,6 +694,19 @@
           <spirit:driver>
             <spirit:defaultValue spirit:format="long">0</spirit:defaultValue>
           </spirit:driver>
+        </spirit:wire>
+      </spirit:port>
+      <spirit:port>
+        <spirit:name>inst_fifo_almost_full</spirit:name>
+        <spirit:wire>
+          <spirit:direction>in</spirit:direction>
+          <spirit:wireTypeDefs>
+            <spirit:wireTypeDef>
+              <spirit:typeName>std_logic</spirit:typeName>
+              <spirit:viewNameRef>xilinx_verilogsynthesis</spirit:viewNameRef>
+              <spirit:viewNameRef>xilinx_verilogbehavioralsimulation</spirit:viewNameRef>
+            </spirit:wireTypeDef>
+          </spirit:wireTypeDefs>
         </spirit:wire>
       </spirit:port>
       <spirit:port>
@@ -1094,7 +1136,7 @@
       <spirit:file>
         <spirit:name>hdl/pulse_controller_v5_0.v</spirit:name>
         <spirit:fileType>verilogSource</spirit:fileType>
-        <spirit:userFileType>CHECKSUM_5dfe99f7</spirit:userFileType>
+        <spirit:userFileType>CHECKSUM_93e40c30</spirit:userFileType>
       </spirit:file>
     </spirit:fileSet>
     <spirit:fileSet>
@@ -1233,17 +1275,17 @@
         <xilinx:taxonomy>AXI_Peripheral</xilinx:taxonomy>
       </xilinx:taxonomies>
       <xilinx:displayName>pulse_controller_v5.0</xilinx:displayName>
-      <xilinx:coreRevision>20</xilinx:coreRevision>
-      <xilinx:coreCreationDateTime>2021-01-23T04:52:39Z</xilinx:coreCreationDateTime>
+      <xilinx:coreRevision>21</xilinx:coreRevision>
+      <xilinx:coreCreationDateTime>2021-01-23T05:53:37Z</xilinx:coreCreationDateTime>
       <xilinx:tags>
       </xilinx:tags>
     </xilinx:coreExtensions>
     <xilinx:packagingInfo>
       <xilinx:xilinxVersion>2020.1</xilinx:xilinxVersion>
-      <xilinx:checksum xilinx:scope="busInterfaces" xilinx:value="c7b19419"/>
+      <xilinx:checksum xilinx:scope="busInterfaces" xilinx:value="928955c7"/>
       <xilinx:checksum xilinx:scope="memoryMaps" xilinx:value="ed1368d5"/>
-      <xilinx:checksum xilinx:scope="fileGroups" xilinx:value="2b5ba4a9"/>
-      <xilinx:checksum xilinx:scope="ports" xilinx:value="265cefe9"/>
+      <xilinx:checksum xilinx:scope="fileGroups" xilinx:value="cfce96bb"/>
+      <xilinx:checksum xilinx:scope="ports" xilinx:value="b8c34293"/>
       <xilinx:checksum xilinx:scope="hdlParameters" xilinx:value="b3792af7"/>
       <xilinx:checksum xilinx:scope="parameters" xilinx:value="11b802fc"/>
     </xilinx:packagingInfo>

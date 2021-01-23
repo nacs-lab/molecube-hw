@@ -1204,16 +1204,16 @@
               }
             },
             "interface_nets": {
-              "s00_couplers_to_auto_pc": {
-                "interface_ports": [
-                  "S_AXI",
-                  "auto_pc/S_AXI"
-                ]
-              },
               "auto_pc_to_s00_couplers": {
                 "interface_ports": [
                   "M_AXI",
                   "auto_pc/M_AXI"
+                ]
+              },
+              "s00_couplers_to_auto_pc": {
+                "interface_ports": [
+                  "S_AXI",
+                  "auto_pc/S_AXI"
                 ]
               }
             },
@@ -1234,16 +1234,16 @@
           }
         },
         "interface_nets": {
-          "s00_couplers_to_axi_interconnect_0": {
-            "interface_ports": [
-              "M00_AXI",
-              "s00_couplers/M_AXI"
-            ]
-          },
           "axi_interconnect_0_to_s00_couplers": {
             "interface_ports": [
               "S00_AXI",
               "s00_couplers/S_AXI"
+            ]
+          },
+          "s00_couplers_to_axi_interconnect_0": {
+            "interface_ports": [
+              "M00_AXI",
+              "s00_couplers/M_AXI"
             ]
           }
         },
@@ -1280,22 +1280,16 @@
       }
     },
     "interface_nets": {
-      "pulse_controller_0_inst_fifo_wr": {
+      "pulse_controller_0_inst_fifo_rd": {
         "interface_ports": [
-          "pulse_controller_0/inst_fifo_wr",
-          "fifo_generator_0/FIFO_WRITE"
+          "pulse_controller_0/inst_fifo_rd",
+          "fifo_generator_0/FIFO_READ"
         ]
       },
       "processing_system7_0_DDR": {
         "interface_ports": [
           "DDR",
           "processing_system7_0/DDR"
-        ]
-      },
-      "pulse_controller_0_inst_fifo_rd": {
-        "interface_ports": [
-          "pulse_controller_0/inst_fifo_rd",
-          "fifo_generator_0/FIFO_READ"
         ]
       },
       "processing_system7_0_M_AXI_GP0": {
@@ -1314,6 +1308,12 @@
         "interface_ports": [
           "FIXED_IO",
           "processing_system7_0/FIXED_IO"
+        ]
+      },
+      "pulse_controller_0_inst_fifo_wr": {
+        "interface_ports": [
+          "pulse_controller_0/inst_fifo_wr",
+          "fifo_generator_0/FIFO_WRITE"
         ]
       }
     },

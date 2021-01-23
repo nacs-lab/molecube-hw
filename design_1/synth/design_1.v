@@ -346,6 +346,8 @@ module design_1
         .dds_cs(pulse_controller_0_dds_cs),
         .dds_data(dds_data_pin[15:0]),
         .dds_data2(dds_data2_pin[15:0]),
+        .inst_fifo_almost_empty(1'b1),
+        .inst_fifo_almost_full(1'b0),
         .inst_fifo_empty(pulse_controller_0_inst_fifo_rd_EMPTY),
         .inst_fifo_full(pulse_controller_0_inst_fifo_wr_FULL),
         .inst_fifo_rd_data(pulse_controller_0_inst_fifo_rd_RD_DATA),
