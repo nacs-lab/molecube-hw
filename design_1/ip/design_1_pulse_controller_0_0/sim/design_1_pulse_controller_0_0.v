@@ -48,7 +48,7 @@
 
 
 // IP VLNV: nigrp.org:nigrp:pulse_controller:5.0
-// IP Revision: 22
+// IP Revision: 25
 
 `timescale 1ns/1ps
 
@@ -176,7 +176,7 @@ stem7_0_0_FCLK_CLK0, NUM_READ_THREADS 4, NUM_WRITE_THREADS 4, RUSER_BITS_PER_BYT
 (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 S00_AXI RREADY" *)
 input wire s00_axi_rready;
 
-  pulse_controller_v5_0 #(
+  pulse_controller #(
     .C_S00_AXI_DATA_WIDTH(32),  // Width of S_AXI data bus
     .C_S00_AXI_ADDR_WIDTH(9),  // Width of S_AXI address bus
     .U_PULSE_WIDTH(32),

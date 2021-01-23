@@ -1,4 +1,4 @@
-module pulse_controller_v5_0 #
+module pulse_controller #
   (
    // Users to add parameters here
    parameter U_PULSE_WIDTH = 32,
@@ -78,15 +78,15 @@ module pulse_controller_v5_0 #
     );
 
    // Instantiation of Axi Bus Interface S00_AXI
-   pulse_controller_v5_0_S00_AXI # (.N_SPI(N_SPI),
-                                    .N_DDS(N_DDS),
-                                    .U_DDS_DATA_WIDTH(U_DDS_DATA_WIDTH),
-                                    .U_DDS_ADDR_WIDTH(U_DDS_ADDR_WIDTH),
-                                    .U_DDS_CTRL_WIDTH(U_DDS_CTRL_WIDTH),
-                                    .U_PULSE_WIDTH(U_PULSE_WIDTH),
-                                    .C_S_AXI_DATA_WIDTH(C_S00_AXI_DATA_WIDTH),
-                                    .C_S_AXI_ADDR_WIDTH(C_S00_AXI_ADDR_WIDTH)
-                                    ) pulse_controller_v5_0_S00_AXI_inst
+   pulse_controller_S00_AXI # (.N_SPI(N_SPI),
+                               .N_DDS(N_DDS),
+                               .U_DDS_DATA_WIDTH(U_DDS_DATA_WIDTH),
+                               .U_DDS_ADDR_WIDTH(U_DDS_ADDR_WIDTH),
+                               .U_DDS_CTRL_WIDTH(U_DDS_CTRL_WIDTH),
+                               .U_PULSE_WIDTH(U_PULSE_WIDTH),
+                               .C_S_AXI_DATA_WIDTH(C_S00_AXI_DATA_WIDTH),
+                               .C_S_AXI_ADDR_WIDTH(C_S00_AXI_ADDR_WIDTH)
+                               ) pulse_controller_S00_AXI_inst
      (
       .pulse_io(pulse_io),
       .dds_addr(dds_addr),

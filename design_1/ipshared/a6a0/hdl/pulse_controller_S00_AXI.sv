@@ -1,4 +1,4 @@
-module pulse_controller_v5_0_S00_AXI #
+module pulse_controller_S00_AXI #
   (
    // Users to add parameters here
    parameter U_PULSE_WIDTH = 32,

@@ -663,7 +663,7 @@
         <spirit:displayName>Verilog Synthesis</spirit:displayName>
         <spirit:envIdentifier>verilogSource:vivado.xilinx.com:synthesis</spirit:envIdentifier>
         <spirit:language>verilog</spirit:language>
-        <spirit:modelName>pulse_controller_v5_0</spirit:modelName>
+        <spirit:modelName>pulse_controller</spirit:modelName>
         <spirit:fileSetRef>
           <spirit:localName>xilinx_verilogsynthesis_view_fileset</spirit:localName>
         </spirit:fileSetRef>
@@ -674,7 +674,7 @@
           </spirit:parameter>
           <spirit:parameter>
             <spirit:name>outputProductCRC</spirit:name>
-            <spirit:value>9:8fc79768</spirit:value>
+            <spirit:value>9:9155cb57</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -685,7 +685,7 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>outputProductCRC</spirit:name>
-            <spirit:value>9:8fc79768</spirit:value>
+            <spirit:value>9:9155cb57</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -705,7 +705,7 @@
           </spirit:parameter>
           <spirit:parameter>
             <spirit:name>outputProductCRC</spirit:name>
-            <spirit:value>9:8fc79768</spirit:value>
+            <spirit:value>9:9155cb57</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -714,7 +714,7 @@
         <spirit:displayName>Verilog Simulation</spirit:displayName>
         <spirit:envIdentifier>verilogSource:vivado.xilinx.com:simulation</spirit:envIdentifier>
         <spirit:language>verilog</spirit:language>
-        <spirit:modelName>pulse_controller_v5_0</spirit:modelName>
+        <spirit:modelName>pulse_controller</spirit:modelName>
         <spirit:fileSetRef>
           <spirit:localName>xilinx_verilogbehavioralsimulation_view_fileset</spirit:localName>
         </spirit:fileSetRef>
@@ -725,7 +725,7 @@
           </spirit:parameter>
           <spirit:parameter>
             <spirit:name>outputProductCRC</spirit:name>
-            <spirit:value>9:ad4222dd</spirit:value>
+            <spirit:value>9:b3d07ee2</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -745,7 +745,7 @@
           </spirit:parameter>
           <spirit:parameter>
             <spirit:name>outputProductCRC</spirit:name>
-            <spirit:value>9:ad4222dd</spirit:value>
+            <spirit:value>9:b3d07ee2</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -1473,23 +1473,23 @@
     <spirit:fileSet>
       <spirit:name>xilinx_verilogsynthesis_view_fileset</spirit:name>
       <spirit:file>
-        <spirit:name>../../ipshared/36f4/hdl/dds_controller.sv</spirit:name>
+        <spirit:name>../../ipshared/a6a0/hdl/dds_controller.sv</spirit:name>
         <spirit:fileType>systemVerilogSource</spirit:fileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../../ipshared/36f4/hdl/pulse_controller_v5_0_S00_AXI.sv</spirit:name>
+        <spirit:name>../../ipshared/a6a0/hdl/pulse_controller_S00_AXI.sv</spirit:name>
         <spirit:fileType>systemVerilogSource</spirit:fileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../../ipshared/36f4/hdl/spi_controller.sv</spirit:name>
+        <spirit:name>../../ipshared/a6a0/hdl/spi_controller.sv</spirit:name>
         <spirit:fileType>systemVerilogSource</spirit:fileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../../ipshared/36f4/hdl/timing_controller.sv</spirit:name>
+        <spirit:name>../../ipshared/a6a0/hdl/timing_controller.sv</spirit:name>
         <spirit:fileType>systemVerilogSource</spirit:fileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../../ipshared/36f4/hdl/pulse_controller_v5_0.v</spirit:name>
+        <spirit:name>../../ipshared/a6a0/hdl/pulse_controller.v</spirit:name>
         <spirit:fileType>verilogSource</spirit:fileType>
       </spirit:file>
     </spirit:fileSet>
@@ -1504,23 +1504,23 @@
     <spirit:fileSet>
       <spirit:name>xilinx_verilogbehavioralsimulation_view_fileset</spirit:name>
       <spirit:file>
-        <spirit:name>../../ipshared/36f4/hdl/dds_controller.sv</spirit:name>
+        <spirit:name>../../ipshared/a6a0/hdl/dds_controller.sv</spirit:name>
         <spirit:fileType>systemVerilogSource</spirit:fileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../../ipshared/36f4/hdl/pulse_controller_v5_0_S00_AXI.sv</spirit:name>
+        <spirit:name>../../ipshared/a6a0/hdl/pulse_controller_S00_AXI.sv</spirit:name>
         <spirit:fileType>systemVerilogSource</spirit:fileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../../ipshared/36f4/hdl/spi_controller.sv</spirit:name>
+        <spirit:name>../../ipshared/a6a0/hdl/spi_controller.sv</spirit:name>
         <spirit:fileType>systemVerilogSource</spirit:fileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../../ipshared/36f4/hdl/timing_controller.sv</spirit:name>
+        <spirit:name>../../ipshared/a6a0/hdl/timing_controller.sv</spirit:name>
         <spirit:fileType>systemVerilogSource</spirit:fileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../../ipshared/36f4/hdl/pulse_controller_v5_0.v</spirit:name>
+        <spirit:name>../../ipshared/a6a0/hdl/pulse_controller.v</spirit:name>
         <spirit:fileType>verilogSource</spirit:fileType>
       </spirit:file>
     </spirit:fileSet>
@@ -1622,8 +1622,8 @@
   </spirit:parameters>
   <spirit:vendorExtensions>
     <xilinx:coreExtensions>
-      <xilinx:displayName>pulse_controller_v5.0</xilinx:displayName>
-      <xilinx:coreRevision>22</xilinx:coreRevision>
+      <xilinx:displayName>Pulse Controller</xilinx:displayName>
+      <xilinx:coreRevision>25</xilinx:coreRevision>
       <xilinx:configElementInfos>
         <xilinx:configElementInfo xilinx:referenceId="BUSIFPARAM_VALUE.S00_AXI.ADDR_WIDTH" xilinx:valueSource="auto" xilinx:valuePermission="bd"/>
         <xilinx:configElementInfo xilinx:referenceId="BUSIFPARAM_VALUE.S00_AXI.ARUSER_WIDTH" xilinx:valueSource="constant" xilinx:valuePermission="bd"/>
@@ -1671,10 +1671,10 @@
       <xilinx:xilinxVersion>2020.1</xilinx:xilinxVersion>
       <xilinx:checksum xilinx:scope="busInterfaces" xilinx:value="928955c7"/>
       <xilinx:checksum xilinx:scope="memoryMaps" xilinx:value="ed1368d5"/>
-      <xilinx:checksum xilinx:scope="fileGroups" xilinx:value="2de360b8"/>
+      <xilinx:checksum xilinx:scope="fileGroups" xilinx:value="2568170f"/>
       <xilinx:checksum xilinx:scope="ports" xilinx:value="b8c34293"/>
       <xilinx:checksum xilinx:scope="hdlParameters" xilinx:value="b3792af7"/>
-      <xilinx:checksum xilinx:scope="parameters" xilinx:value="11b802fc"/>
+      <xilinx:checksum xilinx:scope="parameters" xilinx:value="0ac9b1cc"/>
     </xilinx:packagingInfo>
   </spirit:vendorExtensions>
 </spirit:component>
