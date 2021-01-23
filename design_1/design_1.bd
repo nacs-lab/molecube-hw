@@ -1037,19 +1037,28 @@
         "xci_name": "design_1_fifo_generator_0_1",
         "parameters": {
           "Fifo_Implementation": {
-            "value": "Common_Clock_Builtin_FIFO"
+            "value": "Common_Clock_Block_RAM"
           },
           "Input_Data_Width": {
-            "value": "64"
+            "value": "32"
           },
           "Input_Depth": {
-            "value": "4096"
+            "value": "8192"
+          },
+          "Output_Data_Width": {
+            "value": "64"
           },
           "Overflow_Flag": {
             "value": "false"
           },
           "Performance_Options": {
             "value": "First_Word_Fall_Through"
+          },
+          "Reset_Type": {
+            "value": "Synchronous_Reset"
+          },
+          "Use_Dout_Reset": {
+            "value": "true"
           },
           "Use_Embedded_Registers": {
             "value": "false"
@@ -1423,7 +1432,7 @@
       "rst_ps7_0_100M_peripheral_reset": {
         "ports": [
           "rst_ps7_0_100M/peripheral_reset",
-          "fifo_generator_0/rst"
+          "fifo_generator_0/srst"
         ]
       }
     },

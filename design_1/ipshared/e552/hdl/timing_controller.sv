@@ -127,8 +127,10 @@ module timing_controller
     input [63:0] inst_fifo_rd_data,
     output inst_fifo_rd_en,
     input inst_fifo_full,
-    output [63:0] inst_fifo_wr_data,
-    output inst_fifo_wr_en
+    output [31:0] inst_fifo_wr_data,
+    output inst_fifo_wr_en,
+
+    output reg [(BUS_DATA_WIDTH - 1):0] dbg_regs [0:31]
     );
 
    wire reset = ~resetn;
@@ -176,10 +178,6 @@ module timing_controller
    assign rFIFO_WrReq = dds_WrReq | loopback_WrReq;
    assign rFIFO_data = dds_result | loopback_data;
 
-   // Control reading of 32 bit words into 64 bit wide FIFO
-   reg fifo_next_word_dest;
-   reg [31:0] fifo_low_word;
-
    localparam INSTRUCTION_BITA = 63;
    localparam INSTRUCTION_BITB = 60;
    localparam ENABLE_TIMING_CHECK_BIT = 63 - 4; // 0x08000000
@@ -198,12 +196,13 @@ module timing_controller
    // pulses_hold will be released if FIFO is full or pulse_controller_hold is
    // low once released, the controller runs until it is done
    wire pulses_hold = pulse_controller_hold & ~force_release;
-   assign inst_fifo_wr_data[63:32] = bus_data[31:0]; // Timing, flags or DDS opcode word
-   assign inst_fifo_wr_data[31:0] = fifo_low_word; // TTL or DDS operand word
-   assign inst_fifo_wr_en = ~init & ~reset & bus_data_valid & fifo_next_word_dest;
+   assign inst_fifo_wr_data = bus_data;
+   assign inst_fifo_wr_en = ~init & ~reset & bus_data_valid;
+   wire inst_fifo_wr_ready = ~inst_fifo_full;
+   // The following condition must be consistent with how the fifo is read below.
    assign inst_fifo_rd_en = ~init & ~reset & state == 0 & ~pulses_hold;
-   // acknowledge if FIFO has space
-   assign bus_data_ready = ~inst_fifo_full;
+   // Signal the AXI controller that we've read the data
+   assign bus_data_ready = inst_fifo_wr_ready;
 
    localparam SPI_OPCODE_WIDTH = 16;
    localparam SPI_OPERAND_WIDTH = 18;
@@ -228,6 +227,18 @@ module timing_controller
                        .result_data(spi_result),
                        .result_WrReq(spi_WrReq));
 
+   // Aliases for debug register IDs
+   localparam DBG_INST_WORD_COUNT = 0;
+   localparam DBG_INST_COUNT = 1;
+   localparam DBG_TTL_COUNT = 2;
+   localparam DBG_DDS_COUNT = 3;
+   localparam DBG_WAIT_COUNT = 4;
+   localparam DBG_CLEAR_COUNT = 5;
+   localparam DBG_LOOPBACK_COUNT = 6;
+   localparam DBG_CLOCK_COUNT = 7;
+   localparam DBG_SPI_COUNT = 8;
+   localparam DBG_UNDERFLOW_CYCLE = 9;
+
    always @(posedge clock, posedge reset) begin
       if (reset | init) begin
          if (reset) begin
@@ -242,19 +253,14 @@ module timing_controller
          pulses_finished <= 1;
          loopback_data <= 0;
          loopback_WrReq <= 0;
-         fifo_next_word_dest <= 0;
          clock_out_div <= 255;
          force_release <= 0;
+
+         for (int i = 0; i < 32; i = i + 1)
+           dbg_regs[i] <= 0;
       end else begin
-         // Get new instructions if FIFO has space. The bus will hang if
-         // FIFO is full, until there is space.
-         if (bus_data_ready & bus_data_valid) begin
-            if (fifo_next_word_dest == 0) begin
-               fifo_low_word <= bus_data;
-               fifo_next_word_dest <= 1;
-            end else begin
-               fifo_next_word_dest <= 0;
-            end
+         if (inst_fifo_wr_ready & inst_fifo_wr_en) begin
+            dbg_regs[DBG_INST_WORD_COUNT] = dbg_regs[DBG_INST_WORD_COUNT] + 1;
          end
 
          force_release <= force_release | inst_fifo_full;
@@ -271,13 +277,17 @@ module timing_controller
               loopback_WrReq <= 0;
               loopback_data <= 0;
 
-              // here read_addr == write_addr means FIFO is empty
               if (~inst_fifo_empty & ~pulses_hold) begin
                  state <= 1;
                  pulses_finished <= 0;
-                 instruction <= inst_fifo_rd_data;
+                 // Swap the word order since the FIFO generater
+                 // fills the MSB first whereas we want the LSB first.
+                 instruction <= {inst_fifo_rd_data[31:0], inst_fifo_rd_data[63:32]};
+                 dbg_regs[DBG_INST_COUNT] = dbg_regs[DBG_INST_COUNT] + 1;
               end else begin
                  pulses_finished <= 1;
+                 if (timing_check)
+                   dbg_regs[DBG_UNDERFLOW_CYCLE] <= dbg_regs[DBG_UNDERFLOW_CYCLE] + 1;
                  // underflow bit is sticky
                  underflow <= (underflow | timing_check);
               end
@@ -290,11 +300,13 @@ module timing_controller
 
               case (instruction[INSTRUCTION_BITA:INSTRUCTION_BITB])
                 0 : begin // set digital output for given duration
+                   dbg_regs[DBG_TTL_COUNT] = dbg_regs[DBG_TTL_COUNT] + 1;
                    timer <= instruction[TIMER_BITA:TIMER_BITB];
                    ttl_out <= instruction[TTL_BITA:TTL_BITB];
                 end
 
                 1 : begin // DDS instruction
+                   dbg_regs[DBG_DDS_COUNT] = dbg_regs[DBG_DDS_COUNT] + 1;
                    dds_opcode <= instruction[47:32];
                    dds_operand <= instruction[31:0];
                    dds_we <= 1; // write to DDS
@@ -302,27 +314,33 @@ module timing_controller
                 end
 
                 2 : begin // wait
+                   dbg_regs[DBG_WAIT_COUNT] = dbg_regs[DBG_WAIT_COUNT] + 1;
                    timer <= instruction[TIMER_BITA:TIMER_BITB];
                 end
 
                 3 : begin // clear underflow
+                   dbg_regs[DBG_CLEAR_COUNT] = dbg_regs[DBG_CLEAR_COUNT] + 1;
                    underflow <= 0;
+                   dbg_regs[DBG_UNDERFLOW_CYCLE] <= 0;
                    timer <= 5;
                 end
 
                 4 : begin // loop-back data
+                   dbg_regs[DBG_LOOPBACK_COUNT] = dbg_regs[DBG_LOOPBACK_COUNT] + 1;
                    loopback_data <= instruction[31:0];
                    loopback_WrReq <= 1;
                    timer <= 5;
                 end
 
                 5 : begin // enable/disable clock_out
+                   dbg_regs[DBG_CLOCK_COUNT] = dbg_regs[DBG_CLOCK_COUNT] + 1;
                    clock_out_div <= instruction[7:0];
                    timer <= 5;
                 end
 
                 // SPI communication.
                 6 : begin
+                   dbg_regs[DBG_SPI_COUNT] = dbg_regs[DBG_SPI_COUNT] + 1;
                    spi_opcode <= instruction[47:32];
                    spi_operand <= instruction[(SPI_OPERAND_WIDTH - 1):0];
                    spi_we <= 1; // write to SPI

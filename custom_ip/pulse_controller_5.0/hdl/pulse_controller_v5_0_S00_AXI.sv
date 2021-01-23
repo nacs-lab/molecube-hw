@@ -13,7 +13,7 @@ module pulse_controller_v5_0_S00_AXI #
    // Width of S_AXI data bus
    parameter integer C_S_AXI_DATA_WIDTH = 32,
    // Width of S_AXI address bus
-   parameter integer C_S_AXI_ADDR_WIDTH = 7
+   parameter integer C_S_AXI_ADDR_WIDTH = 9
    )
    (
     // Users to add ports here
@@ -45,7 +45,7 @@ module pulse_controller_v5_0_S00_AXI #
     input [63:0] inst_fifo_rd_data,
     output inst_fifo_rd_en,
     input inst_fifo_full,
-    output [63:0] inst_fifo_wr_data,
+    output [31:0] inst_fifo_wr_data,
     output inst_fifo_wr_en,
     // User ports ends
     // Do not modify the ports beyond this line
@@ -117,7 +117,7 @@ module pulse_controller_v5_0_S00_AXI #
    // ADDR_LSB = 2 for 32 bits (n downto 2)
    // ADDR_LSB = 3 for 64 bits (n downto 3)
    localparam integer ADDR_LSB = (C_S_AXI_DATA_WIDTH / 32) + 1;
-   localparam integer OPT_MEM_ADDR_BITS = 4;
+   localparam integer OPT_MEM_ADDR_BITS = 6;
 
    //----------------------------------------------------------------------------
    // User logic
@@ -164,7 +164,9 @@ module pulse_controller_v5_0_S00_AXI #
    reg [C_S_AXI_DATA_WIDTH - 1:0] ttl_lo_mask;
    reg [C_S_AXI_DATA_WIDTH - 1:0] slv_reg_status;
    reg [C_S_AXI_DATA_WIDTH - 1:0] slv_reg_ctrl;
-   reg [C_S_AXI_DATA_WIDTH - 1:0] slv_reg_dummy;
+   reg [C_S_AXI_DATA_WIDTH - 1:0] slv_reg_loopback;
+
+   wire [(C_S_AXI_DATA_WIDTH - 1):0] slv_dbg_regs [0:31];
 
    // active-high reset
    wire [(C_S_AXI_DATA_WIDTH - 1):0] result;
@@ -215,6 +217,8 @@ module pulse_controller_v5_0_S00_AXI #
    reg s_axi_read_state;
    // This will assert exactly one cycle per request and is used by rFIFO below.
    wire s_axi_rdvalid = s_axi_read_state == 0 & S_AXI_ARVALID;
+   wire [OPT_MEM_ADDR_BITS:0] s_axi_rd_regnum =
+                              S_AXI_ARADDR[ADDR_LSB + OPT_MEM_ADDR_BITS:ADDR_LSB];
    assign S_AXI_RRESP = 0;
    always @(posedge S_AXI_ACLK) begin
       if (~S_AXI_ARESETN) begin
@@ -229,34 +233,38 @@ module pulse_controller_v5_0_S00_AXI #
               if (S_AXI_ARVALID) begin
                  S_AXI_ARREADY <= 1'b0;
                  // Address decoding for reading registers
-                 case (S_AXI_ARADDR[ADDR_LSB + OPT_MEM_ADDR_BITS:ADDR_LSB])
-                   5'h00: begin
+                 case (s_axi_rd_regnum)
+                   7'h00: begin
                       S_AXI_RDATA <= ttl_hi_mask;
                    end
-                   5'h01: begin
+                   7'h01: begin
                       S_AXI_RDATA <= ttl_lo_mask;
                    end
-                   5'h02: begin
+                   7'h02: begin
                       S_AXI_RDATA <= slv_reg_status;
                    end
-                   5'h03: begin
+                   7'h03: begin
                       S_AXI_RDATA <= slv_reg_ctrl;
                    end
-                   5'h04: begin
+                   7'h04: begin
                       S_AXI_RDATA <= ttl_out;
                    end
-                   5'h05: begin
+                   7'h05: begin
                       S_AXI_RDATA[C_S_AXI_DATA_WIDTH - 1:8] <= 0;
                       S_AXI_RDATA[7:0] <= clock_out_div;
                    end
-                   5'h1E: begin
-                      S_AXI_RDATA <= slv_reg_dummy;
+                   7'h1E: begin
+                      S_AXI_RDATA <= slv_reg_loopback;
                    end
-                   5'h1F: begin
+                   7'h1F: begin
                       S_AXI_RDATA <= rFIFO[rFIFO_read_addr];
                    end
                    default: begin
-                      S_AXI_RDATA <= 0;
+                      if (s_axi_rd_regnum >= 7'h20 && s_axi_rd_regnum < 7'h40) begin
+                         S_AXI_RDATA <= slv_dbg_regs[s_axi_rd_regnum - 7'h20];
+                      end else begin
+                         S_AXI_RDATA <= 0;
+                      end
                    end
                  endcase
                  S_AXI_RVALID <= 1'b1;
@@ -334,6 +342,8 @@ module pulse_controller_v5_0_S00_AXI #
    reg [(C_S_AXI_DATA_WIDTH / 8) - 1:0] s_axi_wstrb_l;
    wire [C_S_AXI_ADDR_WIDTH - 1:0] s_axi_awaddr = (s_axi_write_addr_latched ? s_axi_awaddr_l :
                                                    S_AXI_AWADDR);
+   wire [OPT_MEM_ADDR_BITS:0] s_axi_wr_regnum =
+                              s_axi_awaddr[ADDR_LSB + OPT_MEM_ADDR_BITS:ADDR_LSB];
    wire [C_S_AXI_DATA_WIDTH - 1:0] s_axi_wdata = (s_axi_write_data_latched ? s_axi_wdata_l :
                                                   S_AXI_WDATA);
    wire [(C_S_AXI_DATA_WIDTH / 8) - 1:0] s_axi_wstrb = (s_axi_write_data_latched ? s_axi_wstrb_l :
@@ -345,8 +355,7 @@ module pulse_controller_v5_0_S00_AXI #
    wire tc_inst_ready;
    // This will de-assert the cycle following the one
    // `tc_inst_ready && tc_inst_valid`
-   wire tc_inst_valid = (s_axi_wrvalid &
-                         s_axi_awaddr[ADDR_LSB + OPT_MEM_ADDR_BITS:ADDR_LSB] == 5'h1F);
+   wire tc_inst_valid = (s_axi_wrvalid & s_axi_wr_regnum == 7'h1F);
 
    assign S_AXI_BRESP = 0;
    integer byte_index;
@@ -365,7 +374,7 @@ module pulse_controller_v5_0_S00_AXI #
          ttl_hi_mask <= 0;
          ttl_lo_mask <= 0;
          slv_reg_ctrl <= 0;
-         slv_reg_dummy <= 0;
+         slv_reg_loopback <= 0;
       end else begin
          case (s_axi_write_state)
            2'b00: begin
@@ -394,7 +403,7 @@ module pulse_controller_v5_0_S00_AXI #
               // We got both the address and the data
               if ((S_AXI_AWVALID | s_axi_write_addr_latched) &
                   (S_AXI_WVALID | s_axi_write_data_latched)) begin
-                 if (s_axi_awaddr[ADDR_LSB + OPT_MEM_ADDR_BITS:ADDR_LSB] == 5'h1F) begin
+                 if (s_axi_wr_regnum == 7'h1F) begin
                     if (tc_inst_ready)
                       s_axi_write_state <= 2'b10;
                     else
@@ -404,8 +413,8 @@ module pulse_controller_v5_0_S00_AXI #
                     S_AXI_BVALID <= 1'b1;
                     s_axi_write_state <= 2'b10;
                  end
-                 case (s_axi_awaddr[ADDR_LSB + OPT_MEM_ADDR_BITS:ADDR_LSB])
-                   5'h00: begin
+                 case (s_axi_wr_regnum)
+                   7'h00: begin
                       for (byte_index = 0; byte_index <= (C_S_AXI_DATA_WIDTH / 8) - 1;
                            byte_index = byte_index + 1)
                         if (s_axi_wstrb[byte_index] == 1) begin
@@ -414,7 +423,7 @@ module pulse_controller_v5_0_S00_AXI #
                            ttl_hi_mask[(byte_index * 8)+:8] <= s_axi_wdata[(byte_index * 8)+:8];
                         end
                    end
-                   5'h01: begin
+                   7'h01: begin
                       for (byte_index = 0; byte_index <= (C_S_AXI_DATA_WIDTH / 8) - 1;
                            byte_index = byte_index + 1)
                         if (s_axi_wstrb[byte_index] == 1) begin
@@ -423,7 +432,7 @@ module pulse_controller_v5_0_S00_AXI #
                            ttl_lo_mask[(byte_index * 8)+:8] <= s_axi_wdata[(byte_index * 8)+:8];
                         end
                    end
-                   5'h03: begin
+                   7'h03: begin
                       for (byte_index = 0; byte_index <= (C_S_AXI_DATA_WIDTH / 8) - 1;
                            byte_index = byte_index + 1)
                         if (s_axi_wstrb[byte_index] == 1) begin
@@ -432,13 +441,13 @@ module pulse_controller_v5_0_S00_AXI #
                            slv_reg_ctrl[(byte_index * 8)+:8] <= s_axi_wdata[(byte_index * 8)+:8];
                         end
                    end
-                   5'h1E: begin
+                   7'h1E: begin
                       for (byte_index = 0; byte_index <= (C_S_AXI_DATA_WIDTH / 8) - 1;
                            byte_index = byte_index + 1)
                         if (s_axi_wstrb[byte_index] == 1) begin
                            // Respective byte enables are asserted as per write strobes
                            // Slave register 1
-                           slv_reg_dummy[(byte_index * 8)+:8] <= s_axi_wdata[(byte_index * 8)+:8];
+                           slv_reg_loopback[(byte_index * 8)+:8] <= s_axi_wdata[(byte_index * 8)+:8];
                         end
                    end
                  endcase
@@ -477,8 +486,7 @@ module pulse_controller_v5_0_S00_AXI #
 
    // rFIFO
    // Assumes that this only assert a single cycle
-   assign rFIFO_RdReq = s_axi_rdvalid &&
-                        S_AXI_ARADDR[ADDR_LSB + OPT_MEM_ADDR_BITS:ADDR_LSB] == 5'h1F;
+   assign rFIFO_RdReq = s_axi_rdvalid && s_axi_rd_regnum == 7'h1F;
    always @(posedge S_AXI_ACLK) begin
       if (~S_AXI_ARESETN | slv_reg_ctrl[8]) begin
          rFIFO_fill <= 0;
@@ -545,6 +553,8 @@ module pulse_controller_v5_0_S00_AXI #
       .inst_fifo_rd_en(inst_fifo_rd_en),
       .inst_fifo_full(inst_fifo_full),
       .inst_fifo_wr_data(inst_fifo_wr_data),
-      .inst_fifo_wr_en(inst_fifo_wr_en)
+      .inst_fifo_wr_en(inst_fifo_wr_en),
+
+      .dbg_regs(slv_dbg_regs)
       );
 endmodule

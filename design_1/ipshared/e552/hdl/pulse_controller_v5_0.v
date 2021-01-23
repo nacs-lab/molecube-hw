@@ -13,7 +13,7 @@ module pulse_controller_v5_0 #
 
    // Parameters of Axi Slave Bus Interface S00_AXI
    parameter integer C_S00_AXI_DATA_WIDTH = 32,
-   parameter integer C_S00_AXI_ADDR_WIDTH = 7
+   parameter integer C_S00_AXI_ADDR_WIDTH = 9
    )
    (
     // Users to add ports here
@@ -45,7 +45,7 @@ module pulse_controller_v5_0 #
     input [63:0] inst_fifo_rd_data,
     output inst_fifo_rd_en,
     input inst_fifo_full,
-    output [63:0] inst_fifo_wr_data,
+    output [31:0] inst_fifo_wr_data,
     output inst_fifo_wr_en,
     // User ports ends
     // Do not modify the ports beyond this line

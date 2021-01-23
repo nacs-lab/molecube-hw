@@ -217,7 +217,7 @@
         </spirit:parameter>
         <spirit:parameter>
           <spirit:name>ADDR_WIDTH</spirit:name>
-          <spirit:value spirit:format="long" spirit:resolve="generated" spirit:id="BUSIFPARAM_VALUE.S00_AXI.ADDR_WIDTH">7</spirit:value>
+          <spirit:value spirit:format="long" spirit:resolve="generated" spirit:id="BUSIFPARAM_VALUE.S00_AXI.ADDR_WIDTH">9</spirit:value>
           <spirit:vendorExtensions>
             <xilinx:parameterInfo>
               <xilinx:parameterUsage>none</xilinx:parameterUsage>
@@ -658,7 +658,7 @@
           </spirit:parameter>
           <spirit:parameter>
             <spirit:name>outputProductCRC</spirit:name>
-            <spirit:value>9:2f2bcdef</spirit:value>
+            <spirit:value>9:eccead81</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -669,7 +669,7 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>outputProductCRC</spirit:name>
-            <spirit:value>9:2f2bcdef</spirit:value>
+            <spirit:value>9:eccead81</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -689,7 +689,7 @@
           </spirit:parameter>
           <spirit:parameter>
             <spirit:name>outputProductCRC</spirit:name>
-            <spirit:value>9:2f2bcdef</spirit:value>
+            <spirit:value>9:eccead81</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -709,7 +709,7 @@
           </spirit:parameter>
           <spirit:parameter>
             <spirit:name>outputProductCRC</spirit:name>
-            <spirit:value>9:f91fe044</spirit:value>
+            <spirit:value>9:ce9e6537</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -729,7 +729,7 @@
           </spirit:parameter>
           <spirit:parameter>
             <spirit:name>outputProductCRC</spirit:name>
-            <spirit:value>9:f91fe044</spirit:value>
+            <spirit:value>9:ce9e6537</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -1027,7 +1027,7 @@
         <spirit:wire>
           <spirit:direction>out</spirit:direction>
           <spirit:vector>
-            <spirit:left spirit:format="long">63</spirit:left>
+            <spirit:left spirit:format="long">31</spirit:left>
             <spirit:right spirit:format="long">0</spirit:right>
           </spirit:vector>
           <spirit:wireTypeDefs>
@@ -1083,7 +1083,7 @@
         <spirit:wire>
           <spirit:direction>in</spirit:direction>
           <spirit:vector>
-            <spirit:left spirit:format="long" spirit:resolve="dependent" spirit:dependency="(spirit:decode(id(&apos;MODELPARAM_VALUE.C_S00_AXI_ADDR_WIDTH&apos;)) - 1)">6</spirit:left>
+            <spirit:left spirit:format="long" spirit:resolve="dependent" spirit:dependency="(spirit:decode(id(&apos;MODELPARAM_VALUE.C_S00_AXI_ADDR_WIDTH&apos;)) - 1)">8</spirit:left>
             <spirit:right spirit:format="long">0</spirit:right>
           </spirit:vector>
           <spirit:wireTypeDefs>
@@ -1246,7 +1246,7 @@
         <spirit:wire>
           <spirit:direction>in</spirit:direction>
           <spirit:vector>
-            <spirit:left spirit:format="long" spirit:resolve="dependent" spirit:dependency="(spirit:decode(id(&apos;MODELPARAM_VALUE.C_S00_AXI_ADDR_WIDTH&apos;)) - 1)">6</spirit:left>
+            <spirit:left spirit:format="long" spirit:resolve="dependent" spirit:dependency="(spirit:decode(id(&apos;MODELPARAM_VALUE.C_S00_AXI_ADDR_WIDTH&apos;)) - 1)">8</spirit:left>
             <spirit:right spirit:format="long">0</spirit:right>
           </spirit:vector>
           <spirit:wireTypeDefs>
@@ -1373,7 +1373,7 @@
         <spirit:name>C_S00_AXI_ADDR_WIDTH</spirit:name>
         <spirit:displayName>C S00 AXI ADDR WIDTH</spirit:displayName>
         <spirit:description>Width of S_AXI address bus</spirit:description>
-        <spirit:value spirit:format="long" spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.C_S00_AXI_ADDR_WIDTH" spirit:order="4" spirit:rangeType="long">7</spirit:value>
+        <spirit:value spirit:format="long" spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.C_S00_AXI_ADDR_WIDTH" spirit:order="4" spirit:rangeType="long">9</spirit:value>
       </spirit:modelParameter>
       <spirit:modelParameter spirit:dataType="integer">
         <spirit:name>U_PULSE_WIDTH</spirit:name>
@@ -1418,6 +1418,10 @@
       <spirit:enumeration>ACTIVE_LOW</spirit:enumeration>
     </spirit:choice>
     <spirit:choice>
+      <spirit:name>choice_list_ae57517c</spirit:name>
+      <spirit:enumeration>9</spirit:enumeration>
+    </spirit:choice>
+    <spirit:choice>
       <spirit:name>choice_pairs_ce1226b1</spirit:name>
       <spirit:enumeration spirit:text="true">1</spirit:enumeration>
       <spirit:enumeration spirit:text="false">0</spirit:enumeration>
@@ -1427,23 +1431,23 @@
     <spirit:fileSet>
       <spirit:name>xilinx_verilogsynthesis_view_fileset</spirit:name>
       <spirit:file>
-        <spirit:name>../../ipshared/7ead/hdl/dds_controller.sv</spirit:name>
+        <spirit:name>../../ipshared/e552/hdl/dds_controller.sv</spirit:name>
         <spirit:fileType>systemVerilogSource</spirit:fileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../../ipshared/7ead/hdl/pulse_controller_v5_0_S00_AXI.sv</spirit:name>
+        <spirit:name>../../ipshared/e552/hdl/pulse_controller_v5_0_S00_AXI.sv</spirit:name>
         <spirit:fileType>systemVerilogSource</spirit:fileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../../ipshared/7ead/hdl/spi_controller.sv</spirit:name>
+        <spirit:name>../../ipshared/e552/hdl/spi_controller.sv</spirit:name>
         <spirit:fileType>systemVerilogSource</spirit:fileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../../ipshared/7ead/hdl/timing_controller.sv</spirit:name>
+        <spirit:name>../../ipshared/e552/hdl/timing_controller.sv</spirit:name>
         <spirit:fileType>systemVerilogSource</spirit:fileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../../ipshared/7ead/hdl/pulse_controller_v5_0.v</spirit:name>
+        <spirit:name>../../ipshared/e552/hdl/pulse_controller_v5_0.v</spirit:name>
         <spirit:fileType>verilogSource</spirit:fileType>
       </spirit:file>
     </spirit:fileSet>
@@ -1458,23 +1462,23 @@
     <spirit:fileSet>
       <spirit:name>xilinx_verilogbehavioralsimulation_view_fileset</spirit:name>
       <spirit:file>
-        <spirit:name>../../ipshared/7ead/hdl/dds_controller.sv</spirit:name>
+        <spirit:name>../../ipshared/e552/hdl/dds_controller.sv</spirit:name>
         <spirit:fileType>systemVerilogSource</spirit:fileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../../ipshared/7ead/hdl/pulse_controller_v5_0_S00_AXI.sv</spirit:name>
+        <spirit:name>../../ipshared/e552/hdl/pulse_controller_v5_0_S00_AXI.sv</spirit:name>
         <spirit:fileType>systemVerilogSource</spirit:fileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../../ipshared/7ead/hdl/spi_controller.sv</spirit:name>
+        <spirit:name>../../ipshared/e552/hdl/spi_controller.sv</spirit:name>
         <spirit:fileType>systemVerilogSource</spirit:fileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../../ipshared/7ead/hdl/timing_controller.sv</spirit:name>
+        <spirit:name>../../ipshared/e552/hdl/timing_controller.sv</spirit:name>
         <spirit:fileType>systemVerilogSource</spirit:fileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../../ipshared/7ead/hdl/pulse_controller_v5_0.v</spirit:name>
+        <spirit:name>../../ipshared/e552/hdl/pulse_controller_v5_0.v</spirit:name>
         <spirit:fileType>verilogSource</spirit:fileType>
       </spirit:file>
     </spirit:fileSet>
@@ -1506,7 +1510,7 @@
       <spirit:name>C_S00_AXI_ADDR_WIDTH</spirit:name>
       <spirit:displayName>C S00 AXI ADDR WIDTH</spirit:displayName>
       <spirit:description>Width of S_AXI address bus</spirit:description>
-      <spirit:value spirit:format="long" spirit:resolve="user" spirit:id="PARAM_VALUE.C_S00_AXI_ADDR_WIDTH" spirit:order="4" spirit:rangeType="long">7</spirit:value>
+      <spirit:value spirit:format="long" spirit:resolve="user" spirit:id="PARAM_VALUE.C_S00_AXI_ADDR_WIDTH" spirit:choiceRef="choice_list_ae57517c" spirit:order="4">9</spirit:value>
       <spirit:vendorExtensions>
         <xilinx:parameterInfo>
           <xilinx:enablement>
@@ -1577,7 +1581,7 @@
   <spirit:vendorExtensions>
     <xilinx:coreExtensions>
       <xilinx:displayName>pulse_controller_v5.0</xilinx:displayName>
-      <xilinx:coreRevision>17</xilinx:coreRevision>
+      <xilinx:coreRevision>20</xilinx:coreRevision>
       <xilinx:configElementInfos>
         <xilinx:configElementInfo xilinx:referenceId="BUSIFPARAM_VALUE.S00_AXI.ADDR_WIDTH" xilinx:valueSource="auto" xilinx:valuePermission="bd"/>
         <xilinx:configElementInfo xilinx:referenceId="BUSIFPARAM_VALUE.S00_AXI.ARUSER_WIDTH" xilinx:valueSource="constant" xilinx:valuePermission="bd"/>
@@ -1618,16 +1622,17 @@
         <xilinx:configElementInfo xilinx:referenceId="BUSIFPARAM_VALUE.S00_AXI_CLK.FREQ_TOLERANCE_HZ" xilinx:valuePermission="bd"/>
         <xilinx:configElementInfo xilinx:referenceId="BUSIFPARAM_VALUE.S00_AXI_CLK.PHASE" xilinx:valuePermission="bd"/>
         <xilinx:configElementInfo xilinx:referenceId="BUSIFPARAM_VALUE.S00_AXI_RST.POLARITY" xilinx:valuePermission="bd"/>
+        <xilinx:configElementInfo xilinx:referenceId="PARAM_VALUE.C_S00_AXI_ADDR_WIDTH" xilinx:valueSource="user"/>
       </xilinx:configElementInfos>
     </xilinx:coreExtensions>
     <xilinx:packagingInfo>
       <xilinx:xilinxVersion>2020.1</xilinx:xilinxVersion>
       <xilinx:checksum xilinx:scope="busInterfaces" xilinx:value="c7b19419"/>
       <xilinx:checksum xilinx:scope="memoryMaps" xilinx:value="ed1368d5"/>
-      <xilinx:checksum xilinx:scope="fileGroups" xilinx:value="aadb0189"/>
-      <xilinx:checksum xilinx:scope="ports" xilinx:value="1aff9052"/>
-      <xilinx:checksum xilinx:scope="hdlParameters" xilinx:value="74b9f224"/>
-      <xilinx:checksum xilinx:scope="parameters" xilinx:value="a642befe"/>
+      <xilinx:checksum xilinx:scope="fileGroups" xilinx:value="2b5ba4a9"/>
+      <xilinx:checksum xilinx:scope="ports" xilinx:value="265cefe9"/>
+      <xilinx:checksum xilinx:scope="hdlParameters" xilinx:value="b3792af7"/>
+      <xilinx:checksum xilinx:scope="parameters" xilinx:value="11b802fc"/>
     </xilinx:packagingInfo>
   </spirit:vendorExtensions>
 </spirit:component>

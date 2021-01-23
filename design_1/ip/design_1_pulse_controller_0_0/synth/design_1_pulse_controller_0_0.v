@@ -48,7 +48,7 @@
 
 
 // IP VLNV: nigrp.org:nigrp:pulse_controller:5.0
-// IP Revision: 17
+// IP Revision: 20
 
 (* X_CORE_INFO = "pulse_controller_v5_0,Vivado 2020.1" *)
 (* CHECK_LICENSE_TYPE = "design_1_pulse_controller_0_0,pulse_controller_v5_0,{}" *)
@@ -120,7 +120,7 @@ output wire inst_fifo_rd_en;
 (* X_INTERFACE_INFO = "xilinx.com:interface:fifo_write:1.0 inst_fifo_wr FULL" *)
 input wire inst_fifo_full;
 (* X_INTERFACE_INFO = "xilinx.com:interface:fifo_write:1.0 inst_fifo_wr WR_DATA" *)
-output wire [63 : 0] inst_fifo_wr_data;
+output wire [31 : 0] inst_fifo_wr_data;
 (* X_INTERFACE_INFO = "xilinx.com:interface:fifo_write:1.0 inst_fifo_wr WR_EN" *)
 output wire inst_fifo_wr_en;
 (* X_INTERFACE_PARAMETER = "XIL_INTERFACENAME S00_AXI_CLK, ASSOCIATED_BUSIF S00_AXI, ASSOCIATED_RESET s00_axi_aresetn, FREQ_HZ 100000000, FREQ_TOLERANCE_HZ 0, PHASE 0.000, CLK_DOMAIN design_1_processing_system7_0_0_FCLK_CLK0, INSERT_VIP 0" *)
@@ -130,7 +130,7 @@ input wire s00_axi_aclk;
 (* X_INTERFACE_INFO = "xilinx.com:signal:reset:1.0 S00_AXI_RST RST" *)
 input wire s00_axi_aresetn;
 (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 S00_AXI AWADDR" *)
-input wire [6 : 0] s00_axi_awaddr;
+input wire [8 : 0] s00_axi_awaddr;
 (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 S00_AXI AWPROT" *)
 input wire [2 : 0] s00_axi_awprot;
 (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 S00_AXI AWVALID" *)
@@ -152,7 +152,7 @@ output wire s00_axi_bvalid;
 (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 S00_AXI BREADY" *)
 input wire s00_axi_bready;
 (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 S00_AXI ARADDR" *)
-input wire [6 : 0] s00_axi_araddr;
+input wire [8 : 0] s00_axi_araddr;
 (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 S00_AXI ARPROT" *)
 input wire [2 : 0] s00_axi_arprot;
 (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 S00_AXI ARVALID" *)
@@ -165,14 +165,14 @@ output wire [31 : 0] s00_axi_rdata;
 output wire [1 : 0] s00_axi_rresp;
 (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 S00_AXI RVALID" *)
 output wire s00_axi_rvalid;
-(* X_INTERFACE_PARAMETER = "XIL_INTERFACENAME S00_AXI, WIZ_DATA_WIDTH 32, WIZ_NUM_REG 32, SUPPORTS_NARROW_BURST 0, DATA_WIDTH 32, PROTOCOL AXI4LITE, FREQ_HZ 100000000, ID_WIDTH 0, ADDR_WIDTH 7, AWUSER_WIDTH 0, ARUSER_WIDTH 0, WUSER_WIDTH 0, RUSER_WIDTH 0, BUSER_WIDTH 0, READ_WRITE_MODE READ_WRITE, HAS_BURST 0, HAS_LOCK 0, HAS_PROT 1, HAS_CACHE 0, HAS_QOS 0, HAS_REGION 0, HAS_WSTRB 1, HAS_BRESP 1, HAS_RRESP 1, NUM_READ_OUTSTANDING 8, NUM_WRITE_OUTSTANDING 8, MAX_BURST_LENGTH 1, PHASE 0.000, CLK_DOMAIN design_1_processing_sy\
+(* X_INTERFACE_PARAMETER = "XIL_INTERFACENAME S00_AXI, WIZ_DATA_WIDTH 32, WIZ_NUM_REG 32, SUPPORTS_NARROW_BURST 0, DATA_WIDTH 32, PROTOCOL AXI4LITE, FREQ_HZ 100000000, ID_WIDTH 0, ADDR_WIDTH 9, AWUSER_WIDTH 0, ARUSER_WIDTH 0, WUSER_WIDTH 0, RUSER_WIDTH 0, BUSER_WIDTH 0, READ_WRITE_MODE READ_WRITE, HAS_BURST 0, HAS_LOCK 0, HAS_PROT 1, HAS_CACHE 0, HAS_QOS 0, HAS_REGION 0, HAS_WSTRB 1, HAS_BRESP 1, HAS_RRESP 1, NUM_READ_OUTSTANDING 8, NUM_WRITE_OUTSTANDING 8, MAX_BURST_LENGTH 1, PHASE 0.000, CLK_DOMAIN design_1_processing_sy\
 stem7_0_0_FCLK_CLK0, NUM_READ_THREADS 4, NUM_WRITE_THREADS 4, RUSER_BITS_PER_BYTE 0, WUSER_BITS_PER_BYTE 0, INSERT_VIP 0" *)
 (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 S00_AXI RREADY" *)
 input wire s00_axi_rready;
 
   pulse_controller_v5_0 #(
     .C_S00_AXI_DATA_WIDTH(32),  // Width of S_AXI data bus
-    .C_S00_AXI_ADDR_WIDTH(7),  // Width of S_AXI address bus
+    .C_S00_AXI_ADDR_WIDTH(9),  // Width of S_AXI address bus
     .U_PULSE_WIDTH(32),
     .U_DDS_DATA_WIDTH(16),
     .U_DDS_ADDR_WIDTH(7),

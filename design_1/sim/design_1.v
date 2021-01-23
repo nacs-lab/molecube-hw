@@ -177,7 +177,7 @@ module design_1
   wire [63:0]pulse_controller_0_inst_fifo_rd_RD_DATA;
   wire pulse_controller_0_inst_fifo_rd_RD_EN;
   wire pulse_controller_0_inst_fifo_wr_FULL;
-  wire [63:0]pulse_controller_0_inst_fifo_wr_WR_DATA;
+  wire [31:0]pulse_controller_0_inst_fifo_wr_WR_DATA;
   wire pulse_controller_0_inst_fifo_wr_WR_EN;
   wire [31:0]pulse_controller_0_pulse_io;
   wire pulse_controller_0_spi_clk;
@@ -270,7 +270,7 @@ module design_1
         .empty(pulse_controller_0_inst_fifo_rd_EMPTY),
         .full(pulse_controller_0_inst_fifo_wr_FULL),
         .rd_en(pulse_controller_0_inst_fifo_rd_RD_EN),
-        .rst(rst_ps7_0_100M_peripheral_reset),
+        .srst(rst_ps7_0_100M_peripheral_reset),
         .wr_en(pulse_controller_0_inst_fifo_wr_WR_EN));
   design_1_processing_system7_0_0 processing_system7_0
        (.DDR_Addr(DDR_addr[14:0]),
@@ -354,12 +354,12 @@ module design_1
         .inst_fifo_wr_en(pulse_controller_0_inst_fifo_wr_WR_EN),
         .pulse_io(pulse_controller_0_pulse_io),
         .s00_axi_aclk(processing_system7_0_FCLK_CLK0),
-        .s00_axi_araddr(axi_interconnect_0_M00_AXI_ARADDR[6:0]),
+        .s00_axi_araddr(axi_interconnect_0_M00_AXI_ARADDR[8:0]),
         .s00_axi_aresetn(rst_ps7_0_100M_peripheral_aresetn),
         .s00_axi_arprot(axi_interconnect_0_M00_AXI_ARPROT),
         .s00_axi_arready(axi_interconnect_0_M00_AXI_ARREADY),
         .s00_axi_arvalid(axi_interconnect_0_M00_AXI_ARVALID),
-        .s00_axi_awaddr(axi_interconnect_0_M00_AXI_AWADDR[6:0]),
+        .s00_axi_awaddr(axi_interconnect_0_M00_AXI_AWADDR[8:0]),
         .s00_axi_awprot(axi_interconnect_0_M00_AXI_AWPROT),
         .s00_axi_awready(axi_interconnect_0_M00_AXI_AWREADY),
         .s00_axi_awvalid(axi_interconnect_0_M00_AXI_AWVALID),
