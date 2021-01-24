@@ -1,3 +1,5 @@
+// Shim layer between verilog and system verilog
+
 module pulse_controller #
   (
    // Users to add parameters here

@@ -1,4 +1,8 @@
-//
+// AXI4-lite interface:
+//   Handle AXI4-lite protocol and translate it to native signals for the timing controller.
+//   Keeps track of a few state registers that are directly set by the AXI4-lite protocol.
+//   AXI4-lite protocol detail should stay in this file/module.
+//   The placement for other logic is not as strict.
 
 // Forward the input to output if the output isn't full.
 // Otherwise, discard the input and generate the corresponding of zero outputs
@@ -193,9 +197,24 @@ module pulse_controller_S00_AXI #
    // since we don't care about the delay on this
    reg [C_S_AXI_DATA_WIDTH - 1:0] slv_reg_status;
    reg [C_S_AXI_DATA_WIDTH - 1:0] slv_reg_ctrl;
+   wire pulse_controller_hold = slv_reg_ctrl[7];
+   wire pulse_controller_init = slv_reg_ctrl[8];
    reg [C_S_AXI_DATA_WIDTH - 1:0] slv_reg_loopback;
 
-   wire [(C_S_AXI_DATA_WIDTH - 1):0] slv_dbg_regs [0:31];
+   // Debug registers
+   reg [(C_S_AXI_DATA_WIDTH - 1):0] dbg_inst_word_count;
+   wire [(C_S_AXI_DATA_WIDTH - 1):0] dbg_inst_count;
+   wire [(C_S_AXI_DATA_WIDTH - 1):0] dbg_ttl_count;
+   wire [(C_S_AXI_DATA_WIDTH - 1):0] dbg_dds_count;
+   wire [(C_S_AXI_DATA_WIDTH - 1):0] dbg_wait_count;
+   wire [(C_S_AXI_DATA_WIDTH - 1):0] dbg_clear_count;
+   wire [(C_S_AXI_DATA_WIDTH - 1):0] dbg_loopback_count;
+   wire [(C_S_AXI_DATA_WIDTH - 1):0] dbg_clock_count;
+   wire [(C_S_AXI_DATA_WIDTH - 1):0] dbg_spi_count;
+   wire [(C_S_AXI_DATA_WIDTH - 1):0] dbg_underflow_cycle;
+   wire [(C_S_AXI_DATA_WIDTH - 1):0] dbg_inst_cycle;
+   wire [(C_S_AXI_DATA_WIDTH - 1):0] dbg_ttl_cycle;
+   wire [(C_S_AXI_DATA_WIDTH - 1):0] dbg_wait_cycle;
 
    wire underflow;
    wire pulses_finished;
@@ -266,45 +285,35 @@ module pulse_controller_S00_AXI #
                  S_AXI_ARREADY <= 1'b0;
                  // Address decoding for reading registers
                  case (s_axi_rd_regnum)
-                   7'h00: begin
-                      S_AXI_RDATA <= ttl_hi_mask;
-                   end
-                   7'h01: begin
-                      S_AXI_RDATA <= ttl_lo_mask;
-                   end
-                   7'h02: begin
-                      S_AXI_RDATA <= slv_reg_status;
-                   end
-                   7'h03: begin
-                      S_AXI_RDATA <= slv_reg_ctrl;
-                   end
-                   7'h04: begin
-                      S_AXI_RDATA <= ttl_out;
-                   end
+                   7'h00: S_AXI_RDATA <= ttl_hi_mask;
+                   7'h01: S_AXI_RDATA <= ttl_lo_mask;
+                   7'h02: S_AXI_RDATA <= slv_reg_status;
+                   7'h03: S_AXI_RDATA <= slv_reg_ctrl;
+                   7'h04: S_AXI_RDATA <= ttl_out;
                    7'h05: begin
                       S_AXI_RDATA[C_S_AXI_DATA_WIDTH - 1:8] <= 0;
                       S_AXI_RDATA[7:0] <= clockout_div;
                    end
-                   7'h06: begin
-                      S_AXI_RDATA <= MAJOR_VER;
-                   end
-                   7'h07: begin
-                      S_AXI_RDATA <= MINOR_VER;
-                   end
-                   7'h1E: begin
-                      S_AXI_RDATA <= slv_reg_loopback;
-                   end
-                   7'h1F: begin
-                      // Reading from empty buffer has no effect.
-                      S_AXI_RDATA <= ~result_fifo_empty ? result_fifo_rd_data : 0;
-                   end
-                   default: begin
-                      if (s_axi_rd_regnum >= 7'h20 && s_axi_rd_regnum < 7'h40) begin
-                         S_AXI_RDATA <= slv_dbg_regs[s_axi_rd_regnum - 7'h20];
-                      end else begin
-                         S_AXI_RDATA <= 0;
-                      end
-                   end
+                   7'h06: S_AXI_RDATA <= MAJOR_VER;
+                   7'h07: S_AXI_RDATA <= MINOR_VER;
+                   7'h1E: S_AXI_RDATA <= slv_reg_loopback;
+                   7'h1F: // Reading from empty buffer has no effect.
+                     S_AXI_RDATA <= ~result_fifo_empty ? result_fifo_rd_data : 0;
+                   // Debug registers
+                   7'h20: S_AXI_RDATA <= dbg_inst_word_count;
+                   7'h21: S_AXI_RDATA <= dbg_inst_count;
+                   7'h22: S_AXI_RDATA <= dbg_ttl_count;
+                   7'h23: S_AXI_RDATA <= dbg_dds_count;
+                   7'h24: S_AXI_RDATA <= dbg_wait_count;
+                   7'h25: S_AXI_RDATA <= dbg_clear_count;
+                   7'h26: S_AXI_RDATA <= dbg_loopback_count;
+                   7'h27: S_AXI_RDATA <= dbg_clock_count;
+                   7'h28: S_AXI_RDATA <= dbg_spi_count;
+                   7'h29: S_AXI_RDATA <= dbg_underflow_cycle;
+                   7'h2a: S_AXI_RDATA <= dbg_inst_cycle;
+                   7'h2b: S_AXI_RDATA <= dbg_ttl_cycle;
+                   7'h2c: S_AXI_RDATA <= dbg_wait_cycle;
+                   default: S_AXI_RDATA <= 0;
                  endcase
                  S_AXI_RVALID <= 1'b1;
                  s_axi_read_state <= 1'b1;
@@ -569,6 +578,20 @@ module pulse_controller_S00_AXI #
       end
    end
 
+   // Instruction fifo write end
+   assign inst_fifo_wr_data = s_axi_wdata;
+   assign inst_fifo_wr_en = S_AXI_ARESETN & ~pulse_controller_init & tc_inst_valid;
+   wire inst_fifo_wr_ready = ~inst_fifo_full;
+   // Signal the AXI controller that we've read the data
+   assign tc_inst_ready = inst_fifo_wr_ready;
+   always @(posedge S_AXI_ACLK) begin
+      if (~S_AXI_ARESETN | pulse_controller_init) begin
+         dbg_inst_word_count <= 0;
+      end else if (inst_fifo_wr_ready & inst_fifo_wr_en) begin
+         dbg_inst_word_count <= dbg_inst_word_count + 1;
+      end
+   end
+
    timing_controller
      #(.N_SPI(N_SPI),
        .N_DDS(N_DDS),
@@ -579,9 +602,6 @@ module pulse_controller_S00_AXI #
        .RESULT_WIDTH(C_S_AXI_DATA_WIDTH))
    tc(.clock(S_AXI_ACLK),
       .resetn(S_AXI_ARESETN),
-      .bus_data(s_axi_wdata),
-      .bus_data_valid(tc_inst_valid),
-      .bus_data_ready(tc_inst_ready),
       .result_data(result_data),
       .result_wr_en(result_wr_en),
       .dds_addr(dds_addr),
@@ -599,19 +619,29 @@ module pulse_controller_S00_AXI #
       .spi_miso(spi_miso),
       .spi_sclk(spi_sclk),
       .pulses_finished(pulses_finished),
-      .pulse_controller_hold(slv_reg_ctrl[7]),
-      .init(slv_reg_ctrl[8]),
+      .pulse_controller_release(inst_fifo_full),
+      .pulse_controller_hold(pulse_controller_hold),
+      .init(pulse_controller_init),
       .clockout(clockout),
       .clockout_div(clockout_div),
+
       .inst_fifo_empty(inst_fifo_empty),
       .inst_fifo_almost_empty(inst_fifo_almost_empty),
       .inst_fifo_rd_data(inst_fifo_rd_data),
       .inst_fifo_rd_en(inst_fifo_rd_en),
-      .inst_fifo_full(inst_fifo_full),
-      .inst_fifo_almost_full(inst_fifo_almost_full),
-      .inst_fifo_wr_data(inst_fifo_wr_data),
-      .inst_fifo_wr_en(inst_fifo_wr_en),
 
-      .dbg_regs(slv_dbg_regs)
+      // Debug registers
+      .dbg_inst_count(dbg_inst_count),
+      .dbg_ttl_count(dbg_ttl_count),
+      .dbg_dds_count(dbg_dds_count),
+      .dbg_wait_count(dbg_wait_count),
+      .dbg_clear_count(dbg_clear_count),
+      .dbg_loopback_count(dbg_loopback_count),
+      .dbg_clock_count(dbg_clock_count),
+      .dbg_spi_count(dbg_spi_count),
+      .dbg_underflow_cycle(dbg_underflow_cycle),
+      .dbg_inst_cycle(dbg_inst_cycle),
+      .dbg_ttl_cycle(dbg_ttl_cycle),
+      .dbg_wait_cycle(dbg_wait_cycle)
       );
 endmodule

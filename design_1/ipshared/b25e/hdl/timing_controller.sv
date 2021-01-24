@@ -88,9 +88,6 @@ module timing_controller
     localparam TTL_WIDTH = 32)
    (input clock,
     input resetn,
-    input [(BUS_DATA_WIDTH - 1):0] bus_data,
-    input bus_data_valid,
-    output bus_data_ready,
 
     output [(RESULT_WIDTH - 1):0] result_data,
     output result_wr_en,
@@ -117,6 +114,7 @@ module timing_controller
     output reg pulses_finished,
     // pulses wait until this goes low
     input pulse_controller_hold,
+    input pulse_controller_release,
     // init is like reset, but hold the current TTL outputs toggle this at
     // the start of the sequence.
     input init,
@@ -127,12 +125,20 @@ module timing_controller
     input inst_fifo_almost_empty, // unused
     input [63:0] inst_fifo_rd_data,
     output inst_fifo_rd_en,
-    input inst_fifo_full,
-    input inst_fifo_almost_full, // unused
-    output [31:0] inst_fifo_wr_data,
     output inst_fifo_wr_en,
 
-    output reg [(BUS_DATA_WIDTH - 1):0] dbg_regs [0:31]
+    output reg [(BUS_DATA_WIDTH - 1):0] dbg_inst_count,
+    output reg [(BUS_DATA_WIDTH - 1):0] dbg_ttl_count,
+    output reg [(BUS_DATA_WIDTH - 1):0] dbg_dds_count,
+    output reg [(BUS_DATA_WIDTH - 1):0] dbg_wait_count,
+    output reg [(BUS_DATA_WIDTH - 1):0] dbg_clear_count,
+    output reg [(BUS_DATA_WIDTH - 1):0] dbg_loopback_count,
+    output reg [(BUS_DATA_WIDTH - 1):0] dbg_clock_count,
+    output reg [(BUS_DATA_WIDTH - 1):0] dbg_spi_count,
+    output reg [(BUS_DATA_WIDTH - 1):0] dbg_underflow_cycle,
+    output reg [(BUS_DATA_WIDTH - 1):0] dbg_inst_cycle,
+    output reg [(BUS_DATA_WIDTH - 1):0] dbg_ttl_cycle,
+    output reg [(BUS_DATA_WIDTH - 1):0] dbg_wait_cycle
     );
 
    wire reset = ~resetn;
@@ -193,19 +199,16 @@ module timing_controller
    reg [(TIMER_WIDTH - 1):0] wait_timer;
    reg waiting;
    reg timing_check;
-   // goes high when inst_fifo_full is true.  also goes low at last pulse;
-   reg force_release;
-   // pulses_hold will be released if FIFO is full or pulse_controller_hold is
-   // low once released, the controller runs until it is done
-   wire pulses_hold = pulse_controller_hold & ~force_release & ~inst_fifo_full;
+   // goes high when `pulse_controller_release` is true.
+   reg force_released;
+   // `pulses_controller_hold` will be released if FIFO is full or `pulse_controller_hold` is
+   // low once released, the controller runs until it is done.
+   // The last condition on `pulse_controller_release` makes sure this is released
+   // as soon as the FIFO is full. (we could also use almost_full for this if we want)
+   wire pulses_hold = pulse_controller_hold & ~force_released & ~pulse_controller_release;
 
-   assign inst_fifo_wr_data = bus_data;
-   assign inst_fifo_wr_en = ~init & ~reset & bus_data_valid;
-   wire inst_fifo_wr_ready = ~inst_fifo_full;
    // The following condition must be consistent with how the fifo is read below.
    assign inst_fifo_rd_en = ~init & ~reset & ~waiting & ~pulses_hold;
-   // Signal the AXI controller that we've read the data
-   assign bus_data_ready = inst_fifo_wr_ready;
    // Swap the word order since the FIFO generater
    // fills the MSB first whereas we want the LSB first.
    wire [63:0] instruction = {inst_fifo_rd_data[31:0], inst_fifo_rd_data[63:32]};
@@ -233,21 +236,6 @@ module timing_controller
                        .result_data(spi_result),
                        .result_WrReq(spi_WrReq));
 
-   // Aliases for debug register IDs
-   localparam DBG_INST_WORD_COUNT = 0;
-   localparam DBG_INST_COUNT = 1;
-   localparam DBG_TTL_COUNT = 2;
-   localparam DBG_DDS_COUNT = 3;
-   localparam DBG_WAIT_COUNT = 4;
-   localparam DBG_CLEAR_COUNT = 5;
-   localparam DBG_LOOPBACK_COUNT = 6;
-   localparam DBG_CLOCK_COUNT = 7;
-   localparam DBG_SPI_COUNT = 8;
-   localparam DBG_UNDERFLOW_CYCLE = 9;
-   localparam DBG_INST_CYCLE = 10;
-   localparam DBG_TTL_CYCLE = 11;
-   localparam DBG_WAIT_CYCLE = 12;
-
    reg is_ttl;
    reg is_wait;
 
@@ -265,15 +253,23 @@ module timing_controller
          pulses_finished <= 1;
          loopback_WrReq <= 0;
          clockout_div <= 255;
-         force_release <= 0;
+         force_released <= 0;
 
-         for (int i = 0; i < 32; i = i + 1)
-           dbg_regs[i] <= 0;
+         dbg_inst_count <= 0;
+         dbg_ttl_count <= 0;
+         dbg_dds_count <= 0;
+         dbg_wait_count <= 0;
+         dbg_clear_count <= 0;
+         dbg_loopback_count <= 0;
+         dbg_clock_count <= 0;
+         dbg_spi_count <= 0;
+         dbg_underflow_cycle <= 0;
+         dbg_inst_cycle <= 0;
+         dbg_ttl_cycle <= 0;
+         dbg_wait_cycle <= 0;
       end else begin
-         if (inst_fifo_wr_ready & inst_fifo_wr_en)
-           dbg_regs[DBG_INST_WORD_COUNT] = dbg_regs[DBG_INST_WORD_COUNT] + 1;
-         if (inst_fifo_full)
-           force_release <= 1;
+         if (pulse_controller_release)
+           force_released <= 1;
 
          // `waiting`:
          // 0: Fetch and dispatch instruction from instruction FIFO
@@ -282,7 +278,7 @@ module timing_controller
             if (inst_fifo_empty | ~inst_fifo_rd_en) begin
                pulses_finished <= 1;
                if (timing_check) begin
-                  dbg_regs[DBG_UNDERFLOW_CYCLE] <= dbg_regs[DBG_UNDERFLOW_CYCLE] + 1;
+                  dbg_underflow_cycle <= dbg_underflow_cycle + 1;
                   // underflow bit is sticky
                   underflow <= 1;
                end
@@ -295,14 +291,14 @@ module timing_controller
                is_wait <= 0;
                waiting <= 1;
                pulses_finished <= 0;
-               dbg_regs[DBG_INST_COUNT] = dbg_regs[DBG_INST_COUNT] + 1;
-               dbg_regs[DBG_INST_CYCLE] <= dbg_regs[DBG_INST_CYCLE] + 1;
+               dbg_inst_count = dbg_inst_count + 1;
+               dbg_inst_cycle <= dbg_inst_cycle + 1;
                timing_check <= instruction[ENABLE_TIMING_CHECK_BIT];
                case (instruction[INSTRUCTION_BITA:INSTRUCTION_BITB])
                  0 : begin // set digital output for given duration
                     is_ttl <= 1;
-                    dbg_regs[DBG_TTL_COUNT] = dbg_regs[DBG_TTL_COUNT] + 1;
-                    dbg_regs[DBG_TTL_CYCLE] = dbg_regs[DBG_TTL_CYCLE] + 1;
+                    dbg_ttl_count = dbg_ttl_count + 1;
+                    dbg_ttl_cycle = dbg_ttl_cycle + 1;
                     if (instruction[TIMER_BITA:TIMER_BITB] == 1 ||
                         instruction[TIMER_BITA:TIMER_BITB] == 0)
                       waiting <= 0; // 1 cycle pulse, go to next instruction immediately
@@ -310,7 +306,7 @@ module timing_controller
                     ttl_out <= instruction[TTL_BITA:TTL_BITB];
                  end
                  1 : begin // DDS instruction
-                    dbg_regs[DBG_DDS_COUNT] = dbg_regs[DBG_DDS_COUNT] + 1;
+                    dbg_dds_count = dbg_dds_count + 1;
                     dds_opcode <= instruction[47:32];
                     dds_operand <= instruction[31:0];
                     dds_we <= 1; // write to DDS
@@ -318,33 +314,33 @@ module timing_controller
                  end
                  2 : begin // wait
                     is_wait <= 1;
-                    dbg_regs[DBG_WAIT_COUNT] = dbg_regs[DBG_WAIT_COUNT] + 1;
-                    dbg_regs[DBG_WAIT_CYCLE] = dbg_regs[DBG_WAIT_CYCLE] + 1;
+                    dbg_wait_count = dbg_wait_count + 1;
+                    dbg_wait_cycle = dbg_wait_cycle + 1;
                     if (instruction[TIMER_BITA:TIMER_BITB] == 1 ||
                         instruction[TIMER_BITA:TIMER_BITB] == 0)
                       waiting <= 0; // 1 cycle pulse, go to next instruction immediately
                     wait_timer <= instruction[TIMER_BITA:TIMER_BITB];
                  end
                  3 : begin // clear underflow
-                    dbg_regs[DBG_CLEAR_COUNT] = dbg_regs[DBG_CLEAR_COUNT] + 1;
+                    dbg_clear_count = dbg_clear_count + 1;
                     underflow <= 0;
-                    dbg_regs[DBG_UNDERFLOW_CYCLE] <= 0;
+                    dbg_underflow_cycle <= 0;
                     wait_timer <= 5;
                  end
                  4 : begin // loop-back data
-                    dbg_regs[DBG_LOOPBACK_COUNT] = dbg_regs[DBG_LOOPBACK_COUNT] + 1;
+                    dbg_loopback_count = dbg_loopback_count + 1;
                     loopback_data <= instruction[31:0];
                     loopback_WrReq <= 1;
                     wait_timer <= 5;
                  end
                  5 : begin // enable/disable clockout
-                    dbg_regs[DBG_CLOCK_COUNT] = dbg_regs[DBG_CLOCK_COUNT] + 1;
+                    dbg_clock_count = dbg_clock_count + 1;
                     clockout_div <= instruction[7:0];
                     wait_timer <= 5;
                  end
                  // SPI communication.
                  6 : begin
-                    dbg_regs[DBG_SPI_COUNT] = dbg_regs[DBG_SPI_COUNT] + 1;
+                    dbg_spi_count = dbg_spi_count + 1;
                     spi_opcode <= instruction[47:32];
                     spi_operand <= instruction[(SPI_OPERAND_WIDTH - 1):0];
                     spi_we <= 1; // write to SPI
@@ -361,11 +357,11 @@ module timing_controller
             // Although we knew the length of each instruction in the previous step
             // doing the counting like this should be more robust against off-by-one error
             // and also hopefully reduce the maximum amount of work in a single step.
-            dbg_regs[DBG_INST_CYCLE] <= dbg_regs[DBG_INST_CYCLE] + 1;
+            dbg_inst_cycle <= dbg_inst_cycle + 1;
             if (is_ttl)
-              dbg_regs[DBG_TTL_CYCLE] = dbg_regs[DBG_TTL_CYCLE] + 1;
+              dbg_ttl_cycle = dbg_ttl_cycle + 1;
             if (is_wait)
-              dbg_regs[DBG_WAIT_CYCLE] = dbg_regs[DBG_WAIT_CYCLE] + 1;
+              dbg_wait_cycle = dbg_wait_cycle + 1;
             // The `wait_timer` includes the fetch/decoding cycle
             // to avoid doing an unnecessary `- 1`
             // (we should just change the interface to store cycle - 1
