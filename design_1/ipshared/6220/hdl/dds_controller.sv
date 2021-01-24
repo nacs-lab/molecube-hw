@@ -326,7 +326,9 @@ module dds_controller
                       result_data[31:16] <= 0;
                    end
                    3 : dds_r_strobe_n <= 0;
-                   5 : begin
+                   5 : if (sub_cycle == 2'b11) begin
+                      // get data on bus at the last cycle to be consistent
+                      // with the behavior on the old version
                       result_data[15:0] <= active_dds_bank[0] ? dds_data_I : dds_data2_I;
                       result_WrReq <= 1;
                    end
@@ -374,10 +376,14 @@ module dds_controller
                    end
                    //initiate second read from DDS
                    4 : dds_r_strobe_n <= 0;
-                   5 : begin // get data on bus
-                      result_data[31:16] <= active_dds_bank[0] ? dds_data_I : dds_data2_I;
+                   5 : begin
                       dds_r_strobe_n <= 1;
-                      result_WrReq <= 1;
+                      if (sub_cycle == 2'b11) begin
+                         // get data on bus at the last cycle to be consistent
+                         // with the behavior on the old version
+                         result_data[31:16] <= active_dds_bank[0] ? dds_data_I : dds_data2_I;
+                         result_WrReq <= 1;
+                      end
                    end
                  endcase
               end

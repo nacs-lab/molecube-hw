@@ -139,13 +139,6 @@ module pulse_controller_S00_AXI #
    reg [(rFIFO_ADDR_BITS - 1):0] rFIFO_read_addr;
    reg [(rFIFO_ADDR_BITS - 1):0] rFIFO_fill;
 
-   // rFIFO = result FIFO (records DDS, SPI, and loopback results)
-   // push a word onto rFIFO on rising edges of rFIFO_WrReq
-   wire rFIFO_WrReq;
-   reg rFIFO_WrReqPrev;
-   wire rFIFO_WrReqPosEdge = rFIFO_WrReq & ~rFIFO_WrReqPrev;
-   wire rFIFO_RdReq;
-
    // Register map.
    //   write means CPU writes to this register
    //   read means CPU reads this register
@@ -497,7 +490,10 @@ module pulse_controller_S00_AXI #
       end
    end
 
-   // rFIFO
+   // rFIFO = result FIFO (records DDS, SPI, and loopback results)
+   // push a word onto rFIFO when rFIFO_WrReq is high
+   wire rFIFO_WrReq;
+   wire rFIFO_RdReq;
    // Assumes that this only assert a single cycle
    assign rFIFO_RdReq = s_axi_rdvalid && s_axi_rd_regnum == 7'h1F;
    always @(posedge S_AXI_ACLK) begin
@@ -505,11 +501,8 @@ module pulse_controller_S00_AXI #
          rFIFO_fill <= 0;
          rFIFO_read_addr <= 0;
          rFIFO_write_addr <= 0;
-         rFIFO_WrReqPrev <= 0;
       end else begin
-         rFIFO_WrReqPrev <= rFIFO_WrReq;
-
-         if (rFIFO_WrReqPosEdge) begin
+         if (rFIFO_WrReq) begin
             rFIFO[rFIFO_write_addr] <= result;
             rFIFO_write_addr <= rFIFO_write_addr + 1;
          end
@@ -518,11 +511,11 @@ module pulse_controller_S00_AXI #
              rFIFO_read_addr <= rFIFO_read_addr + 1;
 
          // increment fill counter if writing & not reading
-         if (rFIFO_WrReqPosEdge & !rFIFO_RdReq)
+         if (rFIFO_WrReq & !rFIFO_RdReq)
            rFIFO_fill <= rFIFO_fill + 1;
 
          // decrement fill counter if reading & not writing
-         if (!rFIFO_WrReqPosEdge & rFIFO_RdReq)
+         if (!rFIFO_WrReq & rFIFO_RdReq)
            rFIFO_fill <= rFIFO_fill + ~(5'b0);
       end
    end
