@@ -1280,16 +1280,10 @@
       }
     },
     "interface_nets": {
-      "pulse_controller_0_inst_fifo_rd": {
+      "pulse_controller_0_inst_fifo_wr": {
         "interface_ports": [
-          "pulse_controller_0/inst_fifo_rd",
-          "fifo_generator_0/FIFO_READ"
-        ]
-      },
-      "processing_system7_0_DDR": {
-        "interface_ports": [
-          "DDR",
-          "processing_system7_0/DDR"
+          "pulse_controller_0/inst_fifo_wr",
+          "fifo_generator_0/FIFO_WRITE"
         ]
       },
       "processing_system7_0_M_AXI_GP0": {
@@ -1298,10 +1292,10 @@
           "axi_interconnect_0/S00_AXI"
         ]
       },
-      "axi_interconnect_0_M00_AXI": {
+      "processing_system7_0_DDR": {
         "interface_ports": [
-          "axi_interconnect_0/M00_AXI",
-          "pulse_controller_0/S00_AXI"
+          "DDR",
+          "processing_system7_0/DDR"
         ]
       },
       "processing_system7_0_FIXED_IO": {
@@ -1310,10 +1304,16 @@
           "processing_system7_0/FIXED_IO"
         ]
       },
-      "pulse_controller_0_inst_fifo_wr": {
+      "pulse_controller_0_inst_fifo_rd": {
         "interface_ports": [
-          "pulse_controller_0/inst_fifo_wr",
-          "fifo_generator_0/FIFO_WRITE"
+          "pulse_controller_0/inst_fifo_rd",
+          "fifo_generator_0/FIFO_READ"
+        ]
+      },
+      "axi_interconnect_0_M00_AXI": {
+        "interface_ports": [
+          "axi_interconnect_0/M00_AXI",
+          "pulse_controller_0/S00_AXI"
         ]
       }
     },

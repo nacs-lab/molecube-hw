@@ -221,6 +221,9 @@ module dds_controller
       end else begin
          // ddr_reset <= 0;
          dds_addr_reg <= dds_addr_reg_next;
+         // Default value on each cycle to make sure the write request
+         // is only on for a single cycle
+         result_WrReq <= 0;
 
          if (cycle == 0) begin
             dds_w_strobe_n <= 1;
@@ -230,9 +233,6 @@ module dds_controller
             dds_addr_reg_next <= 0;
             dds_data_reg <= 0;
             dds_data_T_reg <= 0;
-
-            result_WrReq <= 0;
-            result_data <= 0;
 
             sub_cycle <= 0;
             dds_sel_mask <= 0;
@@ -323,13 +323,15 @@ module dds_controller
                    1 : begin
                       dds_addr_reg_next <= opcode_reg[DDS_REG_B:DDS_REG_A];
                       dds_data_T_reg <= 1;
-                      result_data <= 0;
+                      result_data[31:16] <= 0;
                    end
                    3 : dds_r_strobe_n <= 0;
-                   5 : result_data[15:0] <= active_dds_bank[0] ? dds_data_I : dds_data2_I;
+                   5 : begin
+                      result_data[15:0] <= active_dds_bank[0] ? dds_data_I : dds_data2_I;
+                      result_WrReq <= 1;
+                   end
                    6 : begin
                       dds_r_strobe_n <= 1;
-                      result_WrReq <= 1;
                    end
                  endcase
               end
@@ -362,7 +364,6 @@ module dds_controller
                    1 : begin
                       dds_addr_reg_next <= opcode_reg[DDS_REG_B:DDS_REG_A];
                       dds_data_T_reg <= 1;
-                      result_data <= 0;
                    end
                    2 : dds_r_strobe_n <= 0; //initiate first read from DDS
                    3 : begin // get data on bus
@@ -372,15 +373,12 @@ module dds_controller
                       dds_addr_reg_next <= opcode_reg[DDS_REG_B:DDS_REG_A] + 2'b10;
                    end
                    //initiate second read from DDS
-                   4 : begin
-                      dds_r_strobe_n <= 0;
-                      result_WrReq <= 0;
-                   end
+                   4 : dds_r_strobe_n <= 0;
                    5 : begin // get data on bus
                       result_data[31:16] <= active_dds_bank[0] ? dds_data_I : dds_data2_I;
                       dds_r_strobe_n <= 1;
+                      result_WrReq <= 1;
                    end
-                   6 : result_WrReq <= 1;
                  endcase
               end
 

@@ -178,7 +178,8 @@ module timing_controller
    // Write one word on rising edge of rFIFO_WrReq.
    // Data should be valid for one cycle after rising edge.
    assign rFIFO_WrReq = dds_WrReq | loopback_WrReq;
-   assign rFIFO_data = dds_result | loopback_data;
+   // each data (dds, loopback, rFIFO) is only valid when the respective wrreq is high.
+   assign rFIFO_data = loopback_WrReq ? loopback_data : dds_result;
 
    localparam INSTRUCTION_BITA = 63;
    localparam INSTRUCTION_BITB = 60;
@@ -262,7 +263,6 @@ module timing_controller
          timing_check <= 0;
          underflow <= 0;
          pulses_finished <= 1;
-         loopback_data <= 0;
          loopback_WrReq <= 0;
          clock_out_div <= 255;
          force_release <= 0;
@@ -355,9 +355,7 @@ module timing_controller
             end
          end else begin
             // Waiting
-            // decrement timer until it equals the minimum pulse time
             loopback_WrReq <= 0;
-            loopback_data <= 0;
             dds_we <= 0;
             spi_we <= 0;
             // Although we knew the length of each instruction in the previous step
