@@ -8,16 +8,17 @@
 // Otherwise, discard the input and generate the corresponding of zero outputs
 // when the output isn't full anymore.
 module overflow_fifo #
-  (parameter DATA_WIDTH = 32)
+  (parameter DATA_WIDTH = 32,
+   parameter COUNTER_WIDTH = 32)
    (input clock, input resetn,
     input full,
     output [(DATA_WIDTH - 1):0] out_data,
     output out_en,
     input in_en,
-    input [(DATA_WIDTH - 1):0] in_data
+    input [(DATA_WIDTH - 1):0] in_data,
+    output reg [(COUNTER_WIDTH - 1):0] overflow_count
     );
 
-   reg [31:0] overflow_count;
    wire has_overflow = overflow_count != 0;
 
    assign out_en = resetn & (in_en | has_overflow);
@@ -215,6 +216,10 @@ module pulse_controller_S00_AXI #
    wire [(C_S_AXI_DATA_WIDTH - 1):0] dbg_inst_cycle;
    wire [(C_S_AXI_DATA_WIDTH - 1):0] dbg_ttl_cycle;
    wire [(C_S_AXI_DATA_WIDTH - 1):0] dbg_wait_cycle;
+   wire [(C_S_AXI_DATA_WIDTH - 1):0] dbg_result_overflow_count;
+   wire [(C_S_AXI_DATA_WIDTH - 1):0] dbg_result_count;
+   reg [(C_S_AXI_DATA_WIDTH - 1):0] dbg_result_generated;
+   reg [(C_S_AXI_DATA_WIDTH - 1):0] dbg_result_consumed;
 
    wire underflow;
    wire pulses_finished;
@@ -313,6 +318,10 @@ module pulse_controller_S00_AXI #
                    7'h2a: S_AXI_RDATA <= dbg_inst_cycle;
                    7'h2b: S_AXI_RDATA <= dbg_ttl_cycle;
                    7'h2c: S_AXI_RDATA <= dbg_wait_cycle;
+                   7'h2d: S_AXI_RDATA <= dbg_result_overflow_count;
+                   7'h2e: S_AXI_RDATA <= dbg_result_count;
+                   7'h2f: S_AXI_RDATA <= dbg_result_generated;
+                   7'h30: S_AXI_RDATA <= dbg_result_consumed;
                    default: S_AXI_RDATA <= 0;
                  endcase
                  S_AXI_RVALID <= 1'b1;
@@ -534,20 +543,23 @@ module pulse_controller_S00_AXI #
 
    wire [31:0] result_data;
    wire result_wr_en;
-   overflow_fifo#(.DATA_WIDTH(32))
+   overflow_fifo#(.DATA_WIDTH(32),
+                  .COUNTER_WIDTH(C_S_AXI_DATA_WIDTH))
    result_overflow(.clock(S_AXI_ACLK),
                    .resetn(S_AXI_ARESETN),
                    .full(result_fifo_full),
                    .out_data(result_fifo_wr_data),
                    .out_en(result_fifo_wr_en),
                    .in_en(result_wr_en),
-                   .in_data(result_data)
+                   .in_data(result_data),
+                   .overflow_count(dbg_result_overflow_count)
                    );
 
    localparam RES_STATUS_ADDR_BITS = 5;
    // This keeps an accurate count of the number of results we are keeping track of.
    // The latest results are in the result fifo whereas the older one could be overflowed.
    reg [31:0] result_count;
+   assign dbg_result_count = result_count;
    // A saturated counter for the software to read.
    wire [(RES_STATUS_ADDR_BITS - 1):0] result_status_count =
                                        result_count[31:RES_STATUS_ADDR_BITS] == 0 ?
@@ -559,12 +571,21 @@ module pulse_controller_S00_AXI #
          result_count <= 0;
       end else begin
          if (result_wr_en) begin
+            dbg_result_generated <= dbg_result_generated + 1;
             if (!result_fifo_rd_en) begin
                result_count <= result_count + 1;
+            end else begin
+               dbg_result_consumed <= dbg_result_consumed + 1;
             end
          end else if (result_fifo_rd_en && result_count != 0) begin
+            dbg_result_consumed <= dbg_result_consumed + 1;
             result_count <= result_count - 1;
          end
+      end
+
+      if (~S_AXI_ARESETN | pulse_controller_init) begin
+         dbg_result_generated <= 0;
+         dbg_result_consumed <= 0;
       end
    end
 
