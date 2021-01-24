@@ -38,7 +38,7 @@
  *
  * 4 PUSH_DATA (variable # cycles)
  *   bits 55...32 = duration (in clock cycles)
- *   push bits 31...0 onto rFIFO for loop-back testing
+ *   push bits 31...0 onto result fifo for loop-back testing
  *
  * 5 ENABLE CLOCK OUT
  *   period - 1 = bits 7...0. disabled when bits 7...0 = 255
@@ -92,8 +92,8 @@ module timing_controller
     input bus_data_valid,
     output bus_data_ready,
 
-    output [(RESULT_WIDTH - 1):0] rFIFO_data,
-    output rFIFO_WrReq,
+    output [(RESULT_WIDTH - 1):0] result_data,
+    output result_wr_en,
 
     // dds_data*: tri-state for dds_data to allow read & write.
     output [(U_DDS_ADDR_WIDTH - 1):0] dds_addr,
@@ -174,12 +174,12 @@ module timing_controller
 
    reg [31:0] loopback_data;
    reg loopback_WrReq;
-   // allow DDS_controller or loop back to write into the rFIFO
-   // Write one word on rising edge of rFIFO_WrReq.
-   // Data should be valid for one cycle after rising edge.
-   assign rFIFO_WrReq = dds_WrReq | loopback_WrReq;
-   // each data (dds, loopback, rFIFO) is only valid when the respective wrreq is high.
-   assign rFIFO_data = loopback_WrReq ? loopback_data : dds_result;
+   // allow DDS_controller or loop back to write into the result fifo
+   // Write one word when result_wr_en is high.
+   // Data should be valid during the cycle and they can have arbitrary value otherwise.
+   assign result_wr_en = dds_WrReq | loopback_WrReq;
+   // each data (dds, loopback, result) is only valid when the respective wrreq is high.
+   assign result_data = loopback_WrReq ? loopback_data : dds_result;
 
    localparam INSTRUCTION_BITA = 63;
    localparam INSTRUCTION_BITB = 60;

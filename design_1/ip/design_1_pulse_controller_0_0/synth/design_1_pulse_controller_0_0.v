@@ -47,8 +47,8 @@
 // DO NOT MODIFY THIS FILE.
 
 
-// IP VLNV: nigrp.org:nigrp:pulse_controller:5.1
-// IP Revision: 2
+// IP VLNV: nigrp.org:nigrp:pulse_controller:5.2
+// IP Revision: 1
 
 (* X_CORE_INFO = "pulse_controller,Vivado 2020.1" *)
 (* CHECK_LICENSE_TYPE = "design_1_pulse_controller_0_0,pulse_controller,{}" *)
@@ -76,6 +76,14 @@ module design_1_pulse_controller_0_0 (
   inst_fifo_almost_full,
   inst_fifo_wr_data,
   inst_fifo_wr_en,
+  result_fifo_empty,
+  result_fifo_almost_empty,
+  result_fifo_rd_data,
+  result_fifo_rd_en,
+  result_fifo_full,
+  result_fifo_almost_full,
+  result_fifo_wr_data,
+  result_fifo_wr_en,
   s00_axi_aclk,
   s00_axi_aresetn,
   s00_axi_awaddr,
@@ -129,6 +137,22 @@ input wire inst_fifo_almost_full;
 output wire [31 : 0] inst_fifo_wr_data;
 (* X_INTERFACE_INFO = "xilinx.com:interface:fifo_write:1.0 inst_fifo_wr WR_EN" *)
 output wire inst_fifo_wr_en;
+(* X_INTERFACE_INFO = "xilinx.com:interface:fifo_read:1.0 result_fifo_rd EMPTY" *)
+input wire result_fifo_empty;
+(* X_INTERFACE_INFO = "xilinx.com:interface:fifo_read:1.0 result_fifo_rd ALMOST_EMPTY" *)
+input wire result_fifo_almost_empty;
+(* X_INTERFACE_INFO = "xilinx.com:interface:fifo_read:1.0 result_fifo_rd RD_DATA" *)
+input wire [31 : 0] result_fifo_rd_data;
+(* X_INTERFACE_INFO = "xilinx.com:interface:fifo_read:1.0 result_fifo_rd RD_EN" *)
+output wire result_fifo_rd_en;
+(* X_INTERFACE_INFO = "xilinx.com:interface:fifo_write:1.0 result_fifo_wr FULL" *)
+input wire result_fifo_full;
+(* X_INTERFACE_INFO = "xilinx.com:interface:fifo_write:1.0 result_fifo_wr ALMOST_FULL" *)
+input wire result_fifo_almost_full;
+(* X_INTERFACE_INFO = "xilinx.com:interface:fifo_write:1.0 result_fifo_wr WR_DATA" *)
+output wire [31 : 0] result_fifo_wr_data;
+(* X_INTERFACE_INFO = "xilinx.com:interface:fifo_write:1.0 result_fifo_wr WR_EN" *)
+output wire result_fifo_wr_en;
 (* X_INTERFACE_PARAMETER = "XIL_INTERFACENAME S00_AXI_CLK, ASSOCIATED_BUSIF S00_AXI, ASSOCIATED_RESET s00_axi_aresetn, FREQ_HZ 100000000, FREQ_TOLERANCE_HZ 0, PHASE 0.000, CLK_DOMAIN design_1_processing_system7_0_0_FCLK_CLK0, INSERT_VIP 0" *)
 (* X_INTERFACE_INFO = "xilinx.com:signal:clock:1.0 S00_AXI_CLK CLK" *)
 input wire s00_axi_aclk;
@@ -208,6 +232,14 @@ input wire s00_axi_rready;
     .inst_fifo_almost_full(inst_fifo_almost_full),
     .inst_fifo_wr_data(inst_fifo_wr_data),
     .inst_fifo_wr_en(inst_fifo_wr_en),
+    .result_fifo_empty(result_fifo_empty),
+    .result_fifo_almost_empty(result_fifo_almost_empty),
+    .result_fifo_rd_data(result_fifo_rd_data),
+    .result_fifo_rd_en(result_fifo_rd_en),
+    .result_fifo_full(result_fifo_full),
+    .result_fifo_almost_full(result_fifo_almost_full),
+    .result_fifo_wr_data(result_fifo_wr_data),
+    .result_fifo_wr_en(result_fifo_wr_en),
     .s00_axi_aclk(s00_axi_aclk),
     .s00_axi_aresetn(s00_axi_aresetn),
     .s00_axi_awaddr(s00_axi_awaddr),

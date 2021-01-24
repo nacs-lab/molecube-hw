@@ -1,3 +1,40 @@
+//
+
+// Forward the input to output if the output isn't full.
+// Otherwise, discard the input and generate the corresponding of zero outputs
+// when the output isn't full anymore.
+module overflow_fifo #
+  (parameter DATA_WIDTH = 32)
+   (input clock, input resetn,
+    input full,
+    output [(DATA_WIDTH - 1):0] out_data,
+    output out_en,
+    input in_en,
+    input [(DATA_WIDTH - 1):0] in_data
+    );
+
+   reg [31:0] overflow_count;
+   wire has_overflow = overflow_count != 0;
+
+   assign out_en = resetn & (in_en | has_overflow);
+   assign out_data = has_overflow ? 0 : in_data;
+   always @(posedge clock) begin
+      if (~resetn) begin
+         overflow_count <= 0;
+      end else if (~full) begin
+         if (~in_en & has_overflow) begin
+            // Condition for decreasing the overflow is when we can write
+            // but we are not taking input.
+            // Of course we also only decrease overflow when it's non-zero.
+            overflow_count <= overflow_count - 1;
+         end
+      end else if (in_en) begin
+         // Output is full but we are still writing.
+         overflow_count <= overflow_count + 1;
+      end
+   end
+endmodule
+
 module pulse_controller_S00_AXI #
   (
    // Users to add parameters here
@@ -49,6 +86,15 @@ module pulse_controller_S00_AXI #
     input inst_fifo_almost_full, // unused
     output [31:0] inst_fifo_wr_data,
     output inst_fifo_wr_en,
+
+    input result_fifo_empty,
+    input result_fifo_almost_empty, // unused
+    input [31:0] result_fifo_rd_data,
+    output result_fifo_rd_en,
+    input result_fifo_full,
+    input result_fifo_almost_full, // unused
+    output [31:0] result_fifo_wr_data,
+    output result_fifo_wr_en,
     // User ports ends
     // Do not modify the ports beyond this line
 
@@ -125,20 +171,6 @@ module pulse_controller_S00_AXI #
    // User logic
    //----------------------------------------------------------------------------
 
-   // rFIFO = results FIFO. Access by reading slave register 31
-   // If using register 31, must check that there is a value in the FIFO to read.
-   // Otherwise things will get messed up.
-   // Check that slv_reg_status[(rFIFO_ADDR_BITS+3):4] (rFIFO_fill) > 0
-   // Register 2 contains rFIFO occupancy. There is no overflow protection,
-   // so don't stuff more than rFIFO_DEPTH results
-
-   localparam rFIFO_DEPTH = 32;
-   localparam rFIFO_ADDR_BITS = 5;
-   reg [31:0] rFIFO [0:(rFIFO_DEPTH - 1)];
-   reg [(rFIFO_ADDR_BITS - 1):0] rFIFO_write_addr;
-   reg [(rFIFO_ADDR_BITS - 1):0] rFIFO_read_addr;
-   reg [(rFIFO_ADDR_BITS - 1):0] rFIFO_fill;
-
    // Register map.
    //   write means CPU writes to this register
    //   read means CPU reads this register
@@ -148,7 +180,7 @@ module pulse_controller_S00_AXI #
    // 2: status (read)
    //   slv_reg_status[0] <= underflow;
    //   slv_reg_status[2] <= pulses_finished;
-   //   slv_reg_status[(rFIFO_ADDR_BITS + 3):4] <= rFIFO_fill;
+   //   slv_reg_status[(RES_STATUS_ADDR_BITS + 3):4] <= result_status_count;
    //
    // 3: control (read write)
    //   slv_reg_ctrl[7] => pulse_controller_hold. nothing happens when this is high
@@ -157,14 +189,14 @@ module pulse_controller_S00_AXI #
    // 31: -- output of result FIFO (read)
    reg [C_S_AXI_DATA_WIDTH - 1:0] ttl_hi_mask;
    reg [C_S_AXI_DATA_WIDTH - 1:0] ttl_lo_mask;
+   // Buffer the output for the status register (use a register instead of a wire)
+   // since we don't care about the delay on this
    reg [C_S_AXI_DATA_WIDTH - 1:0] slv_reg_status;
    reg [C_S_AXI_DATA_WIDTH - 1:0] slv_reg_ctrl;
    reg [C_S_AXI_DATA_WIDTH - 1:0] slv_reg_loopback;
 
    wire [(C_S_AXI_DATA_WIDTH - 1):0] slv_dbg_regs [0:31];
 
-   // active-high reset
-   wire [(C_S_AXI_DATA_WIDTH - 1):0] result;
    wire underflow;
    wire pulses_finished;
    wire [7:0] clock_out_div;
@@ -209,13 +241,13 @@ module pulse_controller_S00_AXI #
    // Change this version when making backward incompatible changes.
    localparam MAJOR_VER = 5;
    // Change this version when adding new features
-   localparam MINOR_VER = 1;
+   localparam MINOR_VER = 2;
 
    // Read state:
    //   0: idle
    //   1: wait for master to acknowledge the read
    reg s_axi_read_state;
-   // This will assert exactly one cycle per request and is used by rFIFO below.
+   // This will assert exactly one cycle per request and is used by result_fifo below.
    wire s_axi_rdvalid = s_axi_read_state == 0 & S_AXI_ARVALID;
    wire [OPT_MEM_ADDR_BITS:0] s_axi_rd_regnum =
                               S_AXI_ARADDR[ADDR_LSB + OPT_MEM_ADDR_BITS:ADDR_LSB];
@@ -263,7 +295,8 @@ module pulse_controller_S00_AXI #
                       S_AXI_RDATA <= slv_reg_loopback;
                    end
                    7'h1F: begin
-                      S_AXI_RDATA <= rFIFO[rFIFO_read_addr];
+                      // Reading from empty buffer has no effect.
+                      S_AXI_RDATA <= ~result_fifo_empty ? result_fifo_rd_data : 0;
                    end
                    default: begin
                       if (s_axi_rd_regnum >= 7'h20 && s_axi_rd_regnum < 7'h40) begin
@@ -480,43 +513,59 @@ module pulse_controller_S00_AXI #
       end
    end
 
+   // result_fifo. (records DDS, SPI, and loopback results)
+   // The CPU can read the fifo from register 31.
+   // Register 2 contains a saturated counter in bits `(RES_STATUS_ADDR_BITS+3):4`
+   // for the number of results.
+   // If the result overflows the buffer, the newest result will be discarded
+   // and reading of the result will return zero (we will leave a sufficiently large gap
+   // in the fifo to make sure results have a one-to-one match
+   // with the requests that generates the results.
+   // If the read underflows the buffer, the read will return zero and nothing will happen.
+
+   wire [31:0] result_data;
+   wire result_wr_en;
+   overflow_fifo#(.DATA_WIDTH(32))
+   result_overflow(.clock(S_AXI_ACLK),
+                   .resetn(S_AXI_ARESETN),
+                   .full(result_fifo_full),
+                   .out_data(result_fifo_wr_data),
+                   .out_en(result_fifo_wr_en),
+                   .in_en(result_wr_en),
+                   .in_data(result_data)
+                   );
+
+   localparam RES_STATUS_ADDR_BITS = 5;
+   // This keeps an accurate count of the number of results we are keeping track of.
+   // The latest results are in the result fifo whereas the older one could be overflowed.
+   reg [31:0] result_count;
+   // A saturated counter for the software to read.
+   wire [(RES_STATUS_ADDR_BITS - 1):0] result_status_count =
+                                       result_count[31:RES_STATUS_ADDR_BITS] == 0 ?
+                                       result_count[(RES_STATUS_ADDR_BITS - 1):0] :
+                                       (2**RES_STATUS_ADDR_BITS - 1);
+   assign result_fifo_rd_en = S_AXI_ARESETN & s_axi_rdvalid & s_axi_rd_regnum == 7'h1F;
+   always @(posedge S_AXI_ACLK) begin
+      if (~S_AXI_ARESETN) begin
+         result_count <= 0;
+      end else begin
+         if (result_wr_en) begin
+            if (!result_fifo_rd_en) begin
+               result_count <= result_count + 1;
+            end
+         end else if (result_fifo_rd_en && result_count != 0) begin
+            result_count <= result_count - 1;
+         end
+      end
+   end
+
    always @(posedge S_AXI_ACLK) begin
       if (~S_AXI_ARESETN) begin
          slv_reg_status <= 0;
       end else begin
          slv_reg_status[0] <= underflow;
          slv_reg_status[2] <= pulses_finished;
-         slv_reg_status[(rFIFO_ADDR_BITS + 3):4] <= rFIFO_fill;
-      end
-   end
-
-   // rFIFO = result FIFO (records DDS, SPI, and loopback results)
-   // push a word onto rFIFO when rFIFO_WrReq is high
-   wire rFIFO_WrReq;
-   wire rFIFO_RdReq;
-   // Assumes that this only assert a single cycle
-   assign rFIFO_RdReq = s_axi_rdvalid && s_axi_rd_regnum == 7'h1F;
-   always @(posedge S_AXI_ACLK) begin
-      if (~S_AXI_ARESETN | slv_reg_ctrl[8]) begin
-         rFIFO_fill <= 0;
-         rFIFO_read_addr <= 0;
-         rFIFO_write_addr <= 0;
-      end else begin
-         if (rFIFO_WrReq) begin
-            rFIFO[rFIFO_write_addr] <= result;
-            rFIFO_write_addr <= rFIFO_write_addr + 1;
-         end
-
-         if (rFIFO_RdReq) // rFIFO_RdReq should de-assert after one cycle.
-             rFIFO_read_addr <= rFIFO_read_addr + 1;
-
-         // increment fill counter if writing & not reading
-         if (rFIFO_WrReq & !rFIFO_RdReq)
-           rFIFO_fill <= rFIFO_fill + 1;
-
-         // decrement fill counter if reading & not writing
-         if (!rFIFO_WrReq & rFIFO_RdReq)
-           rFIFO_fill <= rFIFO_fill + ~(5'b0);
+         slv_reg_status[(RES_STATUS_ADDR_BITS + 3):4] <= result_status_count;
       end
    end
 
@@ -533,8 +582,8 @@ module pulse_controller_S00_AXI #
       .bus_data(s_axi_wdata),
       .bus_data_valid(tc_inst_valid),
       .bus_data_ready(tc_inst_ready),
-      .rFIFO_data(result),
-      .rFIFO_WrReq(rFIFO_WrReq),
+      .result_data(result_data),
+      .result_wr_en(result_wr_en),
       .dds_addr(dds_addr),
       .dds_data(dds_data),
       .dds_control(dds_control),

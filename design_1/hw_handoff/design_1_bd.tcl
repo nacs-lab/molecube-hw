@@ -612,10 +612,30 @@ proc create_root_design { parentCell } {
  ] $processing_system7_0
 
   # Create instance: pulse_controller_0, and set properties
-  set pulse_controller_0 [ create_bd_cell -type ip -vlnv nigrp.org:nigrp:pulse_controller:5.1 pulse_controller_0 ]
+  set pulse_controller_0 [ create_bd_cell -type ip -vlnv nigrp.org:nigrp:pulse_controller:5.2 pulse_controller_0 ]
   set_property -dict [ list \
    CONFIG.C_S00_AXI_ADDR_WIDTH {9} \
  ] $pulse_controller_0
+
+  # Create instance: result_fifo_0, and set properties
+  set result_fifo_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:fifo_generator:13.2 result_fifo_0 ]
+  set_property -dict [ list \
+   CONFIG.Data_Count_Width {12} \
+   CONFIG.Empty_Threshold_Assert_Value {4} \
+   CONFIG.Empty_Threshold_Negate_Value {5} \
+   CONFIG.Fifo_Implementation {Common_Clock_Builtin_FIFO} \
+   CONFIG.Full_Threshold_Assert_Value {4095} \
+   CONFIG.Full_Threshold_Negate_Value {4094} \
+   CONFIG.Input_Data_Width {32} \
+   CONFIG.Input_Depth {4096} \
+   CONFIG.Output_Data_Width {32} \
+   CONFIG.Output_Depth {4096} \
+   CONFIG.Performance_Options {First_Word_Fall_Through} \
+   CONFIG.Read_Data_Count_Width {12} \
+   CONFIG.Reset_Type {Asynchronous_Reset} \
+   CONFIG.Use_Dout_Reset {false} \
+   CONFIG.Write_Data_Count_Width {12} \
+ ] $result_fifo_0
 
   # Create instance: rst_ps7_0_100M, and set properties
   set rst_ps7_0_100M [ create_bd_cell -type ip -vlnv xilinx.com:ip:proc_sys_reset:5.0 rst_ps7_0_100M ]
@@ -627,11 +647,13 @@ proc create_root_design { parentCell } {
   connect_bd_intf_net -intf_net processing_system7_0_M_AXI_GP0 [get_bd_intf_pins axi_interconnect_0/S00_AXI] [get_bd_intf_pins processing_system7_0/M_AXI_GP0]
   connect_bd_intf_net -intf_net pulse_controller_0_inst_fifo_rd [get_bd_intf_pins fifo_generator_0/FIFO_READ] [get_bd_intf_pins pulse_controller_0/inst_fifo_rd]
   connect_bd_intf_net -intf_net pulse_controller_0_inst_fifo_wr [get_bd_intf_pins fifo_generator_0/FIFO_WRITE] [get_bd_intf_pins pulse_controller_0/inst_fifo_wr]
+  connect_bd_intf_net -intf_net pulse_controller_0_result_fifo_rd [get_bd_intf_pins pulse_controller_0/result_fifo_rd] [get_bd_intf_pins result_fifo_0/FIFO_READ]
+  connect_bd_intf_net -intf_net pulse_controller_0_result_fifo_wr [get_bd_intf_pins pulse_controller_0/result_fifo_wr] [get_bd_intf_pins result_fifo_0/FIFO_WRITE]
 
   # Create port connections
   connect_bd_net -net Net [get_bd_ports dds_data_pin] [get_bd_pins pulse_controller_0/dds_data]
   connect_bd_net -net Net1 [get_bd_ports dds_data2_pin] [get_bd_pins pulse_controller_0/dds_data2]
-  connect_bd_net -net processing_system7_0_FCLK_CLK0 [get_bd_pins axi_interconnect_0/ACLK] [get_bd_pins axi_interconnect_0/M00_ACLK] [get_bd_pins axi_interconnect_0/S00_ACLK] [get_bd_pins fifo_generator_0/clk] [get_bd_pins processing_system7_0/FCLK_CLK0] [get_bd_pins processing_system7_0/M_AXI_GP0_ACLK] [get_bd_pins pulse_controller_0/s00_axi_aclk] [get_bd_pins rst_ps7_0_100M/slowest_sync_clk]
+  connect_bd_net -net processing_system7_0_FCLK_CLK0 [get_bd_pins axi_interconnect_0/ACLK] [get_bd_pins axi_interconnect_0/M00_ACLK] [get_bd_pins axi_interconnect_0/S00_ACLK] [get_bd_pins fifo_generator_0/clk] [get_bd_pins processing_system7_0/FCLK_CLK0] [get_bd_pins processing_system7_0/M_AXI_GP0_ACLK] [get_bd_pins pulse_controller_0/s00_axi_aclk] [get_bd_pins result_fifo_0/clk] [get_bd_pins rst_ps7_0_100M/slowest_sync_clk]
   connect_bd_net -net processing_system7_0_FCLK_RESET0_N [get_bd_pins processing_system7_0/FCLK_RESET0_N] [get_bd_pins rst_ps7_0_100M/ext_reset_in]
   connect_bd_net -net pulse_controller_0_clock_out [get_bd_ports clock_out1_pin] [get_bd_pins pulse_controller_0/clock_out]
   connect_bd_net -net pulse_controller_0_dds_FUD [get_bd_ports dds_FUD_pin] [get_bd_pins pulse_controller_0/dds_FUD]
@@ -645,7 +667,7 @@ proc create_root_design { parentCell } {
   connect_bd_net -net pulse_controller_0_spi_cs [get_bd_ports spi0_cs] [get_bd_pins pulse_controller_0/spi_cs]
   connect_bd_net -net pulse_controller_0_spi_mosi [get_bd_ports spi0_mosi] [get_bd_pins pulse_controller_0/spi_mosi]
   connect_bd_net -net rst_ps7_0_100M_peripheral_aresetn [get_bd_pins axi_interconnect_0/ARESETN] [get_bd_pins axi_interconnect_0/M00_ARESETN] [get_bd_pins axi_interconnect_0/S00_ARESETN] [get_bd_pins pulse_controller_0/s00_axi_aresetn] [get_bd_pins rst_ps7_0_100M/peripheral_aresetn]
-  connect_bd_net -net rst_ps7_0_100M_peripheral_reset [get_bd_pins fifo_generator_0/srst] [get_bd_pins rst_ps7_0_100M/peripheral_reset]
+  connect_bd_net -net rst_ps7_0_100M_peripheral_reset [get_bd_pins fifo_generator_0/srst] [get_bd_pins result_fifo_0/rst] [get_bd_pins rst_ps7_0_100M/peripheral_reset]
   connect_bd_net -net spi0_miso_1 [get_bd_ports spi0_miso] [get_bd_pins pulse_controller_0/spi_miso]
 
   # Create address segments

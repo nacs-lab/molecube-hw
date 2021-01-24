@@ -9,7 +9,7 @@
 //--------------------------------------------------------------------------------
 `timescale 1 ps / 1 ps
 
-(* CORE_GENERATION_INFO = "design_1,IP_Integrator,{x_ipVendor=xilinx.com,x_ipLibrary=BlockDiagram,x_ipName=design_1,x_ipVersion=1.00.a,x_ipLanguage=VERILOG,numBlks=7,numReposBlks=5,numNonXlnxBlks=1,numHierBlks=2,maxHierDepth=0,numSysgenBlks=0,numHlsBlks=0,numHdlrefBlks=0,numPkgbdBlks=0,bdsource=USER,da_axi4_cnt=1,da_clkrst_cnt=3,da_ps7_cnt=1,synth_mode=Global}" *) (* HW_HANDOFF = "design_1.hwdef" *) 
+(* CORE_GENERATION_INFO = "design_1,IP_Integrator,{x_ipVendor=xilinx.com,x_ipLibrary=BlockDiagram,x_ipName=design_1,x_ipVersion=1.00.a,x_ipLanguage=VERILOG,numBlks=8,numReposBlks=6,numNonXlnxBlks=1,numHierBlks=2,maxHierDepth=0,numSysgenBlks=0,numHlsBlks=0,numHdlrefBlks=0,numPkgbdBlks=0,bdsource=USER,da_axi4_cnt=1,da_clkrst_cnt=4,da_ps7_cnt=1,synth_mode=Global}" *) (* HW_HANDOFF = "design_1.hwdef" *) 
 module design_1
    (DDR_addr,
     DDR_ba,
@@ -180,6 +180,12 @@ module design_1
   wire [31:0]pulse_controller_0_inst_fifo_wr_WR_DATA;
   wire pulse_controller_0_inst_fifo_wr_WR_EN;
   wire [31:0]pulse_controller_0_pulse_io;
+  wire pulse_controller_0_result_fifo_rd_EMPTY;
+  wire [31:0]pulse_controller_0_result_fifo_rd_RD_DATA;
+  wire pulse_controller_0_result_fifo_rd_RD_EN;
+  wire pulse_controller_0_result_fifo_wr_FULL;
+  wire [31:0]pulse_controller_0_result_fifo_wr_WR_DATA;
+  wire pulse_controller_0_result_fifo_wr_WR_EN;
   wire pulse_controller_0_spi_clk;
   wire [0:0]pulse_controller_0_spi_cs;
   wire pulse_controller_0_spi_mosi;
@@ -355,6 +361,14 @@ module design_1
         .inst_fifo_wr_data(pulse_controller_0_inst_fifo_wr_WR_DATA),
         .inst_fifo_wr_en(pulse_controller_0_inst_fifo_wr_WR_EN),
         .pulse_io(pulse_controller_0_pulse_io),
+        .result_fifo_almost_empty(1'b1),
+        .result_fifo_almost_full(1'b0),
+        .result_fifo_empty(pulse_controller_0_result_fifo_rd_EMPTY),
+        .result_fifo_full(pulse_controller_0_result_fifo_wr_FULL),
+        .result_fifo_rd_data(pulse_controller_0_result_fifo_rd_RD_DATA),
+        .result_fifo_rd_en(pulse_controller_0_result_fifo_rd_RD_EN),
+        .result_fifo_wr_data(pulse_controller_0_result_fifo_wr_WR_DATA),
+        .result_fifo_wr_en(pulse_controller_0_result_fifo_wr_WR_EN),
         .s00_axi_aclk(processing_system7_0_FCLK_CLK0),
         .s00_axi_araddr(axi_interconnect_0_M00_AXI_ARADDR[8:0]),
         .s00_axi_aresetn(rst_ps7_0_100M_peripheral_aresetn),
@@ -380,6 +394,15 @@ module design_1
         .spi_cs(pulse_controller_0_spi_cs),
         .spi_miso(spi0_miso_1),
         .spi_mosi(pulse_controller_0_spi_mosi));
+  design_1_result_fifo_0_0 result_fifo_0
+       (.clk(processing_system7_0_FCLK_CLK0),
+        .din(pulse_controller_0_result_fifo_wr_WR_DATA),
+        .dout(pulse_controller_0_result_fifo_rd_RD_DATA),
+        .empty(pulse_controller_0_result_fifo_rd_EMPTY),
+        .full(pulse_controller_0_result_fifo_wr_FULL),
+        .rd_en(pulse_controller_0_result_fifo_rd_RD_EN),
+        .rst(rst_ps7_0_100M_peripheral_reset),
+        .wr_en(pulse_controller_0_result_fifo_wr_WR_EN));
   design_1_rst_ps7_0_100M_1 rst_ps7_0_100M
        (.aux_reset_in(1'b1),
         .dcm_locked(1'b1),
