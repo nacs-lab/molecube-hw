@@ -35,11 +35,11 @@ module pulse_controller #
 
     // begin: external signals for SPI
     output [(N_SPI - 1):0] spi_cs,
-    output spi_mosi, spi_clk,
+    output spi_mosi, spi_sclk,
     input spi_miso,
     // end: external signals for SPI
 
-    output clock_out,
+    output clockout,
 
     input inst_fifo_empty,
     input inst_fifo_almost_empty, // unused
@@ -112,9 +112,9 @@ module pulse_controller #
 
       .spi_cs(spi_cs),
       .spi_mosi(spi_mosi),
-      .spi_clk(spi_clk),
+      .spi_sclk(spi_sclk),
       .spi_miso(spi_miso),
-      .clock_out(clock_out),
+      .clockout(clockout),
 
       .inst_fifo_empty(inst_fifo_empty),
       .inst_fifo_almost_empty(inst_fifo_almost_empty),

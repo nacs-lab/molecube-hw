@@ -54,7 +54,7 @@
  * Minimum period:   4.916ns{1}   (Maximum frequency: 203.417MHz)
  */
 
-module clock_out_controller(input clock, input reset, input [7:0] div,
+module clockout_controller(input clock, input reset, input [7:0] div,
                             output reg out);
    reg [7:0] counter;
    always @(posedge clock, posedge reset) begin
@@ -112,7 +112,7 @@ module timing_controller
     output [(N_SPI - 1):0] spi_cs,
     output spi_mosi,
     input spi_miso,
-    output spi_clk,
+    output spi_sclk,
 
     output reg pulses_finished,
     // pulses wait until this goes low
@@ -120,8 +120,8 @@ module timing_controller
     // init is like reset, but hold the current TTL outputs toggle this at
     // the start of the sequence.
     input init,
-    output clock_out,
-    output reg [7:0] clock_out_div,
+    output clockout,
+    output reg [7:0] clockout_div,
 
     input inst_fifo_empty,
     input inst_fifo_almost_empty, // unused
@@ -137,10 +137,10 @@ module timing_controller
 
    wire reset = ~resetn;
 
-   clock_out_controller clock_out_ctrl(.clock(clock),
+   clockout_controller clockout_ctrl(.clock(clock),
                                        .reset(reset),
-                                       .out(clock_out),
-                                       .div(clock_out_div));
+                                       .out(clockout),
+                                       .div(clockout_div));
 
    localparam DDS_OPCODE_WIDTH = 16;
    localparam DDS_OPERAND_WIDTH = 32;
@@ -229,7 +229,7 @@ module timing_controller
                        .spi_cs(spi_cs),
                        .spi_mosi(spi_mosi),
                        .spi_miso(spi_miso),
-                       .spi_clk(spi_clk),
+                       .spi_sclk(spi_sclk),
                        .result_data(spi_result),
                        .result_WrReq(spi_WrReq));
 
@@ -264,7 +264,7 @@ module timing_controller
          underflow <= 0;
          pulses_finished <= 1;
          loopback_WrReq <= 0;
-         clock_out_div <= 255;
+         clockout_div <= 255;
          force_release <= 0;
 
          for (int i = 0; i < 32; i = i + 1)
@@ -337,9 +337,9 @@ module timing_controller
                     loopback_WrReq <= 1;
                     wait_timer <= 5;
                  end
-                 5 : begin // enable/disable clock_out
+                 5 : begin // enable/disable clockout
                     dbg_regs[DBG_CLOCK_COUNT] = dbg_regs[DBG_CLOCK_COUNT] + 1;
-                    clock_out_div <= instruction[7:0];
+                    clockout_div <= instruction[7:0];
                     wait_timer <= 5;
                  end
                  // SPI communication.

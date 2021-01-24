@@ -343,7 +343,7 @@ module design_1
         .PS_SRSTB(FIXED_IO_ps_srstb),
         .USB0_VBUS_PWRFAULT(1'b0));
   design_1_pulse_controller_0_0 pulse_controller_0
-       (.clock_out(pulse_controller_0_clock_out),
+       (.clockout(pulse_controller_0_clock_out),
         .dds_FUD(pulse_controller_0_dds_FUD),
         .dds_addr(pulse_controller_0_dds_addr),
         .dds_addr2(pulse_controller_0_dds_addr2),
@@ -390,10 +390,10 @@ module design_1
         .s00_axi_wready(axi_interconnect_0_M00_AXI_WREADY),
         .s00_axi_wstrb(axi_interconnect_0_M00_AXI_WSTRB),
         .s00_axi_wvalid(axi_interconnect_0_M00_AXI_WVALID),
-        .spi_clk(pulse_controller_0_spi_clk),
         .spi_cs(pulse_controller_0_spi_cs),
         .spi_miso(spi0_miso_1),
-        .spi_mosi(pulse_controller_0_spi_mosi));
+        .spi_mosi(pulse_controller_0_spi_mosi),
+        .spi_sclk(pulse_controller_0_spi_clk));
   design_1_result_fifo_0_0 result_fifo_0
        (.clk(processing_system7_0_FCLK_CLK0),
         .din(pulse_controller_0_result_fifo_wr_WR_DATA),

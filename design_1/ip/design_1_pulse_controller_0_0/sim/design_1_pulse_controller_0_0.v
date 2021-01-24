@@ -48,7 +48,7 @@
 
 
 // IP VLNV: nigrp.org:nigrp:pulse_controller:5.2
-// IP Revision: 1
+// IP Revision: 2
 
 `timescale 1ns/1ps
 
@@ -65,9 +65,9 @@ module design_1_pulse_controller_0_0 (
   dds_cs,
   spi_cs,
   spi_mosi,
-  spi_clk,
+  spi_sclk,
   spi_miso,
-  clock_out,
+  clockout,
   inst_fifo_empty,
   inst_fifo_almost_empty,
   inst_fifo_rd_data,
@@ -118,9 +118,9 @@ output wire [1 : 0] dds_FUD;
 output wire [21 : 0] dds_cs;
 output wire [0 : 0] spi_cs;
 output wire spi_mosi;
-output wire spi_clk;
+output wire spi_sclk;
 input wire spi_miso;
-output wire clock_out;
+output wire clockout;
 (* X_INTERFACE_INFO = "xilinx.com:interface:fifo_read:1.0 inst_fifo_rd EMPTY" *)
 input wire inst_fifo_empty;
 (* X_INTERFACE_INFO = "xilinx.com:interface:fifo_read:1.0 inst_fifo_rd ALMOST_EMPTY" *)
@@ -221,9 +221,9 @@ input wire s00_axi_rready;
     .dds_cs(dds_cs),
     .spi_cs(spi_cs),
     .spi_mosi(spi_mosi),
-    .spi_clk(spi_clk),
+    .spi_sclk(spi_sclk),
     .spi_miso(spi_miso),
-    .clock_out(clock_out),
+    .clockout(clockout),
     .inst_fifo_empty(inst_fifo_empty),
     .inst_fifo_almost_empty(inst_fifo_almost_empty),
     .inst_fifo_rd_data(inst_fifo_rd_data),

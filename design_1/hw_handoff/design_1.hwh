@@ -5,9 +5,9 @@
 
   <EXTERNALPORTS>
     <PORT CLKFREQUENCY="100000000" DIR="I" NAME="clock_in_pin" SIGIS="clk"/>
-    <PORT DIR="O" NAME="clock_out1_pin" SIGIS="undef" SIGNAME="pulse_controller_0_clock_out">
+    <PORT DIR="O" NAME="clock_out1_pin" SIGIS="undef" SIGNAME="pulse_controller_0_clockout">
       <CONNECTIONS>
-        <CONNECTION INSTANCE="pulse_controller_0" PORT="clock_out"/>
+        <CONNECTION INSTANCE="pulse_controller_0" PORT="clockout"/>
       </CONNECTIONS>
     </PORT>
     <PORT DIR="O" LEFT="6" NAME="dds_addr2_pin" RIGHT="0" SIGIS="undef" SIGNAME="pulse_controller_0_dds_addr2">
@@ -55,9 +55,9 @@
         <CONNECTION INSTANCE="pulse_controller_0" PORT="pulse_io"/>
       </CONNECTIONS>
     </PORT>
-    <PORT DIR="O" NAME="spi0_clk" SIGIS="undef" SIGNAME="pulse_controller_0_spi_clk">
+    <PORT DIR="O" NAME="spi0_clk" SIGIS="undef" SIGNAME="pulse_controller_0_spi_sclk">
       <CONNECTIONS>
-        <CONNECTION INSTANCE="pulse_controller_0" PORT="spi_clk"/>
+        <CONNECTION INSTANCE="pulse_controller_0" PORT="spi_sclk"/>
       </CONNECTIONS>
     </PORT>
     <PORT DIR="O" LEFT="0" NAME="spi0_cs" RIGHT="0" SIGIS="undef" SIGNAME="pulse_controller_0_spi_cs">
@@ -2771,7 +2771,7 @@
         <PERIPHERAL INSTANCE="pulse_controller_0"/>
       </PERIPHERALS>
     </MODULE>
-    <MODULE COREREVISION="1" FULLNAME="/pulse_controller_0" HWVERSION="5.2" INSTANCE="pulse_controller_0" IPTYPE="PERIPHERAL" IS_ENABLE="1" MODCLASS="PERIPHERAL" MODTYPE="pulse_controller" VLNV="nigrp.org:nigrp:pulse_controller:5.2">
+    <MODULE COREREVISION="2" FULLNAME="/pulse_controller_0" HWVERSION="5.2" INSTANCE="pulse_controller_0" IPTYPE="PERIPHERAL" IS_ENABLE="1" MODCLASS="PERIPHERAL" MODTYPE="pulse_controller" VLNV="nigrp.org:nigrp:pulse_controller:5.2">
       <DOCUMENTS/>
       <ADDRESSBLOCKS>
         <ADDRESSBLOCK ACCESS="" INTERFACE="S00_AXI" NAME="S00_AXI_reg" RANGE="4096" USAGE="register"/>
@@ -2846,7 +2846,7 @@
             <CONNECTION INSTANCE="External_Ports" PORT="spi0_mosi"/>
           </CONNECTIONS>
         </PORT>
-        <PORT DIR="O" NAME="spi_clk" SIGIS="undef" SIGNAME="pulse_controller_0_spi_clk">
+        <PORT DIR="O" NAME="spi_sclk" SIGIS="undef" SIGNAME="pulse_controller_0_spi_sclk">
           <CONNECTIONS>
             <CONNECTION INSTANCE="External_Ports" PORT="spi0_clk"/>
           </CONNECTIONS>
@@ -2856,7 +2856,7 @@
             <CONNECTION INSTANCE="External_Ports" PORT="spi0_miso"/>
           </CONNECTIONS>
         </PORT>
-        <PORT DIR="O" NAME="clock_out" SIGIS="undef" SIGNAME="pulse_controller_0_clock_out">
+        <PORT DIR="O" NAME="clockout" SIGIS="undef" SIGNAME="pulse_controller_0_clockout">
           <CONNECTIONS>
             <CONNECTION INSTANCE="External_Ports" PORT="clock_out1_pin"/>
           </CONNECTIONS>

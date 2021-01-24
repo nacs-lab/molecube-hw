@@ -1442,13 +1442,13 @@
       },
       "pulse_controller_0_spi_clk": {
         "ports": [
-          "pulse_controller_0/spi_clk",
+          "pulse_controller_0/spi_sclk",
           "spi0_clk"
         ]
       },
       "pulse_controller_0_clock_out": {
         "ports": [
-          "pulse_controller_0/clock_out",
+          "pulse_controller_0/clockout",
           "clock_out1_pin"
         ]
       },

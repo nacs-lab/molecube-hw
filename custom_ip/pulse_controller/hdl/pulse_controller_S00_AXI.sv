@@ -72,11 +72,11 @@ module pulse_controller_S00_AXI #
 
     // begin: external signals for SPI
     output [(N_SPI - 1):0] spi_cs,
-    output spi_mosi, spi_clk,
+    output spi_mosi, spi_sclk,
     input spi_miso,
     // end: external signals for SPI
 
-    output clock_out,
+    output clockout,
 
     input inst_fifo_empty,
     input inst_fifo_almost_empty, // unused
@@ -199,7 +199,7 @@ module pulse_controller_S00_AXI #
 
    wire underflow;
    wire pulses_finished;
-   wire [7:0] clock_out_div;
+   wire [7:0] clockout_div;
    // Digital output words
    wire [(U_PULSE_WIDTH - 1):0] ttl_out;
 
@@ -283,7 +283,7 @@ module pulse_controller_S00_AXI #
                    end
                    7'h05: begin
                       S_AXI_RDATA[C_S_AXI_DATA_WIDTH - 1:8] <= 0;
-                      S_AXI_RDATA[7:0] <= clock_out_div;
+                      S_AXI_RDATA[7:0] <= clockout_div;
                    end
                    7'h06: begin
                       S_AXI_RDATA <= MAJOR_VER;
@@ -597,12 +597,12 @@ module pulse_controller_S00_AXI #
       .spi_cs(spi_cs),
       .spi_mosi(spi_mosi),
       .spi_miso(spi_miso),
-      .spi_clk(spi_clk),
+      .spi_sclk(spi_sclk),
       .pulses_finished(pulses_finished),
       .pulse_controller_hold(slv_reg_ctrl[7]),
       .init(slv_reg_ctrl[8]),
-      .clock_out(clock_out),
-      .clock_out_div(clock_out_div),
+      .clockout(clockout),
+      .clockout_div(clockout_div),
       .inst_fifo_empty(inst_fifo_empty),
       .inst_fifo_almost_empty(inst_fifo_almost_empty),
       .inst_fifo_rd_data(inst_fifo_rd_data),

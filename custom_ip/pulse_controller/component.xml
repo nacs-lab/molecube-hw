@@ -426,7 +426,7 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>viewChecksum</spirit:name>
-            <spirit:value>504e0cb1</spirit:value>
+            <spirit:value>41eb58e0</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -442,7 +442,7 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>viewChecksum</spirit:name>
-            <spirit:value>504e0cb1</spirit:value>
+            <spirit:value>41eb58e0</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -660,7 +660,7 @@
         </spirit:wire>
       </spirit:port>
       <spirit:port>
-        <spirit:name>spi_clk</spirit:name>
+        <spirit:name>spi_sclk</spirit:name>
         <spirit:wire>
           <spirit:direction>out</spirit:direction>
           <spirit:wireTypeDefs>
@@ -686,7 +686,7 @@
         </spirit:wire>
       </spirit:port>
       <spirit:port>
-        <spirit:name>clock_out</spirit:name>
+        <spirit:name>clockout</spirit:name>
         <spirit:wire>
           <spirit:direction>out</spirit:direction>
           <spirit:wireTypeDefs>
@@ -1340,7 +1340,7 @@
       <spirit:file>
         <spirit:name>hdl/pulse_controller.v</spirit:name>
         <spirit:fileType>verilogSource</spirit:fileType>
-        <spirit:userFileType>CHECKSUM_e31fc275</spirit:userFileType>
+        <spirit:userFileType>CHECKSUM_e40c844f</spirit:userFileType>
       </spirit:file>
     </spirit:fileSet>
     <spirit:fileSet>
@@ -1481,12 +1481,12 @@
       <xilinx:displayName>Pulse Controller</xilinx:displayName>
       <xilinx:vendorDisplayName>Ni Group</xilinx:vendorDisplayName>
       <xilinx:vendorURL>https://faculty.chemistry.harvard.edu/kni</xilinx:vendorURL>
-      <xilinx:coreRevision>1</xilinx:coreRevision>
+      <xilinx:coreRevision>2</xilinx:coreRevision>
       <xilinx:upgrades>
         <xilinx:canUpgradeFrom>nigrp.org:nigrp:pulse_controller:5.0</xilinx:canUpgradeFrom>
         <xilinx:canUpgradeFrom>nigrp.org:nigrp:pulse_controller:5.1</xilinx:canUpgradeFrom>
       </xilinx:upgrades>
-      <xilinx:coreCreationDateTime>2021-01-24T16:53:20Z</xilinx:coreCreationDateTime>
+      <xilinx:coreCreationDateTime>2021-01-24T21:06:27Z</xilinx:coreCreationDateTime>
       <xilinx:tags>
       </xilinx:tags>
     </xilinx:coreExtensions>
@@ -1494,8 +1494,8 @@
       <xilinx:xilinxVersion>2020.1</xilinx:xilinxVersion>
       <xilinx:checksum xilinx:scope="busInterfaces" xilinx:value="9869a804"/>
       <xilinx:checksum xilinx:scope="memoryMaps" xilinx:value="ed1368d5"/>
-      <xilinx:checksum xilinx:scope="fileGroups" xilinx:value="7849b9b6"/>
-      <xilinx:checksum xilinx:scope="ports" xilinx:value="75c8f3a5"/>
+      <xilinx:checksum xilinx:scope="fileGroups" xilinx:value="9afd8a44"/>
+      <xilinx:checksum xilinx:scope="ports" xilinx:value="05ca7f9d"/>
       <xilinx:checksum xilinx:scope="hdlParameters" xilinx:value="b3792af7"/>
       <xilinx:checksum xilinx:scope="parameters" xilinx:value="0ac9b1cc"/>
     </xilinx:packagingInfo>
