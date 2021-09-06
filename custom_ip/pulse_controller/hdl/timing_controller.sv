@@ -291,14 +291,14 @@ module timing_controller
                is_wait <= 0;
                waiting <= 1;
                pulses_finished <= 0;
-               dbg_inst_count = dbg_inst_count + 1;
+               dbg_inst_count <= dbg_inst_count + 1;
                dbg_inst_cycle <= dbg_inst_cycle + 1;
                timing_check <= instruction[ENABLE_TIMING_CHECK_BIT];
                case (instruction[INSTRUCTION_BITA:INSTRUCTION_BITB])
                  0 : begin // set digital output for given duration
                     is_ttl <= 1;
-                    dbg_ttl_count = dbg_ttl_count + 1;
-                    dbg_ttl_cycle = dbg_ttl_cycle + 1;
+                    dbg_ttl_count <= dbg_ttl_count + 1;
+                    dbg_ttl_cycle <= dbg_ttl_cycle + 1;
                     if (instruction[TIMER_BITA:TIMER_BITB] == 1 ||
                         instruction[TIMER_BITA:TIMER_BITB] == 0)
                       waiting <= 0; // 1 cycle pulse, go to next instruction immediately
@@ -306,7 +306,7 @@ module timing_controller
                     ttl_out <= instruction[TTL_BITA:TTL_BITB];
                  end
                  1 : begin // DDS instruction
-                    dbg_dds_count = dbg_dds_count + 1;
+                    dbg_dds_count <= dbg_dds_count + 1;
                     dds_opcode <= instruction[47:32];
                     dds_operand <= instruction[31:0];
                     dds_we <= 1; // write to DDS
