@@ -1,5 +1,4 @@
-image : {
+the_ROM_image : {
         [bootloader]fsbl.elf
         u-boot.elf
 }
-
