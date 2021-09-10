@@ -3,6 +3,7 @@
 set jobn 1
 set proj ""
 set bitfile ""
+set hwfile ""
 
 while {[llength $argv]} {
     set argv [lassign $argv[set argv {}] flag]
@@ -16,6 +17,9 @@ while {[llength $argv]} {
         }
         -bit {
             set argv [lassign $argv[set argv {}] bitfile]
+        }
+        -hw {
+            set argv [lassign $argv[set argv {}] hwfile]
         }
         default {
             return -code error [list {unknown option} $flag]
@@ -47,3 +51,6 @@ open_run impl_1
 set path [file dirname $bitfile]
 file mkdir $path
 write_bitstream -force -bin_file $bitfile
+if {$hwfile != ""} {
+    write_hw_platform -fixed -force -file $hwfile
+}
