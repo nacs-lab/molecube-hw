@@ -15,7 +15,10 @@ module pulse_controller #
 
    // Parameters of Axi Slave Bus Interface S00_AXI
    parameter integer C_S00_AXI_DATA_WIDTH = 32,
-   parameter integer C_S00_AXI_ADDR_WIDTH = 9
+   parameter integer C_S00_AXI_ADDR_WIDTH = 9,
+
+   // Parameters of Axi Slave Bus Interface S_AXIS_CMD
+   parameter integer C_S_AXIS_CMD_TDATA_WIDTH = 512
    )
    (
     // Users to add ports here
@@ -67,7 +70,15 @@ module pulse_controller #
     output wire [C_S00_AXI_DATA_WIDTH - 1:0] s00_axi_rdata,
     output wire [1:0] s00_axi_rresp,
     output wire s00_axi_rvalid,
-    input wire s00_axi_rready
+    input wire s00_axi_rready,
+
+    input wire s_axis_cmd_aclk,
+    input wire s_axis_cmd_aresetn,
+    output wire s_axis_cmd_tready,
+    input wire [C_S_AXIS_CMD_TDATA_WIDTH-1 : 0] s_axis_cmd_tdata,
+    input wire [(C_S_AXIS_CMD_TDATA_WIDTH/8)-1 : 0] s_axis_cmd_tkeep,
+    input wire s_axis_cmd_tlast,
+    input wire s_axis_cmd_tvalid
     );
 
    // Instantiation of Axi Bus Interface S00_AXI
@@ -122,6 +133,8 @@ module pulse_controller #
       .S_AXI_RVALID(s00_axi_rvalid),
       .S_AXI_RREADY(s00_axi_rready)
       );
+
+   assign s_axis_cmd_tready = 0;
 
    // Add user logic here
 
