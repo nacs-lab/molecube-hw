@@ -45,3 +45,5 @@ vivado*
 *.zip
 sim/
 synth/
+*.xml
+NA/
