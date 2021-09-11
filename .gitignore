@@ -43,3 +43,5 @@ elaborate/
 *.debug
 vivado*
 *.zip
+sim/
+synth/
