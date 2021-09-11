@@ -47,3 +47,4 @@ sim/
 synth/
 *.xml
 NA/
+*.hwdef

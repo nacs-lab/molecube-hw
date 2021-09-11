@@ -1,3 +1,9 @@
 /ipshared/
 /hdl/
 /hw_handoff/
+/ip/design_1_processing_system7_*/ps7_init*
+*.h
+*.c
+*.cc
+*.cpp
+*.html
