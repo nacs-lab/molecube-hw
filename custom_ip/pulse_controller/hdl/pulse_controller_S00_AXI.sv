@@ -82,24 +82,6 @@ module pulse_controller_S00_AXI #
     // end: external signals for SPI
 
     output clockout,
-
-    input inst_fifo_empty,
-    input inst_fifo_almost_empty, // unused
-    input [63:0] inst_fifo_rd_data,
-    output inst_fifo_rd_en,
-    input inst_fifo_full,
-    input inst_fifo_almost_full, // unused
-    output [31:0] inst_fifo_wr_data,
-    output inst_fifo_wr_en,
-
-    input result_fifo_empty,
-    input result_fifo_almost_empty, // unused
-    input [31:0] result_fifo_rd_data,
-    output result_fifo_rd_en,
-    input result_fifo_full,
-    input result_fifo_almost_full, // unused
-    output [31:0] result_fifo_wr_data,
-    output result_fifo_wr_en,
     // User ports ends
     // Do not modify the ports beyond this line
 
@@ -221,6 +203,7 @@ module pulse_controller_S00_AXI #
    reg [(C_S_AXI_DATA_WIDTH - 1):0] dbg_result_generated;
    reg [(C_S_AXI_DATA_WIDTH - 1):0] dbg_result_consumed;
 
+   wire reset = ~S_AXI_ARESETN;
    wire underflow;
    wire pulses_finished;
    wire [7:0] clockout_div;
@@ -266,6 +249,23 @@ module pulse_controller_S00_AXI #
    localparam MAJOR_VER = 5;
    // Change this version when adding new features
    localparam MINOR_VER = 2;
+
+   wire result_fifo_empty;
+   wire [31:0] result_fifo_rd_data;
+   wire result_fifo_rd_en;
+   wire result_fifo_full;
+   wire [31:0] result_fifo_wr_data;
+   wire result_fifo_wr_en;
+   result_fifo_0 result_fifo_0_inst(.rst(reset),
+                                    .clk(S_AXI_ACLK),
+
+                                    .full(result_fifo_full),
+                                    .din(result_fifo_wr_data),
+                                    .wr_en(result_fifo_wr_en),
+
+                                    .empty(result_fifo_empty),
+                                    .dout(result_fifo_rd_data),
+                                    .rd_en(result_fifo_rd_en));
 
    // Read state:
    //   0: idle
@@ -598,6 +598,23 @@ module pulse_controller_S00_AXI #
          slv_reg_status[(RES_STATUS_ADDR_BITS + 3):4] <= result_status_count;
       end
    end
+
+   wire inst_fifo_full;
+   wire [31:0] inst_fifo_wr_data;
+   wire inst_fifo_wr_en;
+   wire inst_fifo_empty;
+   wire [63:0] inst_fifo_rd_data;
+   wire inst_fifo_rd_en;
+   inst_fifo_0 inst_fifo_0_inst(.srst(reset),
+                                .clk(S_AXI_ACLK),
+
+                                .full(inst_fifo_full),
+                                .din(inst_fifo_wr_data),
+                                .wr_en(inst_fifo_wr_en),
+
+                                .empty(inst_fifo_empty),
+                                .dout(inst_fifo_rd_data),
+                                .rd_en(inst_fifo_rd_en));
 
    // Instruction fifo write end
    assign inst_fifo_wr_data = s_axi_wdata;
