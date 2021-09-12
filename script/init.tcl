@@ -17,4 +17,7 @@ while {[llength $argv]} {
 
 set proj [file join $repo project_molecube/project_molecube.xpr]
 open_project $proj
-make_wrapper -files [get_files [file join $repo design_1/design_1.bd]] -top
+set wrapper [file join $repo design_1/hdl/design_1_wrapper.v];
+if {![file exists $wrapper]} {
+    make_wrapper -files [get_files [file join $repo design_1/design_1.bd]] -top
+}
