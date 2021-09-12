@@ -42,24 +42,6 @@ module pulse_controller #
     // end: external signals for SPI
 
     output clockout,
-
-    input inst_fifo_empty,
-    input inst_fifo_almost_empty, // unused
-    input [63:0] inst_fifo_rd_data,
-    output inst_fifo_rd_en,
-    input inst_fifo_full,
-    input inst_fifo_almost_full, // unused
-    output [31:0] inst_fifo_wr_data,
-    output inst_fifo_wr_en,
-
-    input result_fifo_empty,
-    input result_fifo_almost_empty, // unused
-    input [31:0] result_fifo_rd_data,
-    output result_fifo_rd_en,
-    input result_fifo_full,
-    input result_fifo_almost_full, // unused
-    output [31:0] result_fifo_wr_data,
-    output result_fifo_wr_en,
     // User ports ends
     // Do not modify the ports beyond this line
 
@@ -117,24 +99,6 @@ module pulse_controller #
       .spi_sclk(spi_sclk),
       .spi_miso(spi_miso),
       .clockout(clockout),
-
-      .inst_fifo_empty(inst_fifo_empty),
-      .inst_fifo_almost_empty(inst_fifo_almost_empty),
-      .inst_fifo_rd_data(inst_fifo_rd_data),
-      .inst_fifo_rd_en(inst_fifo_rd_en),
-      .inst_fifo_full(inst_fifo_full),
-      .inst_fifo_almost_full(inst_fifo_almost_full),
-      .inst_fifo_wr_data(inst_fifo_wr_data),
-      .inst_fifo_wr_en(inst_fifo_wr_en),
-
-      .result_fifo_empty(result_fifo_empty),
-      .result_fifo_almost_empty(result_fifo_almost_empty),
-      .result_fifo_rd_data(result_fifo_rd_data),
-      .result_fifo_rd_en(result_fifo_rd_en),
-      .result_fifo_full(result_fifo_full),
-      .result_fifo_almost_full(result_fifo_almost_full),
-      .result_fifo_wr_data(result_fifo_wr_data),
-      .result_fifo_wr_en(result_fifo_wr_en),
 
       .S_AXI_ACLK(s00_axi_aclk),
       .S_AXI_ARESETN(s00_axi_aresetn),
