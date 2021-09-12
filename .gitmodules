@@ -1,0 +1,6 @@
+[submodule "boot/device-tree"]
+	path = boot/device-tree
+	url = https://github.com/Xilinx/device-tree-xlnx
+[submodule "boot/u-boot"]
+	path = boot/u-boot
+	url = https://github.com/Xilinx/u-boot-xlnx
