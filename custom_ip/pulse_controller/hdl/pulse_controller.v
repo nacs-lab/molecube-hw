@@ -53,10 +53,12 @@ module pulse_controller #
     input wire [2:0] s00_axi_awprot,
     input wire s00_axi_awvalid,
     output wire s00_axi_awready,
+
     input wire [C_S00_AXI_DATA_WIDTH - 1:0] s00_axi_wdata,
     input wire [(C_S00_AXI_DATA_WIDTH / 8) - 1:0] s00_axi_wstrb,
     input wire s00_axi_wvalid,
     output wire s00_axi_wready,
+
     output wire [1:0] s00_axi_bresp,
     output wire s00_axi_bvalid,
     input wire s00_axi_bready,
@@ -69,6 +71,70 @@ module pulse_controller #
     output wire s00_axi_rvalid,
     input wire s00_axi_rready
     );
+
+   wire [C_S00_AXI_ADDR_WIDTH - 1:0] S_AXI_AWADDR;
+   wire S_AXI_AWVALID;
+   wire S_AXI_AWREADY;
+
+   wire [C_S00_AXI_ADDR_WIDTH - 1:0] S_AXI_ARADDR;
+   wire S_AXI_ARVALID;
+   wire S_AXI_ARREADY;
+
+   wire [C_S00_AXI_ADDR_WIDTH - 1:0] S_AXI_WDATA;
+   wire [(C_S00_AXI_ADDR_WIDTH / 8) - 1:0] S_AXI_WSTRB;
+   wire S_AXI_WVALID;
+   wire S_AXI_WREADY;
+   wire [(C_S00_AXI_ADDR_WIDTH * 9 / 8) - 1:0] S_AXI_WFULL;
+   wire [(C_S00_AXI_ADDR_WIDTH * 9 / 8) - 1:0] s00_axi_wfull;
+   assign s00_axi_wfull[C_S00_AXI_ADDR_WIDTH - 1:0] = s00_axi_wdata;
+   assign s00_axi_wfull[(C_S00_AXI_ADDR_WIDTH * 9 / 8) - 1:C_S00_AXI_ADDR_WIDTH] = s00_axi_wstrb;
+   assign S_AXI_WDATA = S_AXI_WFULL[C_S00_AXI_ADDR_WIDTH - 1:0];
+   assign S_AXI_WSTRB = S_AXI_WFULL[(C_S00_AXI_ADDR_WIDTH * 9 / 8) - 1:C_S00_AXI_ADDR_WIDTH];
+
+   bus_buffer # (.BUS_WIDTH(C_S00_AXI_ADDR_WIDTH)
+                 ) aw_buffer
+     (
+      .clock(s00_axi_aclk),
+      .resetn(s00_axi_aresetn),
+
+      .in_valid(s00_axi_awvalid),
+      .in_data(s00_axi_awaddr),
+      .in_ready(s00_axi_awready),
+
+      .out_valid(S_AXI_AWVALID),
+      .out_data(S_AXI_AWADDR),
+      .out_ready(S_AXI_AWREADY)
+      );
+
+   bus_buffer # (.BUS_WIDTH(C_S00_AXI_ADDR_WIDTH)
+                 ) ar_buffer
+     (
+      .clock(s00_axi_aclk),
+      .resetn(s00_axi_aresetn),
+
+      .in_valid(s00_axi_arvalid),
+      .in_data(s00_axi_araddr),
+      .in_ready(s00_axi_arready),
+
+      .out_valid(S_AXI_ARVALID),
+      .out_data(S_AXI_ARADDR),
+      .out_ready(S_AXI_ARREADY)
+      );
+
+   bus_buffer # (.BUS_WIDTH(C_S00_AXI_ADDR_WIDTH * 9 / 8)
+                 ) w_buffer
+     (
+      .clock(s00_axi_aclk),
+      .resetn(s00_axi_wesetn),
+
+      .in_valid(s00_axi_wvalid),
+      .in_data(s00_axi_wfull),
+      .in_ready(s00_axi_wready),
+
+      .out_valid(S_AXI_WVALID),
+      .out_data(S_AXI_WFULL),
+      .out_ready(S_AXI_WREADY)
+      );
 
    // Instantiation of Axi Bus Interface S00_AXI
    pulse_controller_S00_AXI # (.N_SPI(N_SPI),
@@ -102,21 +168,25 @@ module pulse_controller #
 
       .S_AXI_ACLK(s00_axi_aclk),
       .S_AXI_ARESETN(s00_axi_aresetn),
-      .S_AXI_AWADDR(s00_axi_awaddr),
+      .S_AXI_AWADDR(S_AXI_AWADDR),
       .S_AXI_AWPROT(s00_axi_awprot),
-      .S_AXI_AWVALID(s00_axi_awvalid),
-      .S_AXI_AWREADY(s00_axi_awready),
-      .S_AXI_WDATA(s00_axi_wdata),
-      .S_AXI_WSTRB(s00_axi_wstrb),
-      .S_AXI_WVALID(s00_axi_wvalid),
-      .S_AXI_WREADY(s00_axi_wready),
+      .S_AXI_AWVALID(S_AXI_AWVALID),
+      .S_AXI_AWREADY(S_AXI_AWREADY),
+
+      .S_AXI_WDATA(S_AXI_WDATA),
+      .S_AXI_WSTRB(S_AXI_WSTRB),
+      .S_AXI_WVALID(S_AXI_WVALID),
+      .S_AXI_WREADY(S_AXI_WREADY),
+
       .S_AXI_BRESP(s00_axi_bresp),
       .S_AXI_BVALID(s00_axi_bvalid),
       .S_AXI_BREADY(s00_axi_bready),
-      .S_AXI_ARADDR(s00_axi_araddr),
+
+      .S_AXI_ARADDR(S_AXI_ARADDR),
       .S_AXI_ARPROT(s00_axi_arprot),
-      .S_AXI_ARVALID(s00_axi_arvalid),
-      .S_AXI_ARREADY(s00_axi_arready),
+      .S_AXI_ARVALID(S_AXI_ARVALID),
+      .S_AXI_ARREADY(S_AXI_ARREADY),
+
       .S_AXI_RDATA(s00_axi_rdata),
       .S_AXI_RRESP(s00_axi_rresp),
       .S_AXI_RVALID(s00_axi_rvalid),
