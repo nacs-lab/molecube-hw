@@ -40,6 +40,87 @@ module overflow_fifo #
    end
 endmodule
 
+module bus_buffer #
+  (
+   parameter BUS_WIDTH = 32
+   )
+   (
+    input clock,
+    input resetn,
+
+    // input side
+    input in_valid,
+    input [BUS_WIDTH - 1:0] in_data,
+    output reg in_ready,
+
+    // output side
+    output reg out_valid,
+    output reg [BUS_WIDTH - 1:0] out_data,
+    input out_ready
+    );
+
+   reg buffer_valid;
+   reg [BUS_WIDTH - 1:0] buffer_data;
+
+   // All the output are registers so there shouldn't be any direct signal path
+   // that goes through this module (everything get buffered by the registers)
+   // In order to maintain full throughput (maximum one transfer per cycle)
+   // we must keep the input ready if the output stay ready.
+   // With a register input ready (which is an output port) we must have
+   // `in_ready <= out_ready | <possible other conditions>;`
+   // This means that if `in_valid` is also high,
+   // a transfer will happen the next cycle on the input.
+   // However, if `out_ready` becomes low the next cycle,
+   // no transfer will happen on the output in which case we must hold the input data outselves
+   // so we need to store the data in the buffer instead.
+
+   // Invariant:
+   // * If buffer_valid is 1, out_valid should also be 1.
+   //   We always skip the buffer if we can write to the output.
+   // * If buffer_valid is 1, in_ready should be 0.
+   //   This makes sure that if we can't flush the buffer to the output
+   //   (due to out_ready being 0)
+   //   we won't accept an input without being able to put it in the buffer.
+
+   always @(posedge clock) begin
+      if (~resetn) begin
+         in_ready <= 1;
+         out_valid <= 0;
+         out_data <= 0;
+         buffer_valid <= 0;
+         buffer_data <= 0;
+      end else begin
+         if (in_ready & in_valid) begin
+            // buffer_valid == 0 from invariance
+
+            // A transfer will happen on the input, depending on the output status,
+            // we may either store this to the buffer or the output
+            if (out_ready | ~out_valid) begin
+               // Whatever in out_valid and out_data isn't needed anymore, store directly to out
+               out_valid <= 1;
+               out_data <= in_data;
+               in_ready <= 1; // buffer remains empty, in still ready
+               // buffer remains invalid
+            end else begin
+               // Output is valid and no transfer happens, store to buffer
+               buffer_valid <= 1;
+               buffer_data <= in_data;
+               in_ready <= 0; // buffer is filled, not accepting input anymore
+               // output holds the previous data
+            end
+         end else if (out_ready & out_valid) begin
+            // A transfer will happen on the output but not on the input.
+            // Move the buffer into the output.
+            out_valid <= buffer_valid;
+            out_data <= buffer_data;
+            buffer_valid <= 0;
+            // Don't care about buffer data
+            in_ready <= 1; // input is ready now since the buffer is cleared.
+         end
+      end
+   end
+endmodule
+
 module pulse_controller_S00_AXI #
   (
    // Users to add parameters here
