@@ -39,4 +39,4 @@ cp "$dir/boot/boot.bif" "$outputdir/boot/boot.bif"
 cp "$outputdir/fsbl/executable.elf" "$outputdir/boot/fsbl.elf"
 cp "$u_boot_dir/u-boot" "$outputdir/boot/u-boot.elf"
 armv7l-linux-gnueabihf-strip "$outputdir/boot/u-boot.elf"
-(cd "$outputdir/boot" && bootgen -image boot.bif -o boot.bin)
+(cd "$outputdir/boot" && bootgen -image boot.bif -w -o boot.bin)
