@@ -45,7 +45,6 @@ vivado*
 *.zip
 sim/
 synth/
-*.xml
 NA/
 *.hwdef
 *.veo
