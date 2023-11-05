@@ -7,10 +7,10 @@ set_property PACKAGE_PIN L18 [get_ports {pulse_io_pin[0]}]
 set_property IOSTANDARD LVCMOS33 [get_ports {pulse_io_pin[0]}]
 set_property DRIVE 4 [get_ports {pulse_io_pin[0]}]
 # CLK0_M2C_N / FMC1_H05
-set_property PACKAGE_PIN L19 [get_ports {pulse_io_pin[4]}]
-set_property IOSTANDARD LVCMOS33 [get_ports {pulse_io_pin[4]}]
-set_property DRIVE 4 [get_ports {pulse_io_pin[4]}]
-# LA02_P / FMC1_H07
+# set_property PACKAGE_PIN L19 [get_ports {pulse_io_pin[4]}]
+# set_property IOSTANDARD LVCMOS33 [get_ports {pulse_io_pin[4]}]
+# set_property DRIVE 4 [get_ports {pulse_io_pin[4]}]
+# La02_P / FMC1_H07
 # set_property PACKAGE_PIN L21 [get_ports axi_spi_5_MOSI_pin]
 # set_property IOSTANDARD LVCMOS33 [get_ports axi_spi_5_MOSI_pin]
 # set_property DRIVE 8 [get_ports axi_spi_5_MOSI_pin]
@@ -93,13 +93,13 @@ set_property DRIVE 4 [get_ports {dds_cs_pin[8]}]
 
 # FMC1, column G
 # CLK1_M2C_P / FMC1_G02
-set_property PACKAGE_PIN M19 [get_ports {pulse_io_pin[8]}]
-set_property IOSTANDARD LVCMOS33 [get_ports {pulse_io_pin[8]}]
-set_property DRIVE 4 [get_ports {pulse_io_pin[8]}]
+# set_property PACKAGE_PIN M19 [get_ports {pulse_io_pin[8]}]
+# set_property IOSTANDARD LVCMOS33 [get_ports {pulse_io_pin[8]}]
+# set_property DRIVE 4 [get_ports {pulse_io_pin[8]}]
 # CLK1_M2C_N / FMC1_G03
-set_property PACKAGE_PIN M20 [get_ports {pulse_io_pin[12]}]
-set_property IOSTANDARD LVCMOS33 [get_ports {pulse_io_pin[12]}]
-set_property DRIVE 4 [get_ports {pulse_io_pin[12]}]
+# set_property PACKAGE_PIN M20 [get_ports {pulse_io_pin[12]}]
+# set_property IOSTANDARD LVCMOS33 [get_ports {pulse_io_pin[12]}]
+# set_property DRIVE 4 [get_ports {pulse_io_pin[12]}]
 # LA00_P_CC / FMC1_G06
 # set_property PACKAGE_PIN K19 [get_ports axi_spi_5_SS_pin]
 # set_property IOSTANDARD LVCMOS33 [get_ports axi_spi_5_SS_pin]
@@ -207,22 +207,34 @@ set_property IOSTANDARD LVCMOS33 [get_ports clock_in_pin]
 # set_property IOSTANDARD LVCMOS33 [get_ports sync_counter1_pin]
 # LA09_N / FMC1_D15
 # NC
-set_property PACKAGE_PIN M16 [get_ports {pulse_io_pin[29]}]
-set_property IOSTANDARD LVCMOS33 [get_ports {pulse_io_pin[29]}]
-set_property DRIVE 4 [get_ports {pulse_io_pin[29]}]
+# set_property PACKAGE_PIN M16 [get_ports {pulse_io_pin[29]}]
+# set_property IOSTANDARD LVCMOS33 [get_ports {pulse_io_pin[29]}]
+# set_property DRIVE 4 [get_ports {pulse_io_pin[29]}]
+set_property PACKAGE_PIN M16 [get_ports {pulse_io_pin[31]}]
+set_property IOSTANDARD LVCMOS33 [get_ports {pulse_io_pin[31]}]
+set_property DRIVE 4 [get_ports {pulse_io_pin[31]}]
 # LA13_P / FMC1_D17
 # NC
-set_property PACKAGE_PIN P16 [get_ports {pulse_io_pin[30]}]
-set_property IOSTANDARD LVCMOS33 [get_ports {pulse_io_pin[30]}]
-set_property DRIVE 4 [get_ports {pulse_io_pin[30]}]
-# LA13_N / FMC1_D18
-set_property PACKAGE_PIN R16 [get_ports spi0_clk]
+# set_property PACKAGE_PIN P16 [get_ports {pulse_io_pin[30]}]
+# set_property IOSTANDARD LVCMOS33 [get_ports {pulse_io_pin[30]}]
+# set_property DRIVE 4 [get_ports {pulse_io_pin[30]}]
+set_property PACKAGE_PIN P16 [get_ports spi0_clk]
 set_property IOSTANDARD LVCMOS33 [get_ports spi0_clk]
 set_property DRIVE 8 [get_ports spi0_clk]
-# LA17_CC_P / FMC1_D20
-set_property PACKAGE_PIN B19 [get_ports spi0_mosi]
-set_property IOSTANDARD LVCMOS33 [get_ports spi0_mosi]
-set_property DRIVE 8 [get_ports spi0_mosi]
+# LA13_N / FMC1_D18
+# set_property PACKAGE_PIN R16 [get_ports spi0_clk]
+# set_property IOSTANDARD LVCMOS33 [get_ports spi0_clk]
+# set_property DRIVE 8 [get_ports spi0_clk]
+set_property PACKAGE_PIN R16 [get_ports {pulse_io_pin[30]}]
+set_property IOSTANDARD LVCMOS33 [get_ports {pulse_io_pin[30]}]
+set_property DRIVE 4 [get_ports {pulse_io_pin[30]}]
+# LA17_CC_P / FMC1_D20: new 28
+# set_property PACKAGE_PIN B19 [get_ports spi0_mosi]
+# set_property IOSTANDARD LVCMOS33 [get_ports spi0_mosi]
+# set_property DRIVE 8 [get_ports spi0_mosi]
+set_property PACKAGE_PIN B19 [get_ports {pulse_io_pin[28]}]
+set_property IOSTANDARD LVCMOS33 [get_ports {pulse_io_pin[28]}]
+set_property DRIVE 4 [get_ports {pulse_io_pin[28]}]
 # LA17_CC_N / FMC1_D21
 set_property PACKAGE_PIN B20 [get_ports {spi0_cs[0]}]
 set_property IOSTANDARD LVCMOS33 [get_ports {spi0_cs[0]}]
@@ -231,17 +243,29 @@ set_property DRIVE 8 [get_ports {spi0_cs[0]}]
 # set_property PACKAGE_PIN G15 [get_ports axi_spi_1_MOSI_pin]
 # set_property IOSTANDARD LVCMOS33 [get_ports axi_spi_1_MOSI_pin]
 # set_property DRIVE 8 [get_ports axi_spi_1_MOSI_pin]
+set_property PACKAGE_PIN G15 [get_ports {pulse_io_pin[20]}]
+set_property IOSTANDARD LVCMOS33 [get_ports {pulse_io_pin[20]}]
+set_property DRIVE 4 [get_ports {pulse_io_pin[20]}]
 # LA23_N / FMC1_D24
 # set_property PACKAGE_PIN G16 [get_ports axi_spi_1_SS_pin]
 # set_property IOSTANDARD LVCMOS33 [get_ports axi_spi_1_SS_pin]
 # set_property DRIVE 8 [get_ports axi_spi_1_SS_pin]
+set_property PACKAGE_PIN G16 [get_ports {pulse_io_pin[24]}]
+set_property IOSTANDARD LVCMOS33 [get_ports {pulse_io_pin[24]}]
+set_property DRIVE 4 [get_ports {pulse_io_pin[24]}]
 # LA26_P / FMC1_D26
 # set_property PACKAGE_PIN F18 [get_ports axi_spi_2_MISO_pin]
 # set_property IOSTANDARD LVCMOS33 [get_ports axi_spi_2_MISO_pin]
+set_property PACKAGE_PIN F18 [get_ports {pulse_io_pin[4]}]
+set_property IOSTANDARD LVCMOS33 [get_ports {pulse_io_pin[4]}]
+set_property DRIVE 4 [get_ports {pulse_io_pin[4]}]
 # LA26_N / FMC1_D27
 # set_property PACKAGE_PIN E18 [get_ports axi_spi_2_SS_pin]
 # set_property IOSTANDARD LVCMOS33 [get_ports axi_spi_2_SS_pin]
 # set_property DRIVE 8 [get_ports axi_spi_2_SS_pin]
+set_property PACKAGE_PIN E18 [get_ports {pulse_io_pin[12]}]
+set_property IOSTANDARD LVCMOS33 [get_ports {pulse_io_pin[12]}]
+set_property DRIVE 4 [get_ports {pulse_io_pin[12]}]
 
 # FMC1, column C
 # LA06_P / FMC1_C10
@@ -257,17 +281,25 @@ set_property DRIVE 8 [get_ports {spi0_cs[0]}]
 # set_property IOSTANDARD LVCMOS33 [get_ports axi_spi_3_MISO_pin]
 # LA10_N / FMC1_C15
 # NC input
-set_property PACKAGE_PIN M17 [get_ports {pulse_io_pin[28]}]
-set_property IOSTANDARD LVCMOS33 [get_ports {pulse_io_pin[28]}]
-set_property DRIVE 4 [get_ports {pulse_io_pin[28]}]
+# set_property PACKAGE_PIN M17 [get_ports {pulse_io_pin[28]}]
+# set_property IOSTANDARD LVCMOS33 [get_ports {pulse_io_pin[28]}]
+# set_property DRIVE 4 [get_ports {pulse_io_pin[28]}]
+set_property PACKAGE_PIN M17 [get_ports spi0_mosi]
+set_property IOSTANDARD LVCMOS33 [get_ports spi0_mosi]
+set_property DRIVE 8 [get_ports spi0_mosi]
 # LA14_P / FMC1_C18
 # NC
-set_property PACKAGE_PIN J16 [get_ports {pulse_io_pin[31]}]
-set_property IOSTANDARD LVCMOS33 [get_ports {pulse_io_pin[31]}]
-set_property DRIVE 4 [get_ports {pulse_io_pin[31]}]
-# LA14_N / FMC1_C19
-set_property PACKAGE_PIN J17 [get_ports spi0_miso]
+# set_property PACKAGE_PIN J16 [get_ports {pulse_io_pin[31]}]
+# set_property IOSTANDARD LVCMOS33 [get_ports {pulse_io_pin[31]}]
+# set_property DRIVE 4 [get_ports {pulse_io_pin[31]}]
+set_property PACKAGE_PIN J16 [get_ports spi0_miso]
 set_property IOSTANDARD LVCMOS33 [get_ports spi0_miso]
+# LA14_N / FMC1_C19
+# set_property PACKAGE_PIN J17 [get_ports spi0_miso]
+# set_property IOSTANDARD LVCMOS33 [get_ports spi0_miso]
+set_property PACKAGE_PIN J17 [get_ports {pulse_io_pin[29]}]
+set_property IOSTANDARD LVCMOS33 [get_ports {pulse_io_pin[29]}]
+set_property DRIVE 4 [get_ports {pulse_io_pin[29]}]
 # LA18_CC_P / FMC1_C22
 # set_property PACKAGE_PIN D20 [get_ports axi_spi_1_SCK_pin]
 # set_property IOSTANDARD LVCMOS33 [get_ports axi_spi_1_SCK_pin]
@@ -275,6 +307,9 @@ set_property IOSTANDARD LVCMOS33 [get_ports spi0_miso]
 # LA18_CC_N / FMC1_C23
 # set_property PACKAGE_PIN C20 [get_ports axi_spi_1_MISO_pin]
 # set_property IOSTANDARD LVCMOS33 [get_ports axi_spi_1_MISO_pin]
+set_property PACKAGE_PIN C20 [get_ports {pulse_io_pin[16]}]
+set_property IOSTANDARD LVCMOS33 [get_ports {pulse_io_pin[16]}]
+set_property DRIVE 4 [get_ports {pulse_io_pin[16]}]
 # LA27_P / FMC1_C26
 # set_property PACKAGE_PIN C17 [get_ports axi_spi_2_SCK_pin]
 # set_property IOSTANDARD LVCMOS33 [get_ports axi_spi_2_SCK_pin]
@@ -283,6 +318,9 @@ set_property IOSTANDARD LVCMOS33 [get_ports spi0_miso]
 # set_property PACKAGE_PIN C18 [get_ports axi_spi_2_MOSI_pin]
 # set_property IOSTANDARD LVCMOS33 [get_ports axi_spi_2_MOSI_pin]
 # set_property DRIVE 8 [get_ports axi_spi_2_MOSI_pin]
+set_property PACKAGE_PIN C18 [get_ports {pulse_io_pin[8]}]
+set_property IOSTANDARD LVCMOS33 [get_ports {pulse_io_pin[8]}]
+set_property DRIVE 4 [get_ports {pulse_io_pin[8]}]
 
 
 ############################### FMC2 ######################################
@@ -292,9 +330,9 @@ set_property PACKAGE_PIN Y18 [get_ports clock_out1_pin]
 set_property IOSTANDARD LVCMOS33 [get_ports clock_out1_pin]
 set_property DRIVE 4 [get_ports clock_out1_pin]
 # CLK0_M2C_N / FMC2_H05
-set_property PACKAGE_PIN AA18 [get_ports {pulse_io_pin[16]}]
-set_property IOSTANDARD LVCMOS33 [get_ports {pulse_io_pin[16]}]
-set_property DRIVE 4 [get_ports {pulse_io_pin[16]}]
+# set_property PACKAGE_PIN AA18 [get_ports {pulse_io_pin[16]}]
+# set_property IOSTANDARD LVCMOS33 [get_ports {pulse_io_pin[16]}]
+# set_property DRIVE 4 [get_ports {pulse_io_pin[16]}]
 # LA02_P / FMC2_H07
 set_property PACKAGE_PIN V14 [get_ports {pulse_io_pin[26]}]
 set_property IOSTANDARD LVCMOS33 [get_ports {pulse_io_pin[26]}]
@@ -379,13 +417,13 @@ set_property DRIVE 4 [get_ports {dds_cs_pin[19]}]
 
 # FMC2, column G
 # CLK1_M2C_P / FMC2_G02
-set_property PACKAGE_PIN Y6 [get_ports {pulse_io_pin[20]}]
-set_property IOSTANDARD LVCMOS33 [get_ports {pulse_io_pin[20]}]
-set_property DRIVE 4 [get_ports {pulse_io_pin[20]}]
+# set_property PACKAGE_PIN Y6 [get_ports {pulse_io_pin[20]}]
+# set_property IOSTANDARD LVCMOS33 [get_ports {pulse_io_pin[20]}]
+# set_property DRIVE 4 [get_ports {pulse_io_pin[20]}]
 # CLK1_M2C_N / FMC2_G03
-set_property PACKAGE_PIN Y5 [get_ports {pulse_io_pin[24]}]
-set_property IOSTANDARD LVCMOS33 [get_ports {pulse_io_pin[24]}]
-set_property DRIVE 4 [get_ports {pulse_io_pin[24]}]
+# set_property PACKAGE_PIN Y5 [get_ports {pulse_io_pin[24]}]
+# set_property IOSTANDARD LVCMOS33 [get_ports {pulse_io_pin[24]}]
+# set_property DRIVE 4 [get_ports {pulse_io_pin[24]}]
 # LA00_P_CC / FMC2_G06
 set_property PACKAGE_PIN Y19 [get_ports {pulse_io_pin[27]}]
 set_property IOSTANDARD LVCMOS33 [get_ports {pulse_io_pin[27]}]
