@@ -85,6 +85,9 @@ module timing_controller
     parameter BUS_DATA_WIDTH = 32,
     parameter RESULT_WIDTH = 32,
 
+    parameter TTL_BANK_SHIFT = 3,
+    localparam TTL_BANK_NUM = 1 << TTL_BANK_SHIFT,
+
     localparam TTL_WIDTH = 32)
    (input clock,
     input resetn,
@@ -103,7 +106,7 @@ module timing_controller
     output [(N_DDS - 1):0] dds_cs,
     output [1:0] dds_FUD,
 
-    output reg [(TTL_WIDTH - 1):0] ttl_out,
+    output reg [(TTL_WIDTH << TTL_BANK_SHIFT) - 1:0] ttl_out,
     output reg underflow,
 
     output [(N_SPI - 1):0] spi_cs,
@@ -193,6 +196,8 @@ module timing_controller
    localparam TIMER_WIDTH = 24;
    localparam TIMER_BITA = 63 - 8;
    localparam TIMER_BITB = TIMER_BITA - TIMER_WIDTH + 1;
+   localparam TTLBANK_BITA = 58;
+   localparam TTLBANK_BITB = 56;
    localparam TTL_BITA = 31;
    localparam TTL_BITB = 0;
 
@@ -303,7 +308,7 @@ module timing_controller
                         instruction[TIMER_BITA:TIMER_BITB] == 0)
                       waiting <= 0; // 1 cycle pulse, go to next instruction immediately
                     wait_timer <= instruction[TIMER_BITA:TIMER_BITB];
-                    ttl_out <= instruction[TTL_BITA:TTL_BITB];
+                    ttl_out[(instruction[TTLBANK_BITA:TTLBANK_BITB]) * TTL_WIDTH+:TTL_WIDTH] <= instruction[TTL_BITA:TTL_BITB];
                  end
                  1 : begin // DDS instruction
                     dbg_dds_count <= dbg_dds_count + 1;

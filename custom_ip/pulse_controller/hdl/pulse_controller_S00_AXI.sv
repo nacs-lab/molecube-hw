@@ -49,6 +49,7 @@ module pulse_controller_S00_AXI #
    parameter U_DDS_CTRL_WIDTH = 3,
    parameter N_DDS = 22,
    parameter N_SPI = 1,
+   parameter TTL_BANK_SHIFT = 3,
    // User parameters ends
    // Do not modify the parameters beyond this line
 
@@ -59,7 +60,7 @@ module pulse_controller_S00_AXI #
    )
    (
     // Users to add ports here
-    output [(U_PULSE_WIDTH - 1):0] pulse_io,
+    output [(U_PULSE_WIDTH << TTL_BANK_SHIFT) - 1:0] pulse_io,
 
     // DDS ports
     output [(U_DDS_ADDR_WIDTH - 1):0] dds_addr,
@@ -171,6 +172,7 @@ module pulse_controller_S00_AXI #
    // ADDR_LSB = 3 for 64 bits (n downto 3)
    localparam integer ADDR_LSB = (C_S_AXI_DATA_WIDTH / 32) + 1;
    localparam integer OPT_MEM_ADDR_BITS = 6;
+   localparam integer TTL_BANK_NUM = 1 << TTL_BANK_SHIFT;
 
    //----------------------------------------------------------------------------
    // User logic
@@ -192,8 +194,8 @@ module pulse_controller_S00_AXI #
    //   slv_reg_ctrl[8] => init.  toggle at start of sequence for reset
    //
    // 31: -- output of result FIFO (read)
-   reg [C_S_AXI_DATA_WIDTH - 1:0] ttl_hi_mask;
-   reg [C_S_AXI_DATA_WIDTH - 1:0] ttl_lo_mask;
+   reg [(C_S_AXI_DATA_WIDTH << TTL_BANK_SHIFT) - 1:0] ttl_hi_mask;
+   reg [(C_S_AXI_DATA_WIDTH << TTL_BANK_SHIFT) - 1:0] ttl_lo_mask;
    // Buffer the output for the status register (use a register instead of a wire)
    // since we don't care about the delay on this
    reg [C_S_AXI_DATA_WIDTH - 1:0] slv_reg_status;
@@ -225,10 +227,10 @@ module pulse_controller_S00_AXI #
    wire pulses_finished;
    wire [7:0] clockout_div;
    // Digital output words
-   wire [(U_PULSE_WIDTH - 1):0] ttl_out;
+   wire [(U_PULSE_WIDTH << TTL_BANK_SHIFT) - 1:0] ttl_out;
 
    // assume slave register width == pulse width
-   assign pulse_io = (ttl_out | ttl_hi_mask) & (~ttl_lo_mask);
+   assign pulse_io = (ttl_out | ttl_hi_mask) & ~ttl_lo_mask;
 
    // Read signals
    // Inputs:
@@ -290,17 +292,31 @@ module pulse_controller_S00_AXI #
                  S_AXI_ARREADY <= 1'b0;
                  // Address decoding for reading registers
                  case (s_axi_rd_regnum)
-                   7'h00: S_AXI_RDATA <= ttl_hi_mask;
-                   7'h01: S_AXI_RDATA <= ttl_lo_mask;
+                   7'h00: S_AXI_RDATA <= ttl_hi_mask[0+:C_S_AXI_DATA_WIDTH];
+                   7'h01: S_AXI_RDATA <= ttl_lo_mask[0+:C_S_AXI_DATA_WIDTH];
                    7'h02: S_AXI_RDATA <= slv_reg_status;
                    7'h03: S_AXI_RDATA <= slv_reg_ctrl;
-                   7'h04: S_AXI_RDATA <= ttl_out;
+                   7'h04: S_AXI_RDATA <= ttl_out[0+:C_S_AXI_DATA_WIDTH];
                    7'h05: begin
                       S_AXI_RDATA[C_S_AXI_DATA_WIDTH - 1:8] <= 0;
                       S_AXI_RDATA[7:0] <= clockout_div;
                    end
                    7'h06: S_AXI_RDATA <= MAJOR_VER;
                    7'h07: S_AXI_RDATA <= MINOR_VER;
+                   7'h10: S_AXI_RDATA <= ttl_hi_mask[C_S_AXI_DATA_WIDTH * 1+:C_S_AXI_DATA_WIDTH];
+                   7'h11: S_AXI_RDATA <= ttl_lo_mask[C_S_AXI_DATA_WIDTH * 1+:C_S_AXI_DATA_WIDTH];
+                   7'h12: S_AXI_RDATA <= ttl_hi_mask[C_S_AXI_DATA_WIDTH * 2+:C_S_AXI_DATA_WIDTH];
+                   7'h13: S_AXI_RDATA <= ttl_lo_mask[C_S_AXI_DATA_WIDTH * 2+:C_S_AXI_DATA_WIDTH];
+                   7'h14: S_AXI_RDATA <= ttl_hi_mask[C_S_AXI_DATA_WIDTH * 3+:C_S_AXI_DATA_WIDTH];
+                   7'h15: S_AXI_RDATA <= ttl_lo_mask[C_S_AXI_DATA_WIDTH * 3+:C_S_AXI_DATA_WIDTH];
+                   7'h16: S_AXI_RDATA <= ttl_hi_mask[C_S_AXI_DATA_WIDTH * 4+:C_S_AXI_DATA_WIDTH];
+                   7'h17: S_AXI_RDATA <= ttl_lo_mask[C_S_AXI_DATA_WIDTH * 4+:C_S_AXI_DATA_WIDTH];
+                   7'h18: S_AXI_RDATA <= ttl_hi_mask[C_S_AXI_DATA_WIDTH * 5+:C_S_AXI_DATA_WIDTH];
+                   7'h19: S_AXI_RDATA <= ttl_lo_mask[C_S_AXI_DATA_WIDTH * 5+:C_S_AXI_DATA_WIDTH];
+                   7'h1A: S_AXI_RDATA <= ttl_hi_mask[C_S_AXI_DATA_WIDTH * 6+:C_S_AXI_DATA_WIDTH];
+                   7'h1B: S_AXI_RDATA <= ttl_lo_mask[C_S_AXI_DATA_WIDTH * 6+:C_S_AXI_DATA_WIDTH];
+                   7'h1C: S_AXI_RDATA <= ttl_hi_mask[C_S_AXI_DATA_WIDTH * 7+:C_S_AXI_DATA_WIDTH];
+                   7'h1D: S_AXI_RDATA <= ttl_lo_mask[C_S_AXI_DATA_WIDTH * 7+:C_S_AXI_DATA_WIDTH];
                    7'h1E: S_AXI_RDATA <= slv_reg_loopback;
                    7'h1F: // Reading from empty buffer has no effect.
                      S_AXI_RDATA <= ~result_fifo_empty ? result_fifo_rd_data : 0;
@@ -322,6 +338,13 @@ module pulse_controller_S00_AXI #
                    7'h2e: S_AXI_RDATA <= dbg_result_count;
                    7'h2f: S_AXI_RDATA <= dbg_result_generated;
                    7'h30: S_AXI_RDATA <= dbg_result_consumed;
+                   7'h40: S_AXI_RDATA <= ttl_out[C_S_AXI_DATA_WIDTH * 1+:C_S_AXI_DATA_WIDTH];
+                   7'h41: S_AXI_RDATA <= ttl_out[C_S_AXI_DATA_WIDTH * 2+:C_S_AXI_DATA_WIDTH];
+                   7'h42: S_AXI_RDATA <= ttl_out[C_S_AXI_DATA_WIDTH * 3+:C_S_AXI_DATA_WIDTH];
+                   7'h43: S_AXI_RDATA <= ttl_out[C_S_AXI_DATA_WIDTH * 4+:C_S_AXI_DATA_WIDTH];
+                   7'h44: S_AXI_RDATA <= ttl_out[C_S_AXI_DATA_WIDTH * 5+:C_S_AXI_DATA_WIDTH];
+                   7'h45: S_AXI_RDATA <= ttl_out[C_S_AXI_DATA_WIDTH * 6+:C_S_AXI_DATA_WIDTH];
+                   7'h46: S_AXI_RDATA <= ttl_out[C_S_AXI_DATA_WIDTH * 7+:C_S_AXI_DATA_WIDTH];
                    default: S_AXI_RDATA <= 0;
                  endcase
                  S_AXI_RVALID <= 1'b1;
@@ -414,6 +437,18 @@ module pulse_controller_S00_AXI #
    // `tc_inst_ready && tc_inst_valid`
    wire tc_inst_valid = (s_axi_wrvalid & s_axi_wr_regnum == 7'h1F);
 
+   task automatic write_reg(ref reg [C_S_AXI_DATA_WIDTH - 1:0] mem,
+                            input [C_S_AXI_DATA_WIDTH - 1:0] data,
+                            input [(C_S_AXI_DATA_WIDTH / 8) - 1:0] wstrb);
+      integer byte_index;
+      for (byte_index = 0; byte_index <= (C_S_AXI_DATA_WIDTH / 8) - 1;
+           byte_index = byte_index + 1)
+        if (wstrb[byte_index] == 1) begin
+           // Respective byte enables are asserted as per write strobes
+           mem[(byte_index * 8)+:8] <= data[(byte_index * 8)+:8];
+        end
+   endtask
+
    assign S_AXI_BRESP = 0;
    integer byte_index;
    always @(posedge S_AXI_ACLK) begin
@@ -471,42 +506,40 @@ module pulse_controller_S00_AXI #
                     s_axi_write_state <= 2'b10;
                  end
                  case (s_axi_wr_regnum)
-                   7'h00: begin
-                      for (byte_index = 0; byte_index <= (C_S_AXI_DATA_WIDTH / 8) - 1;
-                           byte_index = byte_index + 1)
-                        if (s_axi_wstrb[byte_index] == 1) begin
-                           // Respective byte enables are asserted as per write strobes
-                           // Slave register 0
-                           ttl_hi_mask[(byte_index * 8)+:8] <= s_axi_wdata[(byte_index * 8)+:8];
-                        end
-                   end
-                   7'h01: begin
-                      for (byte_index = 0; byte_index <= (C_S_AXI_DATA_WIDTH / 8) - 1;
-                           byte_index = byte_index + 1)
-                        if (s_axi_wstrb[byte_index] == 1) begin
-                           // Respective byte enables are asserted as per write strobes
-                           // Slave register 1
-                           ttl_lo_mask[(byte_index * 8)+:8] <= s_axi_wdata[(byte_index * 8)+:8];
-                        end
-                   end
-                   7'h03: begin
-                      for (byte_index = 0; byte_index <= (C_S_AXI_DATA_WIDTH / 8) - 1;
-                           byte_index = byte_index + 1)
-                        if (s_axi_wstrb[byte_index] == 1) begin
-                           // Respective byte enables are asserted as per write strobes
-                           // Slave register 1
-                           slv_reg_ctrl[(byte_index * 8)+:8] <= s_axi_wdata[(byte_index * 8)+:8];
-                        end
-                   end
-                   7'h1E: begin
-                      for (byte_index = 0; byte_index <= (C_S_AXI_DATA_WIDTH / 8) - 1;
-                           byte_index = byte_index + 1)
-                        if (s_axi_wstrb[byte_index] == 1) begin
-                           // Respective byte enables are asserted as per write strobes
-                           // Slave register 1
-                           slv_reg_loopback[(byte_index * 8)+:8] <= s_axi_wdata[(byte_index * 8)+:8];
-                        end
-                   end
+                   7'h00: write_reg(ttl_hi_mask[0+:C_S_AXI_DATA_WIDTH],
+                                    s_axi_wdata, s_axi_wstrb);
+                   7'h01: write_reg(ttl_lo_mask[0+:C_S_AXI_DATA_WIDTH],
+                                    s_axi_wdata, s_axi_wstrb);
+                   7'h03: write_reg(slv_reg_ctrl, s_axi_wdata, s_axi_wstrb);
+                   7'h10: write_reg(ttl_hi_mask[1 * C_S_AXI_DATA_WIDTH+:C_S_AXI_DATA_WIDTH],
+                                    s_axi_wdata, s_axi_wstrb);
+                   7'h11: write_reg(ttl_lo_mask[1 * C_S_AXI_DATA_WIDTH+:C_S_AXI_DATA_WIDTH],
+                                    s_axi_wdata, s_axi_wstrb);
+                   7'h12: write_reg(ttl_hi_mask[2 * C_S_AXI_DATA_WIDTH+:C_S_AXI_DATA_WIDTH],
+                                    s_axi_wdata, s_axi_wstrb);
+                   7'h13: write_reg(ttl_lo_mask[2 * C_S_AXI_DATA_WIDTH+:C_S_AXI_DATA_WIDTH],
+                                    s_axi_wdata, s_axi_wstrb);
+                   7'h14: write_reg(ttl_hi_mask[3 * C_S_AXI_DATA_WIDTH+:C_S_AXI_DATA_WIDTH],
+                                    s_axi_wdata, s_axi_wstrb);
+                   7'h15: write_reg(ttl_lo_mask[3 * C_S_AXI_DATA_WIDTH+:C_S_AXI_DATA_WIDTH],
+                                    s_axi_wdata, s_axi_wstrb);
+                   7'h16: write_reg(ttl_hi_mask[4 * C_S_AXI_DATA_WIDTH+:C_S_AXI_DATA_WIDTH],
+                                    s_axi_wdata, s_axi_wstrb);
+                   7'h17: write_reg(ttl_lo_mask[4 * C_S_AXI_DATA_WIDTH+:C_S_AXI_DATA_WIDTH],
+                                    s_axi_wdata, s_axi_wstrb);
+                   7'h18: write_reg(ttl_hi_mask[5 * C_S_AXI_DATA_WIDTH+:C_S_AXI_DATA_WIDTH],
+                                    s_axi_wdata, s_axi_wstrb);
+                   7'h19: write_reg(ttl_lo_mask[5 * C_S_AXI_DATA_WIDTH+:C_S_AXI_DATA_WIDTH],
+                                    s_axi_wdata, s_axi_wstrb);
+                   7'h1A: write_reg(ttl_hi_mask[6 * C_S_AXI_DATA_WIDTH+:C_S_AXI_DATA_WIDTH],
+                                    s_axi_wdata, s_axi_wstrb);
+                   7'h1B: write_reg(ttl_lo_mask[6 * C_S_AXI_DATA_WIDTH+:C_S_AXI_DATA_WIDTH],
+                                    s_axi_wdata, s_axi_wstrb);
+                   7'h1C: write_reg(ttl_hi_mask[7 * C_S_AXI_DATA_WIDTH+:C_S_AXI_DATA_WIDTH],
+                                    s_axi_wdata, s_axi_wstrb);
+                   7'h1D: write_reg(ttl_lo_mask[7 * C_S_AXI_DATA_WIDTH+:C_S_AXI_DATA_WIDTH],
+                                    s_axi_wdata, s_axi_wstrb);
+                   7'h1E: write_reg(slv_reg_loopback, s_axi_wdata, s_axi_wstrb);
                  endcase
               end
            end
@@ -620,7 +653,8 @@ module pulse_controller_S00_AXI #
        .U_DDS_ADDR_WIDTH(U_DDS_ADDR_WIDTH),
        .U_DDS_CTRL_WIDTH(U_DDS_CTRL_WIDTH),
        .BUS_DATA_WIDTH(C_S_AXI_DATA_WIDTH),
-       .RESULT_WIDTH(C_S_AXI_DATA_WIDTH))
+       .RESULT_WIDTH(C_S_AXI_DATA_WIDTH),
+       .TTL_BANK_SHIFT(TTL_BANK_SHIFT))
    tc(.clock(S_AXI_ACLK),
       .resetn(S_AXI_ARESETN),
       .result_data(result_data),
