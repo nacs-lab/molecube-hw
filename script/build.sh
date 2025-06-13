@@ -28,6 +28,8 @@ make -j1 -C "$outputdir/fsbl/"
 # uboot
 (
     export DEVICE_TREE=zynq-zc702
+    sed -i -e 's/^YYLTYPE yylloc;/extern YYLTYPE yylloc;/' \
+        "${u_boot_dir}/scripts/dtc/dtc-lexer.l"
     make -C "$u_boot_dir" zynq_zc702_defconfig \
          ARCH=arm CROSS_COMPILE=armv7l-linux-gnueabihf- \
          KCFLAGS='-march=armv7-a+nofp'
