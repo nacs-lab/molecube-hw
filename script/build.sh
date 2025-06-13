@@ -33,6 +33,7 @@ make -j1 -C "$outputdir/fsbl/"
     make -C "$u_boot_dir" zynq_zc702_defconfig \
          ARCH=arm CROSS_COMPILE=armv7l-linux-gnueabihf- \
          KCFLAGS='-march=armv7-a+nofp'
+    echo 'CONFIG_OF_EMBED=y' >> "${u_boot_dir}/.config"
     make -C "$u_boot_dir" ARCH=arm CROSS_COMPILE=armv7l-linux-gnueabihf- \
          KCFLAGS='-march=armv7-a+nofp'
 )
