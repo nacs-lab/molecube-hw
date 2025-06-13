@@ -28,7 +28,7 @@ make -j1 -C "$outputdir/fsbl/"
 # uboot
 (
     export DEVICE_TREE=zynq-zc702
-    make -C "$u_boot_dir" xilinx_zynq_virt_defconfig \
+    make -C "$u_boot_dir" zynq_zc702_defconfig \
          ARCH=arm CROSS_COMPILE=armv7l-linux-gnueabihf- \
          KCFLAGS='-march=armv7-a+nofp'
     make -C "$u_boot_dir" ARCH=arm CROSS_COMPILE=armv7l-linux-gnueabihf- \
