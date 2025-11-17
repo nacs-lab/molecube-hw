@@ -88,7 +88,8 @@ module pulse_controller #
     input wire s00_axi_rready
     );
    localparam TTL_BANK_SHIFT = 3;
-   wire [(U_PULSE_WIDTH << TTL_BANK_SHIFT) - 1:0] pulse_io2;
+   localparam U_TTL_BANK_WIDTH = 32;
+   wire [(U_TTL_BANK_WIDTH << TTL_BANK_SHIFT) - 1:0] pulse_io2;
    assign pulse_io = pulse_io2[U_PULSE_WIDTH - 1:0];
 
    // Instantiation of Axi Bus Interface S00_AXI
@@ -97,7 +98,7 @@ module pulse_controller #
                                .U_DDS_DATA_WIDTH(U_DDS_DATA_WIDTH),
                                .U_DDS_ADDR_WIDTH(U_DDS_ADDR_WIDTH),
                                .U_DDS_CTRL_WIDTH(U_DDS_CTRL_WIDTH),
-                               .U_PULSE_WIDTH(U_PULSE_WIDTH),
+                               .U_PULSE_WIDTH(U_TTL_BANK_WIDTH),
                                .C_S_AXI_DATA_WIDTH(C_S00_AXI_DATA_WIDTH),
                                .C_S_AXI_ADDR_WIDTH(C_S00_AXI_ADDR_WIDTH)
                                ) pulse_controller_S00_AXI_inst
