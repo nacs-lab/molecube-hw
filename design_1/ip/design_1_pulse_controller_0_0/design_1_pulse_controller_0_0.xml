@@ -754,7 +754,7 @@
           </spirit:parameter>
           <spirit:parameter>
             <spirit:name>outputProductCRC</spirit:name>
-            <spirit:value>9:57727c48</spirit:value>
+            <spirit:value>9:d9b90c77</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -765,7 +765,7 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>outputProductCRC</spirit:name>
-            <spirit:value>9:57727c48</spirit:value>
+            <spirit:value>9:d9b90c77</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -785,7 +785,7 @@
           </spirit:parameter>
           <spirit:parameter>
             <spirit:name>outputProductCRC</spirit:name>
-            <spirit:value>9:57727c48</spirit:value>
+            <spirit:value>9:d9b90c77</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -805,7 +805,7 @@
           </spirit:parameter>
           <spirit:parameter>
             <spirit:name>outputProductCRC</spirit:name>
-            <spirit:value>9:359b5361</spirit:value>
+            <spirit:value>9:bb50235e</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -825,7 +825,7 @@
           </spirit:parameter>
           <spirit:parameter>
             <spirit:name>outputProductCRC</spirit:name>
-            <spirit:value>9:359b5361</spirit:value>
+            <spirit:value>9:bb50235e</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -1677,23 +1677,23 @@
     <spirit:fileSet>
       <spirit:name>xilinx_verilogsynthesis_view_fileset</spirit:name>
       <spirit:file>
-        <spirit:name>../../ipshared/b25e/hdl/dds_controller.sv</spirit:name>
+        <spirit:name>../../ipshared/a475/hdl/dds_controller.sv</spirit:name>
         <spirit:fileType>systemVerilogSource</spirit:fileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../../ipshared/b25e/hdl/pulse_controller_S00_AXI.sv</spirit:name>
+        <spirit:name>../../ipshared/a475/hdl/pulse_controller_S00_AXI.sv</spirit:name>
         <spirit:fileType>systemVerilogSource</spirit:fileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../../ipshared/b25e/hdl/spi_controller.sv</spirit:name>
+        <spirit:name>../../ipshared/a475/hdl/spi_controller.sv</spirit:name>
         <spirit:fileType>systemVerilogSource</spirit:fileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../../ipshared/b25e/hdl/timing_controller.sv</spirit:name>
+        <spirit:name>../../ipshared/a475/hdl/timing_controller.sv</spirit:name>
         <spirit:fileType>systemVerilogSource</spirit:fileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../../ipshared/b25e/hdl/pulse_controller.v</spirit:name>
+        <spirit:name>../../ipshared/a475/hdl/pulse_controller.v</spirit:name>
         <spirit:fileType>verilogSource</spirit:fileType>
       </spirit:file>
     </spirit:fileSet>
@@ -1708,23 +1708,23 @@
     <spirit:fileSet>
       <spirit:name>xilinx_verilogbehavioralsimulation_view_fileset</spirit:name>
       <spirit:file>
-        <spirit:name>../../ipshared/b25e/hdl/dds_controller.sv</spirit:name>
+        <spirit:name>../../ipshared/a475/hdl/dds_controller.sv</spirit:name>
         <spirit:fileType>systemVerilogSource</spirit:fileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../../ipshared/b25e/hdl/pulse_controller_S00_AXI.sv</spirit:name>
+        <spirit:name>../../ipshared/a475/hdl/pulse_controller_S00_AXI.sv</spirit:name>
         <spirit:fileType>systemVerilogSource</spirit:fileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../../ipshared/b25e/hdl/spi_controller.sv</spirit:name>
+        <spirit:name>../../ipshared/a475/hdl/spi_controller.sv</spirit:name>
         <spirit:fileType>systemVerilogSource</spirit:fileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../../ipshared/b25e/hdl/timing_controller.sv</spirit:name>
+        <spirit:name>../../ipshared/a475/hdl/timing_controller.sv</spirit:name>
         <spirit:fileType>systemVerilogSource</spirit:fileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../../ipshared/b25e/hdl/pulse_controller.v</spirit:name>
+        <spirit:name>../../ipshared/a475/hdl/pulse_controller.v</spirit:name>
         <spirit:fileType>verilogSource</spirit:fileType>
       </spirit:file>
     </spirit:fileSet>
@@ -1795,8 +1795,8 @@
     </spirit:parameter>
     <spirit:parameter>
       <spirit:name>U_PULSE_WIDTH</spirit:name>
-      <spirit:displayName>U Pulse Width</spirit:displayName>
-      <spirit:value spirit:format="long" spirit:resolve="user" spirit:id="PARAM_VALUE.U_PULSE_WIDTH">32</spirit:value>
+      <spirit:displayName>Pulse Width</spirit:displayName>
+      <spirit:value spirit:format="long" spirit:resolve="user" spirit:id="PARAM_VALUE.U_PULSE_WIDTH" spirit:minimum="32" spirit:maximum="256" spirit:rangeType="long">32</spirit:value>
     </spirit:parameter>
     <spirit:parameter>
       <spirit:name>U_DDS_DATA_WIDTH</spirit:name>
@@ -1827,7 +1827,7 @@
   <spirit:vendorExtensions>
     <xilinx:coreExtensions>
       <xilinx:displayName>Pulse Controller</xilinx:displayName>
-      <xilinx:coreRevision>2</xilinx:coreRevision>
+      <xilinx:coreRevision>3</xilinx:coreRevision>
       <xilinx:configElementInfos>
         <xilinx:configElementInfo xilinx:referenceId="BUSIFPARAM_VALUE.S00_AXI.ADDR_WIDTH" xilinx:valueSource="auto" xilinx:valuePermission="bd"/>
         <xilinx:configElementInfo xilinx:referenceId="BUSIFPARAM_VALUE.S00_AXI.ARUSER_WIDTH" xilinx:valueSource="constant" xilinx:valuePermission="bd"/>
@@ -1875,10 +1875,10 @@
       <xilinx:xilinxVersion>2020.1</xilinx:xilinxVersion>
       <xilinx:checksum xilinx:scope="busInterfaces" xilinx:value="9869a804"/>
       <xilinx:checksum xilinx:scope="memoryMaps" xilinx:value="ed1368d5"/>
-      <xilinx:checksum xilinx:scope="fileGroups" xilinx:value="9afd8a44"/>
+      <xilinx:checksum xilinx:scope="fileGroups" xilinx:value="56eae13f"/>
       <xilinx:checksum xilinx:scope="ports" xilinx:value="05ca7f9d"/>
       <xilinx:checksum xilinx:scope="hdlParameters" xilinx:value="b3792af7"/>
-      <xilinx:checksum xilinx:scope="parameters" xilinx:value="0ac9b1cc"/>
+      <xilinx:checksum xilinx:scope="parameters" xilinx:value="ea3dbe5d"/>
     </xilinx:packagingInfo>
   </spirit:vendorExtensions>
 </spirit:component>

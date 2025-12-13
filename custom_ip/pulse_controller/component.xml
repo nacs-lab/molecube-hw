@@ -426,7 +426,7 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>viewChecksum</spirit:name>
-            <spirit:value>41eb58e0</spirit:value>
+            <spirit:value>f20894eb</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -442,7 +442,7 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>viewChecksum</spirit:name>
-            <spirit:value>41eb58e0</spirit:value>
+            <spirit:value>f20894eb</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -456,7 +456,7 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>viewChecksum</spirit:name>
-            <spirit:value>9c1ed95e</spirit:value>
+            <spirit:value>83a0d4db</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -1340,7 +1340,7 @@
       <spirit:file>
         <spirit:name>hdl/pulse_controller.v</spirit:name>
         <spirit:fileType>verilogSource</spirit:fileType>
-        <spirit:userFileType>CHECKSUM_e40c844f</spirit:userFileType>
+        <spirit:userFileType>CHECKSUM_f5aa2e49</spirit:userFileType>
       </spirit:file>
     </spirit:fileSet>
     <spirit:fileSet>
@@ -1371,7 +1371,7 @@
       <spirit:file>
         <spirit:name>xgui/pulse_controller_v5_2.tcl</spirit:name>
         <spirit:fileType>tclSource</spirit:fileType>
-        <spirit:userFileType>CHECKSUM_9c1ed95e</spirit:userFileType>
+        <spirit:userFileType>CHECKSUM_83a0d4db</spirit:userFileType>
         <spirit:userFileType>XGUI_VERSION_2</spirit:userFileType>
       </spirit:file>
     </spirit:fileSet>
@@ -1441,8 +1441,8 @@
     </spirit:parameter>
     <spirit:parameter>
       <spirit:name>U_PULSE_WIDTH</spirit:name>
-      <spirit:displayName>U Pulse Width</spirit:displayName>
-      <spirit:value spirit:format="long" spirit:resolve="user" spirit:id="PARAM_VALUE.U_PULSE_WIDTH">32</spirit:value>
+      <spirit:displayName>Pulse Width</spirit:displayName>
+      <spirit:value spirit:format="long" spirit:resolve="user" spirit:id="PARAM_VALUE.U_PULSE_WIDTH" spirit:minimum="32" spirit:maximum="256" spirit:rangeType="long">32</spirit:value>
     </spirit:parameter>
     <spirit:parameter>
       <spirit:name>U_DDS_DATA_WIDTH</spirit:name>
@@ -1481,7 +1481,7 @@
       <xilinx:displayName>Pulse Controller</xilinx:displayName>
       <xilinx:vendorDisplayName>Ni Group</xilinx:vendorDisplayName>
       <xilinx:vendorURL>https://faculty.chemistry.harvard.edu/kni</xilinx:vendorURL>
-      <xilinx:coreRevision>2</xilinx:coreRevision>
+      <xilinx:coreRevision>3</xilinx:coreRevision>
       <xilinx:upgrades>
         <xilinx:canUpgradeFrom>nigrp.org:nigrp:pulse_controller:5.0</xilinx:canUpgradeFrom>
         <xilinx:canUpgradeFrom>nigrp.org:nigrp:pulse_controller:5.1</xilinx:canUpgradeFrom>
@@ -1494,10 +1494,10 @@
       <xilinx:xilinxVersion>2020.1</xilinx:xilinxVersion>
       <xilinx:checksum xilinx:scope="busInterfaces" xilinx:value="9869a804"/>
       <xilinx:checksum xilinx:scope="memoryMaps" xilinx:value="ed1368d5"/>
-      <xilinx:checksum xilinx:scope="fileGroups" xilinx:value="9afd8a44"/>
+      <xilinx:checksum xilinx:scope="fileGroups" xilinx:value="56eae13f"/>
       <xilinx:checksum xilinx:scope="ports" xilinx:value="05ca7f9d"/>
       <xilinx:checksum xilinx:scope="hdlParameters" xilinx:value="b3792af7"/>
-      <xilinx:checksum xilinx:scope="parameters" xilinx:value="0ac9b1cc"/>
+      <xilinx:checksum xilinx:scope="parameters" xilinx:value="ea3dbe5d"/>
     </xilinx:packagingInfo>
   </spirit:vendorExtensions>
 </spirit:component>
