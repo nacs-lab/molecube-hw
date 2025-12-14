@@ -754,7 +754,7 @@
           </spirit:parameter>
           <spirit:parameter>
             <spirit:name>outputProductCRC</spirit:name>
-            <spirit:value>9:d9b90c77</spirit:value>
+            <spirit:value>9:4ab11378</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -765,7 +765,7 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>outputProductCRC</spirit:name>
-            <spirit:value>9:d9b90c77</spirit:value>
+            <spirit:value>9:4ab11378</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -785,7 +785,7 @@
           </spirit:parameter>
           <spirit:parameter>
             <spirit:name>outputProductCRC</spirit:name>
-            <spirit:value>9:d9b90c77</spirit:value>
+            <spirit:value>9:4ab11378</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -805,7 +805,7 @@
           </spirit:parameter>
           <spirit:parameter>
             <spirit:name>outputProductCRC</spirit:name>
-            <spirit:value>9:bb50235e</spirit:value>
+            <spirit:value>9:ba060b24</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -825,7 +825,7 @@
           </spirit:parameter>
           <spirit:parameter>
             <spirit:name>outputProductCRC</spirit:name>
-            <spirit:value>9:bb50235e</spirit:value>
+            <spirit:value>9:ba060b24</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -836,7 +836,7 @@
         <spirit:wire>
           <spirit:direction>out</spirit:direction>
           <spirit:vector>
-            <spirit:left spirit:format="long" spirit:resolve="dependent" spirit:dependency="(spirit:decode(id(&apos;MODELPARAM_VALUE.U_PULSE_WIDTH&apos;)) - 1)">31</spirit:left>
+            <spirit:left spirit:format="long" spirit:resolve="dependent" spirit:dependency="(spirit:decode(id(&apos;MODELPARAM_VALUE.U_PULSE_WIDTH&apos;)) - 1)">55</spirit:left>
             <spirit:right spirit:format="long">0</spirit:right>
           </spirit:vector>
           <spirit:wireTypeDefs>
@@ -1624,7 +1624,7 @@
       <spirit:modelParameter spirit:dataType="integer">
         <spirit:name>U_PULSE_WIDTH</spirit:name>
         <spirit:displayName>U Pulse Width</spirit:displayName>
-        <spirit:value spirit:format="long" spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.U_PULSE_WIDTH">32</spirit:value>
+        <spirit:value spirit:format="long" spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.U_PULSE_WIDTH">56</spirit:value>
       </spirit:modelParameter>
       <spirit:modelParameter spirit:dataType="integer">
         <spirit:name>U_DDS_DATA_WIDTH</spirit:name>
@@ -1796,7 +1796,7 @@
     <spirit:parameter>
       <spirit:name>U_PULSE_WIDTH</spirit:name>
       <spirit:displayName>Pulse Width</spirit:displayName>
-      <spirit:value spirit:format="long" spirit:resolve="user" spirit:id="PARAM_VALUE.U_PULSE_WIDTH" spirit:minimum="32" spirit:maximum="256" spirit:rangeType="long">32</spirit:value>
+      <spirit:value spirit:format="long" spirit:resolve="user" spirit:id="PARAM_VALUE.U_PULSE_WIDTH" spirit:minimum="32" spirit:maximum="256" spirit:rangeType="long">56</spirit:value>
     </spirit:parameter>
     <spirit:parameter>
       <spirit:name>U_DDS_DATA_WIDTH</spirit:name>
@@ -1869,6 +1869,7 @@
         <xilinx:configElementInfo xilinx:referenceId="BUSIFPARAM_VALUE.S00_AXI_CLK.PHASE" xilinx:valuePermission="bd"/>
         <xilinx:configElementInfo xilinx:referenceId="BUSIFPARAM_VALUE.S00_AXI_RST.POLARITY" xilinx:valuePermission="bd"/>
         <xilinx:configElementInfo xilinx:referenceId="PARAM_VALUE.C_S00_AXI_ADDR_WIDTH" xilinx:valueSource="user"/>
+        <xilinx:configElementInfo xilinx:referenceId="PARAM_VALUE.U_PULSE_WIDTH" xilinx:valueSource="user"/>
       </xilinx:configElementInfos>
     </xilinx:coreExtensions>
     <xilinx:packagingInfo>

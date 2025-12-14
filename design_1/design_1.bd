@@ -1,7 +1,7 @@
 {
   "design": {
     "design_info": {
-      "boundary_crc": "0x76949D2B455EB44A",
+      "boundary_crc": "0xC2B8D4DEF172FDBF",
       "device": "xc7z020clg484-1",
       "name": "design_1",
       "rev_ctrl_bd_flag": "RevCtrlBdOff",
@@ -133,7 +133,7 @@
       },
       "pulse_io_pin": {
         "direction": "O",
-        "left": "31",
+        "left": "55",
         "right": "0"
       },
       "spi0_clk": {
@@ -1270,7 +1270,12 @@
       },
       "pulse_controller_0": {
         "vlnv": "nigrp.org:nigrp:pulse_controller:5.2",
-        "xci_name": "design_1_pulse_controller_0_0"
+        "xci_name": "design_1_pulse_controller_0_0",
+        "parameters": {
+          "U_PULSE_WIDTH": {
+            "value": "56"
+          }
+        }
       }
     },
     "interface_nets": {
