@@ -200,8 +200,8 @@ set_property DRIVE 4 [get_ports {dds_cs_pin[10]}]
 # set_property PACKAGE_PIN N17 [get_ports <pin_name>]
 # set_property IOSTANDARD LVCMOS33 [get_ports <pin_name>]
 # LA05_N / FMC1_D12
-set_property PACKAGE_PIN N18 [get_ports clock_in_pin]
-set_property IOSTANDARD LVCMOS33 [get_ports clock_in_pin]
+# set_property PACKAGE_PIN N18 [get_ports clock_in_pin]
+# set_property IOSTANDARD LVCMOS33 [get_ports clock_in_pin]
 # LA09_P / FMC1_D14
 # set_property PACKAGE_PIN M15 [get_ports sync_counter1_pin]
 # set_property IOSTANDARD LVCMOS33 [get_ports sync_counter1_pin]
