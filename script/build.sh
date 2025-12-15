@@ -34,6 +34,7 @@ make -j1 -C "$outputdir/fsbl/"
     make -C "$u_boot_dir" ${conf_target} \
          ARCH=arm CROSS_COMPILE=armv7l-linux-gnueabihf- \
          KCFLAGS='-march=armv7-a+nofp'
+    echo 'CONFIG_ENV_OVERWRITE=y' >> "$u_boot_dir"/.config
     make -C "$u_boot_dir" \
          ARCH=arm CROSS_COMPILE=armv7l-linux-gnueabihf- \
          KCFLAGS='-march=armv7-a+nofp'
