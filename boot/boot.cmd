@@ -1,5 +1,9 @@
-loadbootenv_addr=0x2000000
 bitstream_image=system.bit.bin
+devicetree_image=devicetree.dtb
+kernel_image=uImage
+ramdisk_image=uramdisk.image.gz
+
+loadbootenv_addr=0x2000000
 loadbit_addr=0x100000
 
 load mmc 0 ${loadbootenv_addr} uEnv.txt
