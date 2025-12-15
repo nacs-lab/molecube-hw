@@ -28,13 +28,15 @@ make -j1 -C "$outputdir/fsbl/"
 # uboot
 (
     export DEVICE_TREE=zynq-zc702
+    conf_target=zynq_zc702_defconfig
+    # conf_target=xilinx_zynq_virt_defconfig
     sed -i -e 's/^YYLTYPE yylloc;/extern YYLTYPE yylloc;/' \
         "${u_boot_dir}/scripts/dtc/dtc-lexer.l"
-    make -C "$u_boot_dir" zynq_zc702_defconfig \
+    make -C "$u_boot_dir" ${conf_target} \
          ARCH=arm CROSS_COMPILE=armv7l-linux-gnueabihf- \
          KCFLAGS='-march=armv7-a+nofp'
-    echo 'CONFIG_OF_EMBED=y' >> "${u_boot_dir}/.config"
-    make -C "$u_boot_dir" ARCH=arm CROSS_COMPILE=armv7l-linux-gnueabihf- \
+    make -C "$u_boot_dir" \
+         ARCH=arm CROSS_COMPILE=armv7l-linux-gnueabihf- \
          KCFLAGS='-march=armv7-a+nofp'
 )
 
@@ -42,6 +44,10 @@ make -j1 -C "$outputdir/fsbl/"
 mkdir -p "$outputdir/boot/"
 cp "$dir/boot/boot.bif" "$outputdir/boot/boot.bif"
 cp "$outputdir/fsbl/executable.elf" "$outputdir/boot/fsbl.elf"
-cp "$u_boot_dir/u-boot" "$outputdir/boot/u-boot.elf"
+cp "$u_boot_dir/u-boot.elf" "$outputdir/boot/u-boot.elf"
 armv7l-linux-gnueabihf-strip "$outputdir/boot/u-boot.elf"
 (cd "$outputdir/boot" && bootgen -image boot.bif -w -o boot.bin)
+
+# boot.scr
+"$u_boot_dir/tools/mkimage" -A arm -T script -d \
+                            "$dir/boot/boot.cmd" "$outputdir/boot/boot.scr"
