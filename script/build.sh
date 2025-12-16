@@ -30,12 +30,10 @@ make -j1 -C "$outputdir/fsbl/"
     export DEVICE_TREE=zynq-zc702
     conf_target=xilinx_zynq_virt_defconfig
     make -C "$u_boot_dir" ${conf_target} \
-         ARCH=arm CROSS_COMPILE=armv7l-linux-gnueabihf- \
-         KCFLAGS='-march=armv7-a+nofp'
+         ARCH=arm CROSS_COMPILE=armv7l-linux-gnueabihf-
     echo 'CONFIG_ENV_OVERWRITE=y' >> "$u_boot_dir"/.config
     make -C "$u_boot_dir" \
-         ARCH=arm CROSS_COMPILE=armv7l-linux-gnueabihf- \
-         KCFLAGS='-march=armv7-a+nofp'
+         ARCH=arm CROSS_COMPILE=armv7l-linux-gnueabihf-
 )
 
 # boot.bin
