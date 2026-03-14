@@ -9,6 +9,7 @@ module pulse_controller #
    parameter U_DDS_CTRL_WIDTH = 3,
    parameter N_DDS = 22,
    parameter N_SPI = 1,
+   parameter U_TTL_IN_WIDTH = 32,
    // User parameters ends
    // Do not modify the parameters beyond this line
 
@@ -20,6 +21,7 @@ module pulse_controller #
    (
     // Users to add ports here
     output [(U_PULSE_WIDTH - 1):0] pulse_io,
+    input [(U_TTL_IN_WIDTH - 1):0] ttl_in,
 
     // DDS ports
     output [(U_DDS_ADDR_WIDTH - 1):0] dds_addr,
@@ -99,11 +101,14 @@ module pulse_controller #
                                .U_DDS_ADDR_WIDTH(U_DDS_ADDR_WIDTH),
                                .U_DDS_CTRL_WIDTH(U_DDS_CTRL_WIDTH),
                                .U_PULSE_WIDTH(U_TTL_BANK_WIDTH),
+                               .U_TTL_IN_WIDTH(U_TTL_IN_WIDTH),
                                .C_S_AXI_DATA_WIDTH(C_S00_AXI_DATA_WIDTH),
                                .C_S_AXI_ADDR_WIDTH(C_S00_AXI_ADDR_WIDTH)
                                ) pulse_controller_S00_AXI_inst
      (
       .pulse_io(pulse_io2),
+      .ttl_in(ttl_in),
+
       .dds_addr(dds_addr),
       .dds_addr2(dds_addr2),
 

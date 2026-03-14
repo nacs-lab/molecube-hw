@@ -85,6 +85,7 @@ module timing_controller
     parameter BUS_DATA_WIDTH = 32,
     parameter RESULT_WIDTH = 32,
 
+    parameter TTL_IN_WIDTH = 32,
     parameter TTL_BANK_SHIFT = 3,
     localparam TTL_BANK_NUM = 1 << TTL_BANK_SHIFT,
 
@@ -107,6 +108,7 @@ module timing_controller
     output [1:0] dds_FUD,
 
     output reg [(TTL_WIDTH << TTL_BANK_SHIFT) - 1:0] ttl_out,
+    input [TTL_IN_WIDTH - 1:0] ttl_in,
     output reg underflow,
 
     output [(N_SPI - 1):0] spi_cs,
