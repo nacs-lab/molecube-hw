@@ -110,6 +110,7 @@ module timing_controller
     output reg [(TTL_WIDTH << TTL_BANK_SHIFT) - 1:0] ttl_out,
     input [TTL_IN_WIDTH - 1:0] ttl_in,
     output reg underflow,
+    output reg trigger_timeout,
 
     output [(N_SPI - 1):0] spi_cs,
     output spi_mosi,
@@ -202,9 +203,20 @@ module timing_controller
    localparam TTLBANK_BITB = 56;
    localparam TTL_BITA = 31;
    localparam TTL_BITB = 0;
+   localparam WAIT_TYPE_BITA = 31;
+   localparam WAIT_TYPE_BITB = 28;
+   localparam WAIT_TTL_BITA = 27;
+   localparam WAIT_TTL_BITB = 20;
 
    reg [(TIMER_WIDTH - 1):0] wait_timer;
    reg waiting;
+
+   // 0: not trigger, 1: raising edge, 2: lowering edge
+   reg [1:0] wait_ttl_type = 0;
+   reg wait_ttl_armed = 0;
+   reg [7:0] wait_ttl_chn = 0;
+   wire wait_ttl = ttl_in[wait_ttl_chn];
+
    reg timing_check;
    // goes high when `pulse_controller_release` is true.
    reg force_released;
@@ -257,6 +269,7 @@ module timing_controller
          dds_we <= 0;
          timing_check <= 0;
          underflow <= 0;
+         trigger_timeout <= 0;
          pulses_finished <= 1;
          loopback_WrReq <= 0;
          clockout_div <= 255;
@@ -323,14 +336,21 @@ module timing_controller
                     is_wait <= 1;
                     dbg_wait_count = dbg_wait_count + 1;
                     dbg_wait_cycle = dbg_wait_cycle + 1;
+                    wait_ttl_type <= instruction[WAIT_TYPE_BITA:WAIT_TYPE_BITB];
                     if (instruction[TIMER_BITA:TIMER_BITB] == 1 ||
-                        instruction[TIMER_BITA:TIMER_BITB] == 0)
-                      waiting <= 0; // 1 cycle pulse, go to next instruction immediately
+                        instruction[TIMER_BITA:TIMER_BITB] == 0) begin
+                       waiting <= 0; // 1 cycle pulse, go to next instruction immediately
+                       // Silently ignore any wait type for short wait.
+                       // Software driver should make sure this doesn't happen.
+                       wait_ttl_type <= 0;
+                    end
                     wait_timer <= instruction[TIMER_BITA:TIMER_BITB];
+                    wait_ttl_chn <= instruction[WAIT_TTL_BITA:WAIT_TTL_BITB];
                  end
                  3 : begin // clear underflow
                     dbg_clear_count = dbg_clear_count + 1;
                     underflow <= 0;
+                    trigger_timeout <= 0;
                     dbg_underflow_cycle <= 0;
                     wait_timer <= 5;
                  end
@@ -379,8 +399,35 @@ module timing_controller
             // 1 cycle wait/ttl pulse bypasses this step.
             if (wait_timer == 2) begin
                waiting <= 0;
+               if (wait_ttl_type != 0) begin
+                  trigger_timeout <= 1;
+               end
+               wait_ttl_type <= 0;
+               wait_ttl_armed <= 0;
             end else begin
                wait_timer <= wait_timer - 1; // decrement timer
+            end
+            if (wait_ttl_armed) begin
+               // Trigger received
+               if (wait_ttl == wait_ttl_type[1]) begin
+                  waiting <= 0;
+                  wait_ttl_type <= 0;
+                  wait_ttl_armed <= 0;
+               end
+            end else begin
+               // Check to arm trigger
+               case (wait_ttl_type)
+                 1: begin
+                    if (~wait_ttl) begin
+                       wait_ttl_armed <= 1;
+                    end
+                 end
+                 2: begin
+                    if (wait_ttl) begin
+                       wait_ttl_armed <= 1;
+                    end
+                 end
+               endcase
             end
          end
       end
