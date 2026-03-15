@@ -188,6 +188,7 @@ module pulse_controller_S00_AXI #
    //
    // 2: status (read)
    //   slv_reg_status[0] <= underflow;
+   //   slv_reg_status[1] <= trigger_timeout;
    //   slv_reg_status[2] <= pulses_finished;
    //   slv_reg_status[(RES_STATUS_ADDR_BITS + 3):4] <= result_status_count;
    //
@@ -226,6 +227,7 @@ module pulse_controller_S00_AXI #
    reg [(C_S_AXI_DATA_WIDTH - 1):0] dbg_result_consumed;
 
    wire underflow;
+   wire trigger_timeout;
    wire pulses_finished;
    wire [7:0] clockout_div;
    // Digital output words
@@ -629,6 +631,7 @@ module pulse_controller_S00_AXI #
          slv_reg_status <= 0;
       end else begin
          slv_reg_status[0] <= underflow;
+         slv_reg_status[1] <= trigger_timeout;
          slv_reg_status[2] <= pulses_finished;
          slv_reg_status[(RES_STATUS_ADDR_BITS + 3):4] <= result_status_count;
       end
@@ -673,6 +676,7 @@ module pulse_controller_S00_AXI #
       .ttl_out(ttl_out),
       .ttl_in(ttl_in),
       .underflow(underflow),
+      .trigger_timeout(trigger_timeout),
       .spi_cs(spi_cs),
       .spi_mosi(spi_mosi),
       .spi_miso(spi_miso),
