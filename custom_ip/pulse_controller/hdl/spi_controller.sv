@@ -54,8 +54,6 @@ module spi_controller
    reg [(SPI_OPCODE_WIDTH - 1):0] opcode_reg;
    reg [(SPI_OPERAND_WIDTH - 1):0] operand_reg;
 
-   reg [1:0] nbytes_minus_one;
-
    reg [(N_SPI - 1):0] spi_cs_reg;
 
    reg clk_pha, clk_pol;
