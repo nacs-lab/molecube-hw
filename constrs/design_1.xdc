@@ -15,9 +15,8 @@ set_property PACKAGE_PIN L21 [get_ports pulse_io_pin[54]]
 set_property IOSTANDARD LVCMOS33 [get_ports pulse_io_pin[54]]
 set_property DRIVE 4 [get_ports pulse_io_pin[54]]
 # LA02_N / FMC1_H08
-set_property PACKAGE_PIN L22 [get_ports pulse_io_pin[52]]
-set_property IOSTANDARD LVCMOS33 [get_ports pulse_io_pin[52]]
-set_property DRIVE 4 [get_ports pulse_io_pin[52]]
+set_property PACKAGE_PIN L22 [get_ports ttl_in_pin[1]]
+set_property IOSTANDARD LVCMOS33 [get_ports ttl_in_pin[1]]
 # LA04_P / FMC1_H10
 set_property PACKAGE_PIN M21 [get_ports {dds_data_pin[14]}]
 set_property IOSTANDARD LVCMOS33 [get_ports {dds_data_pin[14]}]
@@ -90,6 +89,9 @@ set_property DRIVE 4 [get_ports {dds_cs_pin[6]}]
 set_property PACKAGE_PIN D21 [get_ports {dds_cs_pin[8]}]
 set_property IOSTANDARD LVCMOS33 [get_ports {dds_cs_pin[8]}]
 set_property DRIVE 4 [get_ports {dds_cs_pin[8]}]
+# LA32_P / FMC1_H37
+set_property PACKAGE_PIN B21 [get_ports {ttl_in_pin[2]}]
+set_property IOSTANDARD LVCMOS33 [get_ports {ttl_in_pin[2]}]
 
 # FMC1, column G
 # CLK1_M2C_P / FMC1_G02 (Auxiliary output 1-3)
@@ -296,9 +298,8 @@ set_property PACKAGE_PIN Y18 [get_ports clock_out1_pin]
 set_property IOSTANDARD LVCMOS33 [get_ports clock_out1_pin]
 set_property DRIVE 4 [get_ports clock_out1_pin]
 # CLK0_M2C_N / FMC2_H05
-# set_property PACKAGE_PIN AA18 [get_ports {pulse_io_pin[16]}]
-# set_property IOSTANDARD LVCMOS33 [get_ports {pulse_io_pin[16]}]
-# set_property DRIVE 4 [get_ports {pulse_io_pin[16]}]
+set_property PACKAGE_PIN AA18 [get_ports {ttl_in_pin[3]}]
+set_property IOSTANDARD LVCMOS33 [get_ports {ttl_in_pin[3]}]
 # LA02_P / FMC2_H07
 set_property PACKAGE_PIN V14 [get_ports {pulse_io_pin[26]}]
 set_property IOSTANDARD LVCMOS33 [get_ports {pulse_io_pin[26]}]
@@ -307,7 +308,6 @@ set_property DRIVE 4 [get_ports {pulse_io_pin[26]}]
 # input:
 set_property PACKAGE_PIN V15 [get_ports {ttl_in_pin[0]}]
 set_property IOSTANDARD LVCMOS33 [get_ports {ttl_in_pin[0]}]
-set_property DRIVE 4 [get_ports {ttl_in_pin[0]}]
 # LA04_P / FMC2_H10
 set_property PACKAGE_PIN V13 [get_ports {dds_data2_pin[14]}]
 set_property IOSTANDARD LVCMOS33 [get_ports {dds_data2_pin[14]}]
@@ -383,9 +383,9 @@ set_property DRIVE 4 [get_ports {dds_cs_pin[19]}]
 
 # FMC2, column G
 # CLK1_M2C_P / FMC2_G02
-# set_property PACKAGE_PIN Y6 [get_ports {pulse_io_pin[20]}]
-# set_property IOSTANDARD LVCMOS33 [get_ports {pulse_io_pin[20]}]
-# set_property DRIVE 4 [get_ports {pulse_io_pin[20]}]
+set_property PACKAGE_PIN Y6 [get_ports {pulse_io_pin[52]}]
+set_property IOSTANDARD LVCMOS33 [get_ports {pulse_io_pin[52]}]
+set_property DRIVE 4 [get_ports {pulse_io_pin[52]}]
 # CLK1_M2C_N / FMC2_G03
 set_property PACKAGE_PIN Y5 [get_ports {pulse_io_pin[24]}]
 set_property IOSTANDARD LVCMOS33 [get_ports {pulse_io_pin[24]}]

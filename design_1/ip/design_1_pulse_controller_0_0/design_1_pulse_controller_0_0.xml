@@ -754,7 +754,7 @@
           </spirit:parameter>
           <spirit:parameter>
             <spirit:name>outputProductCRC</spirit:name>
-            <spirit:value>9:1b3f5e33</spirit:value>
+            <spirit:value>9:47538dc1</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -765,7 +765,7 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>outputProductCRC</spirit:name>
-            <spirit:value>9:1b3f5e33</spirit:value>
+            <spirit:value>9:47538dc1</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -785,7 +785,7 @@
           </spirit:parameter>
           <spirit:parameter>
             <spirit:name>outputProductCRC</spirit:name>
-            <spirit:value>9:1b3f5e33</spirit:value>
+            <spirit:value>9:47538dc1</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -805,7 +805,7 @@
           </spirit:parameter>
           <spirit:parameter>
             <spirit:name>outputProductCRC</spirit:name>
-            <spirit:value>9:90d7a64d</spirit:value>
+            <spirit:value>9:80990647</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -825,7 +825,7 @@
           </spirit:parameter>
           <spirit:parameter>
             <spirit:name>outputProductCRC</spirit:name>
-            <spirit:value>9:90d7a64d</spirit:value>
+            <spirit:value>9:80990647</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -853,7 +853,7 @@
         <spirit:wire>
           <spirit:direction>in</spirit:direction>
           <spirit:vector>
-            <spirit:left spirit:format="long" spirit:resolve="dependent" spirit:dependency="(spirit:decode(id(&apos;MODELPARAM_VALUE.U_TTL_IN_WIDTH&apos;)) - 1)">0</spirit:left>
+            <spirit:left spirit:format="long" spirit:resolve="dependent" spirit:dependency="(spirit:decode(id(&apos;MODELPARAM_VALUE.U_TTL_IN_WIDTH&apos;)) - 1)">3</spirit:left>
             <spirit:right spirit:format="long">0</spirit:right>
           </spirit:vector>
           <spirit:wireTypeDefs>
@@ -1671,7 +1671,7 @@
       <spirit:modelParameter spirit:dataType="integer">
         <spirit:name>U_TTL_IN_WIDTH</spirit:name>
         <spirit:displayName>U Ttl In Width</spirit:displayName>
-        <spirit:value spirit:format="long" spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.U_TTL_IN_WIDTH">1</spirit:value>
+        <spirit:value spirit:format="long" spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.U_TTL_IN_WIDTH">4</spirit:value>
       </spirit:modelParameter>
     </spirit:modelParameters>
   </spirit:model>
@@ -1848,7 +1848,7 @@
     <spirit:parameter>
       <spirit:name>U_TTL_IN_WIDTH</spirit:name>
       <spirit:displayName>TTL in width</spirit:displayName>
-      <spirit:value spirit:format="long" spirit:resolve="user" spirit:id="PARAM_VALUE.U_TTL_IN_WIDTH" spirit:minimum="0" spirit:maximum="256" spirit:rangeType="long">1</spirit:value>
+      <spirit:value spirit:format="long" spirit:resolve="user" spirit:id="PARAM_VALUE.U_TTL_IN_WIDTH" spirit:minimum="0" spirit:maximum="256" spirit:rangeType="long">4</spirit:value>
     </spirit:parameter>
   </spirit:parameters>
   <spirit:vendorExtensions>

@@ -1,7 +1,7 @@
 {
   "design": {
     "design_info": {
-      "boundary_crc": "0x6710719837485D87",
+      "boundary_crc": "0xC142F892F3C2E1C7",
       "device": "xc7z020clg484-1",
       "name": "design_1",
       "rev_ctrl_bd_flag": "RevCtrlBdOff",
@@ -152,7 +152,7 @@
       },
       "ttl_in_pin": {
         "direction": "I",
-        "left": "0",
+        "left": "3",
         "right": "0"
       }
     },
@@ -1281,7 +1281,7 @@
             "value": "56"
           },
           "U_TTL_IN_WIDTH": {
-            "value": "1"
+            "value": "4"
           }
         }
       }
