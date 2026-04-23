@@ -314,6 +314,9 @@ module timing_controller
                dbg_inst_count <= dbg_inst_count + 1;
                dbg_inst_cycle <= dbg_inst_cycle + 1;
                timing_check <= instruction[ENABLE_TIMING_CHECK_BIT];
+               wait_ttl_type <= 0;
+               wait_ttl_chn <= instruction[WAIT_TTL_BITA:WAIT_TTL_BITB];
+               wait_ttl_armed <= 0;
                case (instruction[INSTRUCTION_BITA:INSTRUCTION_BITB])
                  0 : begin // set digital output for given duration
                     is_ttl <= 1;
@@ -345,7 +348,6 @@ module timing_controller
                        wait_ttl_type <= 0;
                     end
                     wait_timer <= instruction[TIMER_BITA:TIMER_BITB];
-                    wait_ttl_chn <= instruction[WAIT_TTL_BITA:WAIT_TTL_BITB];
                  end
                  3 : begin // clear underflow
                     dbg_clear_count = dbg_clear_count + 1;
@@ -409,11 +411,22 @@ module timing_controller
             end
             if (wait_ttl_armed) begin
                // Trigger received
-               if (wait_ttl == wait_ttl_type[1]) begin
-                  waiting <= 0;
-                  wait_ttl_type <= 0;
-                  wait_ttl_armed <= 0;
-               end
+               case (wait_ttl_type)
+                 1: begin
+                    if (wait_ttl) begin
+                       waiting <= 0;
+                       wait_ttl_type <= 0;
+                       wait_ttl_armed <= 0;
+                    end
+                 end
+                 2: begin
+                    if (~wait_ttl) begin
+                       waiting <= 0;
+                       wait_ttl_type <= 0;
+                       wait_ttl_armed <= 0;
+                    end
+                 end
+               endcase
             end else begin
                // Check to arm trigger
                case (wait_ttl_type)
