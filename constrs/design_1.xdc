@@ -315,6 +315,8 @@ set_property IOSTANDARD LVCMOS33 [get_ports {pulse_io_pin[26]}]
 set_property DRIVE 4 [get_ports {pulse_io_pin[26]}]
 # LA02_N / FMC2_H08
 # input:
+set_property PACKAGE_PIN V15 [get_ports {ttl_in_pin[0]}]
+set_property IOSTANDARD LVCMOS33 [get_ports {ttl_in_pin[0]}]
 # set_property PACKAGE_PIN V15 [get_ports {pulse_io_pin[24]}]
 # set_property IOSTANDARD LVCMOS33 [get_ports {pulse_io_pin[24]}]
 # set_property DRIVE 4 [get_ports {pulse_io_pin[24]}]
@@ -587,9 +589,8 @@ set_property IOSTANDARD LVCMOS33 [get_ports {pulse_io_pin[5]}]
 set_property DRIVE 4 [get_ports {pulse_io_pin[5]}]
 # LA27_P / FMC2_C26
 # input:
-set_property PACKAGE_PIN AB2 [get_ports {ttl_in_pin[0]}]
-set_property IOSTANDARD LVCMOS33 [get_ports {ttl_in_pin[0]}]
-set_property DRIVE 4 [get_ports {ttl_in_pin[0]}]
+# set_property PACKAGE_PIN AB2 [get_ports {ttl_in_pin[0]}]
+# set_property IOSTANDARD LVCMOS33 [get_ports {ttl_in_pin[0]}]
 # LA27_N / FMC2_C27
 set_property PACKAGE_PIN AB1 [get_ports {pulse_io_pin[2]}]
 set_property IOSTANDARD LVCMOS33 [get_ports {pulse_io_pin[2]}]
